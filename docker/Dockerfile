@@ -8,4 +8,5 @@ COPY server .
 ENV PATH=/app:${PATH}
 ENV PORT="50051"
 
+EXPOSE 50051
 ENTRYPOINT ["/app/server"]
