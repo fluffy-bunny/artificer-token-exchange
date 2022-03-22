@@ -19,13 +19,18 @@ func NewStartup() *Startup {
 		config: &tex_config.Config{},
 	}
 }
+func (s *Startup) GetPort() int {
+	return s.config.Port
+}
 func (s *Startup) GetConfigOptions() *core_contracts.ConfigOptions {
 	return &core_contracts.ConfigOptions{
 		RootConfig:  []byte(tex_config.ConfigDefaultJSON),
 		Destination: s.config,
 	}
 }
-func (s *Startup) ConfigureServices(build *di.Builder) error {
+func (s *Startup) ConfigureServices(builder *di.Builder) error {
+	di.AddSingletonTypeByObj(builder, s.config)
+
 	return nil
 }
 func (s *Startup) Configure(e *echo.Echo, root di.Container) error {
