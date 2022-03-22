@@ -118,7 +118,7 @@ jobs:
           push: true
           tags: ${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}},${{env.DOCKER_IMAGE_NAME}}:latest
           
-      - name: Build and push docker_build - main
+      - name: Build and push docker_build - branch
         id: docker_build_branch
         if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v2
