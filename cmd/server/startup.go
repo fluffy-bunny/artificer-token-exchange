@@ -1,7 +1,7 @@
 package main
 
 import (
-	tex_config "tex/internal/contracts/config"
+	tex_config "echo-starter/internal/contracts/config"
 
 	core_contracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/core"
 	di "github.com/fluffy-bunny/sarulabsdi"

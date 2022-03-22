@@ -1,4 +1,4 @@
-module tex
+module echo-starter
 
 go 1.18
 

@@ -7,6 +7,8 @@ on:
       - '**.md'
       - 'docs/**'
       - '.github/dependabot.yml'
+      - '.env'
+      - 'docker-compose.yml'
   pull_request:
     paths-ignore:
       - '**.md'

@@ -18,13 +18,13 @@
             "mode": "debug",
             "program": "${workspaceFolder}/cmd/server",
             "env": {
-                "APPLICATION_ENVIRONMENT":"Development",
-                "MODE":"ddd",
-                "EXAMPLE__PORT": "1111",
-                //"OIDC_CONFIG__AUTHORITY": "https://some.oidc.authority/",
-                "ENABLE_TRANSIENT_2": "false"               
+                "APPLICATION_NAME": "echo-starter",
+                "APPLICATION_ENVIRONMENT": "Development",
+                "PRETTY_LOG": "false",
+                "LOG_LEVEL": "info",
+                "PORT": "1323",
             },
-            "args": ["serve", "-e=EXAMPLE__PORT=5105" ]
+            "args": [  ]
         },
     ]
 }

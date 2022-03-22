@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	tex_middleware_container "tex/internal/middleware/container"
-	"tex/internal/shared"
+	tex_middleware_container "echo-starter/internal/middleware/container"
+	"echo-starter/internal/shared"
 
 	"github.com/fluffy-bunny/grpcdotnetgo/pkg/core"
 	di "github.com/fluffy-bunny/sarulabsdi"

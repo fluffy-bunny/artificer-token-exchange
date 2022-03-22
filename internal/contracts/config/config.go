@@ -16,6 +16,6 @@ var ConfigDefaultJSON = []byte(`
 	"APPLICATION_ENVIRONMENT": "in-environment",
 	"PRETTY_LOG": false,
 	"LOG_LEVEL": "info",
-	"PORT": 1323
+	"PORT": 1111
 }
 `)
