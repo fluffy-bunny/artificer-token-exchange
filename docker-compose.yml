@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+
+ # echo-starter
+  echo-starter:
+    image: "${ECHO_STARTER_IMAGE_NAME}:${ECHO_STARTER_VERSION}"
+    container_name: "${ECHO_STARTER_NAME}"
+    networks:
+      - echostarter
+    ports:
+      - 0.0.0.0:${ECHO_STARTER_PORT}:${ECHO_STARTER_PORT}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "${CONTAINER_LOG_SIZE}"
+        max-file: "${CONTAINER_LOG_COUNT}"
+    environment:
+      APPLICATION_ENVIRONMENT: "${APPLICATION_ENVIRONMENT}"
+      EXAMPLE__PORT: "${ECHO_STARTER_PORT}"
+      LOG_LEVEL: "${ECHO_STARTER_LOG_LEVEL}"
+      PRETTY_LOG: "${ECHO_STARTER_PRETTY_LOG}"
+  
+    entrypoint: ["/app/server", "serve"]
+
+
+networks:
+  echostarter:
+
+volumes:
+  mongodb-data:
+  redis:
+    driver: local
