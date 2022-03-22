@@ -12,7 +12,7 @@ on:
       - '**.md'
     branches: [ main ]
 env:
-  BINARY: 'cli'
+  BINARY: 'server'
   GO_VERSION: '1.18'
   BUILD_PATH: './cmd/server'
   DOCKER_IMAGE_NAME: 'ghstahl/artificer-tex'
