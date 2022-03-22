@@ -15,7 +15,7 @@ env:
   BINARY: 'server'
   GO_VERSION: '1.18'
   BUILD_PATH: './cmd/server'
-  DOCKER_IMAGE_NAME: 'ghstahl/artificer-tex'
+  DOCKER_IMAGE_NAME: 'echo-starter'
   
 jobs:
   pre_flight:
@@ -116,7 +116,7 @@ jobs:
           context: ./build
           file: ./docker/Dockerfile
           push: true
-          tags: ${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}},${{env.DOCKER_IMAGE_NAME}}:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}},${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
           
       - name: Build and push docker_build - branch
         id: docker_build_branch
@@ -126,7 +126,7 @@ jobs:
           context: ./build
           file: ./docker/Dockerfile
           push: true
-          tags: ${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}}
 
 
       - name: Image digest docker_build
