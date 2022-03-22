@@ -6,5 +6,6 @@ WORKDIR /app
 COPY server .
 
 ENV PATH=/app:${PATH}
+ENV PORT="50051"
 
 ENTRYPOINT ["/app/server"]
