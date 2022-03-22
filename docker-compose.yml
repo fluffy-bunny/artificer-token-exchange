@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 services:
 
@@ -9,7 +9,7 @@ services:
     networks:
       - echostarter
     ports:
-      - 0.0.0.0:${ECHO_STARTER_PORT}:${ECHO_STARTER_PORT}
+      - ${ECHO_STARTER_PORT}:8081
     logging:
       driver: "json-file"
       options:
@@ -26,8 +26,5 @@ services:
 
 networks:
   echostarter:
-
-volumes:
-  mongodb-data:
-  redis:
-    driver: local
+  
+ 
