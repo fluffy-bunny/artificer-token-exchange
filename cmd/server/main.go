@@ -6,6 +6,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+var version = "Development"
+
 func main() {
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
