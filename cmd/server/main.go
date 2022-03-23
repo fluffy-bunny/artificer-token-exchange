@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"text/template"
 
 	auth_authenticator "echo-starter/internal/auth/authenticator"
@@ -38,11 +40,25 @@ type TemplateRenderer struct {
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
+func FilePathWalkDir(root string) ([]string, error) {
+	var files []string
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			files = append(files, path)
+		}
+		return nil
+	})
+	return files, err
+}
 func main() {
 	fmt.Println("Version:" + version)
+	files, err := FilePathWalkDir("./")
+	for _, file := range files {
+		fmt.Println(file)
+	}
 	startup := NewStartup()
 	configOptions := startup.GetConfigOptions()
-	err := core.LoadConfig(configOptions)
+	err = core.LoadConfig(configOptions)
 	if err != nil {
 		panic(err)
 	}
