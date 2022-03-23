@@ -75,6 +75,11 @@ jobs:
         with:
           submodules: true
 
+      - name: copy assets
+        run: |
+          cp -r ./cmd/server/assets/    ./build/assets/
+          cp -r ./cmd/server/templates/ ./build/templates/
+
       - name: Download Build Artifact
         uses: actions/download-artifact@v2
         with:
