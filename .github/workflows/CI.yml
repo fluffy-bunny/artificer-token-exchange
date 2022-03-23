@@ -75,16 +75,21 @@ jobs:
         with:
           submodules: true
 
-      - name: copy assets
-        run: |
-          mkdir -p ./build/assets/    && cp -r ./cmd/server/assets/    ./build/assets/
-          mkdir -p ./build/templates/ && cp -r ./cmd/server/templates/ ./build/templates/
-
       - name: Download Build Artifact
         uses: actions/download-artifact@v2
         with:
           name: build
           path: build
+
+      - name: copy assets
+        run: |
+          mkdir -p ./build/assets/    && cp -r ./cmd/server/assets/    ./build/assets/
+          mkdir -p ./build/templates/ && cp -r ./cmd/server/templates/ ./build/templates/
+
+      - name: inspect build folder
+        run: |
+          cd ./build/
+          ls -al
 
       # If we ever have more than 1 file, tar before actions/upload-artifact
       - name: Fix Execute Bit
