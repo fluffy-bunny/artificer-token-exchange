@@ -77,8 +77,8 @@ jobs:
 
       - name: copy assets
         run: |
-          cp -r ./cmd/server/assets/    ./build/assets/
-          cp -r ./cmd/server/templates/ ./build/templates/
+          mkdir -p ./build/assets/    && cp -r ./cmd/server/assets/    ./build/assets/
+          mkdir -p ./build/templates/ && cp -r ./cmd/server/templates/ ./build/templates/
 
       - name: Download Build Artifact
         uses: actions/download-artifact@v2
