@@ -1,9 +1,9 @@
-package user
+package home
 
 import (
 	auth_shared "echo-starter/internal/handlers/auth/shared"
+	"echo-starter/internal/models"
 	"echo-starter/internal/session"
-	"echo-starter/internal/utils"
 	"encoding/json"
 	"net/http"
 
@@ -17,10 +17,17 @@ func Handler() func(c echo.Context) error {
 		if jsonProfile != nil {
 			var profile map[string]interface{}
 			json.Unmarshal(jsonProfile.([]byte), &profile)
-			jsonProfileS := utils.PrettyJSON(profile)
-			return c.String(http.StatusOK, jsonProfileS)
-		} else {
-			return c.String(http.StatusOK, "No profile found")
+			//	jsonProfileS := utils.PrettyJSON(profile)
+			user := &models.User{
+				Name: profile["name"].(string),
+				ID:   profile["sub"].(string),
+			}
+			return c.Render(http.StatusOK, "content", map[string]interface{}{
+				"user": user,
+			})
+			//	return c.String(http.StatusOK, jsonProfileS)
 		}
+		return c.Render(http.StatusOK, "content", map[string]interface{}{})
+
 	}
 }
