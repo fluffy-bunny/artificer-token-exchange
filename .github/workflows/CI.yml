@@ -81,10 +81,10 @@ jobs:
           name: build
           path: build
 
-      - name: copy assets
-        run: |
-          mkdir -p ./build/assets/    && cp -r ./cmd/server/assets/    ./build/
-          mkdir -p ./build/templates/ && cp -r ./cmd/server/templates/ ./build/
+#      - name: copy assets
+#        run: |
+#          mkdir -p ./build/assets/    && cp -r ./cmd/server/assets/    ./build/
+#          mkdir -p ./build/templates/ && cp -r ./cmd/server/templates/ ./build/
 
       - name: inspect build folder
         run: |
