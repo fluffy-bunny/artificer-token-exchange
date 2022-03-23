@@ -6,6 +6,7 @@ import (
 
 	tex_middleware_container "echo-starter/internal/middleware/container"
 	"echo-starter/internal/shared"
+	"os"
 
 	"github.com/fluffy-bunny/grpcdotnetgo/pkg/core"
 	di "github.com/fluffy-bunny/sarulabsdi"
@@ -16,6 +17,11 @@ import (
 var version = "Development"
 
 func main() {
+	d := os.Getenv("OIDC__CLIENT_ID")
+	fmt.Println(d)
+
+	d = os.Getenv("AUTH0_CLIENT_ID")
+	fmt.Println(d)
 	startup := NewStartup()
 	configOptions := startup.GetConfigOptions()
 	err := core.LoadConfig(configOptions)
