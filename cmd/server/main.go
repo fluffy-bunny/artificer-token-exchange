@@ -17,9 +17,10 @@ import (
 	middleware_container "echo-starter/internal/middleware/container"
 
 	"echo-starter/internal/shared"
+	echostarter_utils "echo-starter/internal/utils"
 
 	"github.com/fluffy-bunny/grpcdotnetgo/pkg/core"
-	"github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
+
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/gorilla/sessions"
@@ -49,6 +50,7 @@ func main() {
 	if core_utils.IsEmptyOrNil(appConfig.Oidc.CallbackURL) {
 		appConfig.Oidc.CallbackURL = fmt.Sprintf("http://localhost:%v/oidc", appConfig.Port)
 	}
+	fmt.Println(echostarter_utils.PrettyJSON(appConfig))
 	builder, _ := di.NewBuilder(di.App, di.Request, "transient")
 	err = startup.ConfigureServices(builder)
 	if err != nil {
@@ -65,12 +67,12 @@ func main() {
 
 	if core_utils.IsEmptyOrNil(appConfig.SessionKey) {
 		fmt.Println("WARNING: SESSION_KEY must be set for production......")
-		appConfig.SessionKey = utils.RandomString(32)
+		appConfig.SessionKey = core_utils.RandomString(32)
 		fmt.Printf("SESSION_KEY: %v\n", appConfig.SessionKey)
 	}
 	if core_utils.IsEmptyOrNil(appConfig.SessionEncryptionKey) {
 		fmt.Println("WARNING: SESSION_ENCRYPTION_KEY must be set for production......")
-		appConfig.SessionEncryptionKey = utils.RandomString(32)
+		appConfig.SessionEncryptionKey = core_utils.RandomString(32)
 		fmt.Printf("SESSION_ENCRYPTION_KEY: %v\n", appConfig.SessionEncryptionKey)
 	}
 	// we don't have a shared backend session store (i.e. redis), so fat cookies it is
