@@ -55,6 +55,26 @@ func (mr *MockIOIDCAuthenticatorMockRecorder) AuthCodeURL(arg0 interface{}, arg1
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AuthCodeURL", reflect.TypeOf((*MockIOIDCAuthenticator)(nil).AuthCodeURL), varargs...)
 }
 
+// Exchange mocks base method.
+func (m *MockIOIDCAuthenticator) Exchange(arg0 context.Context, arg1 string, arg2 ...oauth2.AuthCodeOption) (*oauth2.Token, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Exchange", varargs...)
+	ret0, _ := ret[0].(*oauth2.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Exchange indicates an expected call of Exchange.
+func (mr *MockIOIDCAuthenticatorMockRecorder) Exchange(arg0, arg1 interface{}, arg2 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exchange", reflect.TypeOf((*MockIOIDCAuthenticator)(nil).Exchange), varargs...)
+}
+
 // VerifyIDToken mocks base method.
 func (m *MockIOIDCAuthenticator) VerifyIDToken(arg0 context.Context, arg1 *oauth2.Token) (*oidc.IDToken, error) {
 	m.ctrl.T.Helper()
