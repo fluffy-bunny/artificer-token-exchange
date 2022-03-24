@@ -7,21 +7,18 @@ import (
 	"path/filepath"
 	"text/template"
 
-	auth_authenticator "echo-starter/internal/auth/authenticator"
 	contracts_config "echo-starter/internal/contracts/config"
-	handlers_auth_callback "echo-starter/internal/handlers/auth/callback"
-	handlers_auth_login "echo-starter/internal/handlers/auth/login"
-	handlers_auth_logout "echo-starter/internal/handlers/auth/logout"
-	handlers_home "echo-starter/internal/handlers/home"
+	services_container "echo-starter/internal/services/container"
 
-	handlers_auth_user "echo-starter/internal/handlers/auth/user"
-
+	contracts_handler "echo-starter/internal/contracts/handler"
 	middleware_container "echo-starter/internal/middleware/container"
 
 	"echo-starter/internal/shared"
 	echostarter_utils "echo-starter/internal/utils"
 
 	"github.com/fluffy-bunny/grpcdotnetgo/pkg/core"
+
+	"echo-starter/internal/wellknown"
 
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
@@ -64,10 +61,13 @@ func main() {
 	}
 	appConfig := configOptions.Destination.(*contracts_config.Config)
 	if core_utils.IsEmptyOrNil(appConfig.Oidc.CallbackURL) {
-		appConfig.Oidc.CallbackURL = fmt.Sprintf("http://localhost:%v/oidc", appConfig.Port)
+		appConfig.Oidc.CallbackURL = fmt.Sprintf("http://localhost:%v%s",
+			appConfig.Port,
+			wellknown.OIDCCallbackPath)
 	}
 	fmt.Println(echostarter_utils.PrettyJSON(appConfig))
 	builder, _ := di.NewBuilder(di.App, di.Request, "transient")
+	services_container.AddContainerAccessorFunc(builder)
 	err = startup.ConfigureServices(builder)
 	if err != nil {
 		panic(err)
@@ -93,30 +93,20 @@ func main() {
 	}
 	// we don't have a shared backend session store (i.e. redis), so fat cookies it is
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey))))
-
 	e.Use(middleware_container.EnsureScopedContainer(shared.RootContainer))
 	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
 
 	app := e.Group("")
-	app.Static("/css", "./assets/css")
 	app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "form:csrf",
 	}))
-	// we don't have a shared backend session store (i.e. redis), so fat cookies it is
-	app.Use(session.Middleware(sessions.NewCookieStore([]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey))))
-
 	startup.Configure(e, shared.RootContainer)
+	e.Use(middleware.Recover())
 
-	e.GET("/", handlers_home.Handler())
-	authenticator, err := auth_authenticator.New(appConfig)
-	if err != nil {
-		panic(err)
-	}
-	app.GET("/oidc", handlers_auth_callback.Handler(authenticator))
-	app.GET("/login", handlers_auth_login.Handler(authenticator))
-	app.GET("/user", handlers_auth_user.Handler())
-	app.GET("/logout", handlers_auth_logout.Handler(authenticator))
+	app.Static("/css", "./assets/css")
+	handlerFactory := contracts_handler.GetIHandlerFactoryFromContainer(shared.RootContainer)
+	handlerFactory.RegisterHandlers(app)
+
 	port := startup.GetPort()
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", port)))
 }

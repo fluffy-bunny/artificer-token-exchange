@@ -6,13 +6,14 @@ require (
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
 	github.com/coreos/go-oidc/v3 v3.1.0
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.214
-	github.com/fluffy-bunny/sarulabsdi v0.1.56
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.216
+	github.com/fluffy-bunny/sarulabsdi v0.1.58
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.2.0
-	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/labstack/echo-contrib v0.12.0
 	github.com/labstack/echo/v4 v4.7.2
+	github.com/rs/zerolog v1.26.1
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 )
 
@@ -29,20 +30,18 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/fluffy-bunny/viperEx v0.0.26 // indirect
-	github.com/foolin/goview v0.3.0 // indirect
 	github.com/form3tech-oss/jwt-go v3.2.5+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
+	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/klauspost/compress v1.11.13 // indirect
-	github.com/labstack/echo v3.3.10+incompatible // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
@@ -60,7 +59,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/reugn/async v0.0.0-20200819063434-15e5b3951cd7 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/rs/zerolog v1.26.1 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
