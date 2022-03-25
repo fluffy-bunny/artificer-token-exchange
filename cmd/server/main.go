@@ -16,6 +16,7 @@ import (
 	echostarter_utils "echo-starter/internal/utils"
 
 	"github.com/fluffy-bunny/grpcdotnetgo/pkg/core"
+	"github.com/google/uuid"
 
 	"echo-starter/internal/wellknown"
 
@@ -38,6 +39,8 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 }
 
 func main() {
+	appInstanceID := uuid.New().String()
+
 	fmt.Println("Version:" + version)
 	DumpPath("./")
 	var err error
@@ -84,8 +87,11 @@ func main() {
 	sessionStore.Options.MaxAge = 60
 
 	e.Use(session.Middleware(sessionStore))
+	e.Use(middleware_session.EnsureSlidingSession())
+	if appConfig.ApplicationEnvironment == contracts_config.Environment_Development {
+		e.Use(middleware_session.EnsureDevelopmentSession(appInstanceID))
+	}
 	e.Use(middleware_container.EnsureScopedContainer(shared.RootContainer))
-	e.Use(middleware_session.EnsureSlidingSession(shared.RootContainer))
 	e.Use(middleware.Logger())
 
 	app := e.Group("")

@@ -7,8 +7,7 @@ import (
 )
 
 const (
-	// so nobody can guess the session name
-	sessionName = "87f875fc-2e8e-4c59-9bce-109b94fd20d2"
+	sessionName = "_session"
 )
 
 func GetSession(c echo.Context) *sessions.Session {
