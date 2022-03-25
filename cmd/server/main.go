@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"text/template"
 
 	contracts_config "echo-starter/internal/contracts/config"
@@ -12,6 +10,7 @@ import (
 
 	contracts_handler "echo-starter/internal/contracts/handler"
 	middleware_container "echo-starter/internal/middleware/container"
+	middleware_session "echo-starter/internal/middleware/session"
 
 	"echo-starter/internal/shared"
 	echostarter_utils "echo-starter/internal/utils"
@@ -37,22 +36,11 @@ type TemplateRenderer struct {
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
-func FilePathWalkDir(root string) ([]string, error) {
-	var files []string
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			files = append(files, path)
-		}
-		return nil
-	})
-	return files, err
-}
+
 func main() {
 	fmt.Println("Version:" + version)
-	files, err := FilePathWalkDir("./")
-	for _, file := range files {
-		fmt.Println(file)
-	}
+	DumpPath("./")
+	var err error
 	startup := NewStartup()
 	configOptions := startup.GetConfigOptions()
 	err = core.LoadConfig(configOptions)
@@ -92,8 +80,12 @@ func main() {
 		fmt.Printf("SESSION_ENCRYPTION_KEY: %v\n", appConfig.SessionEncryptionKey)
 	}
 	// we don't have a shared backend session store (i.e. redis), so fat cookies it is
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey))))
+	sessionStore := sessions.NewCookieStore([]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey))
+	sessionStore.Options.MaxAge = 60
+
+	e.Use(session.Middleware(sessionStore))
 	e.Use(middleware_container.EnsureScopedContainer(shared.RootContainer))
+	e.Use(middleware_session.EnsureSlidingSession(shared.RootContainer))
 	e.Use(middleware.Logger())
 
 	app := e.Group("")

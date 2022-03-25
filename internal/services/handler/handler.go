@@ -25,7 +25,7 @@ var reflectType = reflect.TypeOf((*service)(nil))
 
 // AddSingletonIHandlerFactory registers the *service as a singleton.
 func AddSingletonIHandlerFactory(builder *di.Builder) {
-	log.Info().Msg("DI:AddSingletonIHandlerFactory")
+	log.Info().Str("DI", "IHandlerFactory").Send()
 	contracts_handler.AddSingletonIHandlerFactory(builder, reflectType)
 }
 
