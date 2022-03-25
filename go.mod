@@ -2,11 +2,13 @@ module echo-starter
 
 go 1.18
 
+//replace github.com/fluffy-bunny/grpcdotnetgo => ../grpcdotnetgo
+
 require (
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
 	github.com/coreos/go-oidc/v3 v3.1.0
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.216
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.218
 	github.com/fluffy-bunny/sarulabsdi v0.1.58
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.2.0
@@ -34,6 +36,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/gogo/status v1.1.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
