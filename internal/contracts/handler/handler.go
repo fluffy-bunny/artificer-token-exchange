@@ -1,7 +1,12 @@
 package handler
 
 import (
+	"reflect"
+	"strings"
+
+	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 //go:generate genny -pkg $GOPACKAGE -in=../../../genny/sarulabsdi/interface-types.go -out=gen-$GOFILE gen "InterfaceType=IHandler,IHandlerFactory"
@@ -57,3 +62,19 @@ type (
 		RegisterHandlers(app *echo.Group)
 	}
 )
+
+func AddScopedIHandlerEx(builder *di.Builder, reflectType reflect.Type, httpVerbs []HTTPVERB, path string) {
+	httpVerbS := []string{}
+	for _, httpVerb := range httpVerbs {
+		httpVerbS = append(httpVerbS, httpVerb.String())
+	}
+	metadata := map[string]interface{}{
+		"path":      path,
+		"httpVerbs": httpVerbs,
+	}
+	log.Info().
+		Str("DI", "IHandler").
+		Str("path", path).
+		Str("httpVerbs", strings.Join(httpVerbS, "|")).Send()
+	AddScopedIHandlerWithMetadata(builder, reflectType, metadata)
+}
