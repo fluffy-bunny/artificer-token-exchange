@@ -71,11 +71,11 @@ func (s *service) Do(c echo.Context) error {
 	if err := idToken.Claims(&profile); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	jsonProfile, err := json.Marshal(profile)
-	if err != nil {
-		c.Redirect(http.StatusTemporaryRedirect, "/error")
+	sess.Values["authenticated"] = true
+
+	for k, v := range profile {
+		sess.Values["id:"+k] = v
 	}
-	sess.Values[auth_shared.ProfileSessionKey] = jsonProfile
 
 	// NOTE: I have NEVER had the need to store an access token to what is a simple Authentication service. i.e. proof of life.
 	// imagine having you website login to google, but you aren't actually using any google services.  The services you are using are yours.

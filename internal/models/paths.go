@@ -8,6 +8,7 @@ type Paths struct {
 	Home   string
 	Login  string
 	Logout string
+	Deep   string
 }
 
 func NewPaths() *Paths {
@@ -15,5 +16,6 @@ func NewPaths() *Paths {
 		Home:   wellknown.HomePath,
 		Login:  wellknown.LoginPath,
 		Logout: wellknown.LogoutPath,
+		Deep:   "/deep/a/b",
 	}
 }

@@ -1,8 +1,10 @@
 package wellknown
 
 const (
-	ClaimTypeAuthorized = "authorized"
-	ClaimTypeDeep       = "deep"
+	ClaimTypeAuthenticated = "authenticated"
+	ClaimTypeSubject       = "subject"
+
+	ClaimTypeDeep = "deep"
 
 	ClaimValueRead         = "read"
 	ClaimValueReadWrite    = "readwrite"

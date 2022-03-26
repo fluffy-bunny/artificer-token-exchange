@@ -8,7 +8,7 @@ require (
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
 	github.com/coreos/go-oidc/v3 v3.1.0
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.218
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.219
 	github.com/fluffy-bunny/sarulabsdi v0.1.58
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.2.0

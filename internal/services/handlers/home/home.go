@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
 
 	"github.com/labstack/echo/v4"
@@ -20,6 +21,7 @@ import (
 
 type (
 	service struct {
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
 	}
 )
 
@@ -61,14 +63,17 @@ func (s *service) Do(c echo.Context) error {
 		}
 
 		return c.Render(http.StatusOK, "content", map[string]interface{}{
-			"user":  user,
-			"paths": models.NewPaths(),
-			"test":  test,
+			"user":   user,
+			"paths":  models.NewPaths(),
+			"test":   test,
+			"claims": s.ClaimsPrincipal.GetClaims(),
 		})
 		//	return c.String(http.StatusOK, jsonProfileS)
 	}
 	return c.Render(http.StatusOK, "content", map[string]interface{}{
-		"paths": models.NewPaths(),
-		"test":  test,
+		"isAuthenticated": func() bool { return s.ClaimsPrincipal.HasClaimType(wellknown.ClaimTypeAuthenticated) },
+		"paths":           models.NewPaths(),
+		"test":            test,
+		"claims":          s.ClaimsPrincipal.GetClaims(),
 	})
 }

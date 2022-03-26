@@ -4,5 +4,5 @@ const (
 	LoginPath        = "/login"
 	LogoutPath       = "/logout"
 	OIDCCallbackPath = "/oidc"
-	UserPath         = "/user"
+	ErrorPath        = "/error/:id"
 )

@@ -21,24 +21,24 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.OIDCCallbackPath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.HomePath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.AboutPath)
+	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.ErrorPath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/css*")
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/assets*")
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/js*")
 
-	entryPointClaimsBuilder.GetClaimsConfig(wellknown.UserPath).
-		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthorized),
-		)
-
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.DeepPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthorized),
+			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
 		).GetChild().
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
 			services_claimsprincipal.NewClaimFactTypeAndValue(wellknown.ClaimTypeDeep, wellknown.ClaimValueRead),
 			services_claimsprincipal.NewClaimFactTypeAndValue(wellknown.ClaimTypeDeep, wellknown.ClaimValueReadWrite),
 			services_claimsprincipal.NewClaimFactTypeAndValue(wellknown.ClaimTypeDeep, wellknown.ClaimValueReadWriteAll),
 		)
-
-	return entryPointClaimsBuilder.GrpcEntrypointClaimsMap
+	entryPointClaimsBuilder.AddMetaData(wellknown.DeepPath, map[string]interface{}{
+		"onUnauthenticated": "login",
+		"onUnauthorized":    "error",
+	})
+	cMap := entryPointClaimsBuilder.GrpcEntrypointClaimsMap
+	return cMap
 }
