@@ -1,4 +1,4 @@
-FROM scratch
+FROM ubuntu:latest
 LABEL maintainer="maintainer@fluffy-bunny.com"
 LABEL description="starter kit"
 
