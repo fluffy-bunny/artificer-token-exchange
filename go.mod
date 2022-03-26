@@ -13,6 +13,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/sessions v1.2.1
+	github.com/karelbilek/template-parse-recursive v0.0.0-20210219053001-6ba27ddd6f12
 	github.com/labstack/echo-contrib v0.12.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/rs/zerolog v1.26.1

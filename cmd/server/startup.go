@@ -14,9 +14,12 @@ import (
 	middleware_claimsprincipal "echo-starter/internal/middleware/claimsprincipal"
 	services_handler "echo-starter/internal/services/handler"
 
+	services_claimsprovider "echo-starter/internal/services/claimsprovider"
+
 	core_contracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/core"
 	services_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
+	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -24,11 +27,13 @@ import (
 
 type Startup struct {
 	config *tex_config.Config
+	ctrl   *gomock.Controller
 }
 
 func NewStartup() *Startup {
 	return &Startup{
 		config: &tex_config.Config{},
+		ctrl:   gomock.NewController(nil),
 	}
 }
 func (s *Startup) GetPort() int {
@@ -50,6 +55,7 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	services_handlers_deep.AddScopedIHandler(builder)
 	services_handler.AddSingletonIHandlerFactory(builder)
 	services_core_claimsprincipal.AddScopedIClaimsPrincipal(builder)
+	services_claimsprovider.AddSingletonIClaimsProviderMock(builder, s.ctrl)
 	return nil
 }
 func (s *Startup) Configure(e *echo.Echo, root di.Container) error {

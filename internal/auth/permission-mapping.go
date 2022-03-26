@@ -4,13 +4,12 @@ import (
 	"echo-starter/internal/wellknown"
 
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
-	claimsprincipalServices "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
 	services_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
 )
 
 // BuildGrpcEntrypointPermissionsClaimsMap ...
 func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.EntryPointConfig {
-	entryPointClaimsBuilder := claimsprincipalServices.NewEntryPointClaimsBuilder()
+	entryPointClaimsBuilder := services_claimsprincipal.NewEntryPointClaimsBuilder()
 	// HEALTH SERVICE START
 	//---------------------------------------------------------------------------------------------------
 	// health check is open to anyone

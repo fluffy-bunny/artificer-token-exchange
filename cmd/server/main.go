@@ -3,6 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 	"text/template"
 
 	contracts_config "echo-starter/internal/contracts/config"
@@ -37,7 +41,35 @@ type TemplateRenderer struct {
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
+func findAndParseTemplates(rootDir string, funcMap template.FuncMap) (*template.Template, error) {
+	cleanRoot := filepath.Clean(rootDir)
+	pfx := len(cleanRoot) + 1
+	root := template.New("")
 
+	err := filepath.Walk(cleanRoot, func(path string, info os.FileInfo, e1 error) error {
+		if !info.IsDir() && strings.HasSuffix(path, ".tpl") {
+			if e1 != nil {
+				return e1
+			}
+
+			b, e2 := ioutil.ReadFile(path)
+			if e2 != nil {
+				return e2
+			}
+
+			name := path[pfx:]
+			t := root.New(name).Funcs(funcMap)
+			_, e2 = t.Parse(string(b))
+			if e2 != nil {
+				return e2
+			}
+		}
+
+		return nil
+	})
+
+	return root, err
+}
 func main() {
 	appInstanceID := uuid.New().String()
 
@@ -67,8 +99,11 @@ func main() {
 
 	e := echo.New()
 	//Set Renderer
+	t, err := findAndParseTemplates("./templates", nil)
+
 	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("templates/*.tpl")),
+		//	templates: template.Must(template.ParseGlob("templates/*.tpl")),
+		templates: t,
 	}
 	e.Renderer = renderer
 

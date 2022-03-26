@@ -2,17 +2,19 @@ package deep
 
 import (
 	contracts_handler "echo-starter/internal/contracts/handler"
-	"echo-starter/internal/utils"
+	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"net/http"
 	"reflect"
 
+	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	service struct {
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
 	}
 )
 
@@ -49,7 +51,8 @@ func (s *service) Do(c echo.Context) error {
 		return err
 	}
 
-	content := utils.PrettyJSON(u)
-	return c.String(http.StatusOK, content)
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/deep/deep", map[string]interface{}{
+		"params": u,
+	})
 
 }
