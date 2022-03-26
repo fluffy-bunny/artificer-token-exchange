@@ -101,7 +101,9 @@ func main() {
 	startup.Configure(e, shared.RootContainer)
 	e.Use(middleware.Recover())
 
-	app.Static("/css", "./assets/css")
+	app.Static("/css", "./css")
+	app.Static("/assets", "./assets")
+	app.Static("/js", "./js")
 	handlerFactory := contracts_handler.GetIHandlerFactoryFromContainer(shared.RootContainer)
 	handlerFactory.RegisterHandlers(app)
 

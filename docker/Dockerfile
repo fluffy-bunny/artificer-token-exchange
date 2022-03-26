@@ -4,6 +4,8 @@ LABEL description="starter kit"
 
 WORKDIR /app
 COPY server .
+COPY css/ /css/
+COPY js/ /js/
 COPY assets/ /assets/
 COPY templates/ /templates/
 
