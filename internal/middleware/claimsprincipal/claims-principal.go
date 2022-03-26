@@ -4,7 +4,10 @@ import (
 	"echo-starter/internal/session"
 	"echo-starter/internal/wellknown"
 	echostarter_wellknown "echo-starter/internal/wellknown"
+	"encoding/json"
 	"net/http"
+
+	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	middleware_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/claimsprincipal"
@@ -79,6 +82,20 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware() echo.MiddlewareFunc {
 				tryAddProfileClaim("id:name", claimsPrincipal)
 				tryAddProfileClaim("id:email", claimsPrincipal)
 				tryAddProfileClaim("id:iss", claimsPrincipal)
+				jsonClaims, ok := sess.Values["claims"]
+
+				if ok {
+					jsonClaimsS := jsonClaims.(string)
+					var claims []contracts_claimsprincipal.Claim
+					err := json.Unmarshal([]byte(jsonClaimsS), &claims)
+					if err != nil {
+						log.Error().Err(err).Msg("unmarshal claims")
+					} else {
+						for _, claim := range claims {
+							claimsPrincipal.AddClaim(claim)
+						}
+					}
+				}
 			}
 			return next(c)
 		}

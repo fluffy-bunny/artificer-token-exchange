@@ -10,13 +10,16 @@ import (
 	"net/http"
 	"reflect"
 
+	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
+
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	service struct {
-		Authenticator contracts_auth.IOIDCAuthenticator `inject:"authenticator"`
+		Authenticator  contracts_auth.IOIDCAuthenticator        `inject:""`
+		ClaimsProvider contracts_claimsprovider.IClaimsProvider `inject:""`
 	}
 )
 
@@ -64,9 +67,20 @@ func (s *service) Do(c echo.Context) error {
 	idToken, err := s.Authenticator.VerifyIDToken(ctx, token)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to verify ID Token.")
-
 	}
 
+	claims, err := s.ClaimsProvider.GetClaims(idToken.Subject)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to fetch claims.")
+	}
+	jsonClaims, err := json.Marshal(claims)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to marshal claims.")
+	}
+	sess.Values["claims"] = string(jsonClaims)
+	for _, v := range claims {
+		sess.Values["claim:"+v.Type] = v.Value
+	}
 	var profile map[string]interface{}
 	if err := idToken.Claims(&profile); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())

@@ -2,17 +2,13 @@ package home
 
 import (
 	contracts_handler "echo-starter/internal/contracts/handler"
-
+	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
-
-	"reflect"
-
-	"echo-starter/internal/models"
 	"net/http"
+	"reflect"
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
-
 	"github.com/labstack/echo/v4"
 )
 
@@ -44,9 +40,7 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 }
 func (s *service) Do(c echo.Context) error {
 
-	return c.Render(http.StatusOK, "content", map[string]interface{}{
-		"isAuthenticated": func() bool { return s.ClaimsPrincipal.HasClaimType(wellknown.ClaimTypeAuthenticated) },
-		"paths":           models.NewPaths(),
-		"claims":          s.ClaimsPrincipal.GetClaims(),
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/home/home", map[string]interface{}{
+		"claims": s.ClaimsPrincipal.GetClaims(),
 	})
 }
