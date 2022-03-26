@@ -4,10 +4,10 @@ LABEL description="starter kit"
 
 WORKDIR /app
 COPY server .
-COPY css/ /css/
-COPY js/ /js/
-COPY assets/ /assets/
-COPY templates/ /templates/
+COPY css/ .
+COPY js/ .
+COPY assets/ .
+COPY templates/ .
 
 ENV PATH=/app:${PATH}
 ENV PORT="8081"
