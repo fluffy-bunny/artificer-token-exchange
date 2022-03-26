@@ -1,6 +1,8 @@
 package container
 
 import (
+	echostarter_wellknown "echo-starter/internal/wellknown"
+
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
@@ -12,7 +14,7 @@ func EnsureScopedContainer(root di.Container) echo.MiddlewareFunc {
 			if err != nil {
 				panic(err)
 			}
-			c.Set("container", subContainer)
+			c.Set(echostarter_wellknown.SCOPED_CONTAINER_KEY, subContainer)
 			return next(c)
 		}
 	}
