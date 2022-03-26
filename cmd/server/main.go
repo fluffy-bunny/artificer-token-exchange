@@ -1,9 +1,8 @@
 package main
 
 import (
+	"echo-starter/internal/templates"
 	"fmt"
-	"io"
-	"text/template"
 
 	contracts_config "echo-starter/internal/contracts/config"
 	services_container "echo-starter/internal/services/container"
@@ -29,14 +28,6 @@ import (
 )
 
 var version = "Development"
-
-type TemplateRenderer struct {
-	templates *template.Template
-}
-
-func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
-}
 
 func main() {
 	appInstanceID := uuid.New().String()
@@ -67,10 +58,7 @@ func main() {
 
 	e := echo.New()
 	//Set Renderer
-	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("templates/*.tpl")),
-	}
-	e.Renderer = renderer
+	e.Renderer = templates.GetTemplateRender("./templates")
 
 	if core_utils.IsEmptyOrNil(appConfig.SessionKey) {
 		fmt.Println("WARNING: SESSION_KEY must be set for production......")

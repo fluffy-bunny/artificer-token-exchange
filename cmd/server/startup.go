@@ -14,6 +14,8 @@ import (
 	middleware_claimsprincipal "echo-starter/internal/middleware/claimsprincipal"
 	services_handler "echo-starter/internal/services/handler"
 
+	services_claimsprovider "echo-starter/internal/services/claimsprovider"
+
 	core_contracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/core"
 	services_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
@@ -50,6 +52,7 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	services_handlers_deep.AddScopedIHandler(builder)
 	services_handler.AddSingletonIHandlerFactory(builder)
 	services_core_claimsprincipal.AddScopedIClaimsPrincipal(builder)
+	services_claimsprovider.AddSingletonIClaimsProviderMock(builder)
 	return nil
 }
 func (s *Startup) Configure(e *echo.Echo, root di.Container) error {
