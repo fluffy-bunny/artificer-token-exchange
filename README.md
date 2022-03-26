@@ -32,3 +32,20 @@ IDistributedCache
 IMemoryCache  
 func ContainerAccessor vs aps.net's IServiceProvider  
 etc.   
+
+## Docker-Compose
+
+### Secrets
+place the following Auth0 env variables in your OS envs.  
+```env
+AUTH0_CLIENT_ID=M8x**REDACTED**4Zwk
+AUTH0_CLIENT_SECRET=mbTS7_63xBUx**REDACTED**lYgmRwXPbMy8ai9Pd
+AUTH0_DOMAIN={{yourdomain}}.auth0.com
+```
+example with none working secrets
+```.env
+AUTH0_CLIENT_ID=M8xSKujdhflsjdfPd3yfkBTjnajz4Zwk
+AUTH0_CLIENT_SECRET=mbTS7_63xBUxkjlhdsjkdfhksdjdfhnvyoWlYgmRwXPbMy8ai9Pd
+AUTH0_DOMAIN=foo.auth0.com
+```
+
