@@ -3,7 +3,7 @@ package main
 import (
 	echostarter_auth "echo-starter/internal/auth"
 	tex_config "echo-starter/internal/contracts/config"
-
+	services_auth_authcookie "echo-starter/internal/services/auth/authcookie"
 	services_auth_authenticator "echo-starter/internal/services/auth/authenticator"
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
 	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
@@ -44,6 +44,7 @@ func (s *Startup) GetConfigOptions() *core_contracts.ConfigOptions {
 }
 func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	di.AddSingletonTypeByObj(builder, s.config)
+	services_auth_authcookie.AddSingletonIAuthCookie(builder)
 	services_auth_authenticator.AddSingletonIOIDCAuthenticator(builder)
 	services_handlers_auth_login.AddScopedIHandler(builder)
 	services_handlers_auth_callback.AddScopedIHandler(builder)
