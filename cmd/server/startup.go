@@ -5,10 +5,10 @@ import (
 	tex_config "echo-starter/internal/contracts/config"
 	services_auth_authcookie "echo-starter/internal/services/auth/authcookie"
 	services_auth_authenticator "echo-starter/internal/services/auth/authenticator"
+	services_handlers_about "echo-starter/internal/services/handlers/about"
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
 	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
 	services_handlers_auth_logout "echo-starter/internal/services/handlers/auth/logout"
-
 	services_handlers_auth_profiles "echo-starter/internal/services/handlers/auth/profiles"
 	services_handlers_auth_unauthorized "echo-starter/internal/services/handlers/auth/unauthorized"
 	services_handlers_deep "echo-starter/internal/services/handlers/deep"
@@ -62,6 +62,7 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	services_handlers_home.AddScopedIHandler(builder)
 	services_handlers_deep.AddScopedIHandler(builder)
 	services_handlers_error.AddScopedIHandler(builder)
+	services_handlers_about.AddScopedIHandler(builder)
 	services_handler.AddSingletonIHandlerFactory(builder)
 	services_core_claimsprincipal.AddScopedIClaimsPrincipal(builder)
 	services_claimsprovider.AddSingletonIClaimsProviderMock(builder, s.ctrl)

@@ -1,4 +1,4 @@
-package home
+package about
 
 import (
 	contracts_handler "echo-starter/internal/contracts/handler"
@@ -31,7 +31,7 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.HomePath)
+		wellknown.AboutPath)
 }
 
 func (s *service) Ctor() {
@@ -41,5 +41,8 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 func (s *service) Do(c echo.Context) error {
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/home/index", map[string]interface{}{})
+
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/about/index", map[string]interface{}{
+		"claims": s.ClaimsPrincipal.GetClaims(),
+	})
 }
