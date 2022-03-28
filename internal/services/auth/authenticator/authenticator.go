@@ -47,7 +47,7 @@ func (s *service) Ctor() {
 		ClientSecret: s.AppConfig.Oidc.ClientSecret,
 		RedirectURL:  s.AppConfig.Oidc.CallbackURL,
 		Endpoint:     provider.Endpoint(),
-		Scopes:       []string{oidc.ScopeOpenID, "profile"},
+		Scopes:       []string{oidc.ScopeOpenID, oidc.ScopeOfflineAccess, "profile"},
 	}
 	s.Config = conf
 }

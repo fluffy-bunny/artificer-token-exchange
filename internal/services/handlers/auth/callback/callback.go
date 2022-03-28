@@ -3,6 +3,7 @@ package callback
 import (
 	contracts_auth "echo-starter/internal/contracts/auth"
 	auth_shared "echo-starter/internal/contracts/auth/shared"
+	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
 	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/session"
 	"echo-starter/internal/wellknown"
@@ -10,8 +11,6 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-
-	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
 
 	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 
@@ -67,6 +66,11 @@ func (s *service) Do(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusUnauthorized, "Failed to convert an authorization code into a token.")
 	}
+	jsonTokenB, err := json.Marshal(token)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	sess.Values["_authArtifacts"] = string(jsonTokenB)
 
 	idToken, err := s.Authenticator.VerifyIDToken(ctx, token)
 	if err != nil {
