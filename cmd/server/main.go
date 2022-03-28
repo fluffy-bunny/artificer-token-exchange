@@ -79,7 +79,7 @@ func main() {
 	sessionStore.Options.MaxAge = appConfig.SessionMaxAgeSeconds
 
 	e.Use(session.Middleware(sessionStore))
-	e.Use(middleware_session.EnsureSlidingSession())
+	e.Use(middleware_session.EnsureSlidingSession(shared.RootContainer))
 	if appConfig.ApplicationEnvironment == contracts_config.Environment_Development {
 		e.Use(middleware_session.EnsureDevelopmentSession(appInstanceID))
 	}

@@ -7,6 +7,8 @@ import (
 	services_auth_authenticator "echo-starter/internal/services/auth/authenticator"
 	services_handlers_about "echo-starter/internal/services/handlers/about"
 
+	core_services_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/timeutils"
+
 	// ARTISTS
 	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_api_artists "echo-starter/internal/services/handlers/api/artists"
@@ -62,6 +64,7 @@ func (s *Startup) GetConfigOptions() *core_contracts.ConfigOptions {
 func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	di.AddSingletonTypeByObj(builder, s.config)
 
+	core_services_timeutils.AddTimeParse(builder)
 	// AUTH SERVICES
 	//----------------------------------------------------------------------------------------------------------------------
 	services_auth_authcookie.AddSingletonIAuthCookie(builder)
