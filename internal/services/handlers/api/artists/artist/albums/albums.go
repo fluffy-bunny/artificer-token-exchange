@@ -1,12 +1,13 @@
-package deep
+package albumns
 
 import (
 	contracts_handler "echo-starter/internal/contracts/handler"
-	"echo-starter/internal/templates"
+	artists_shared "echo-starter/internal/services/handlers/api/artists/shared"
 	"echo-starter/internal/wellknown"
 	"net/http"
 	"reflect"
 
+	linq "github.com/ahmetb/go-linq/v3"
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -31,7 +32,7 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.DeepPath)
+		wellknown.ArtistsIdAlbumsPath)
 }
 
 func (s *service) Ctor() {}
@@ -40,8 +41,7 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 }
 
 type params struct {
-	ID   string `param:"id" query:"id" header:"id" form:"id" json:"id" xml:"id"`
-	Name string `param:"name" query:"name" header:"name" form:"name" json:"name" xml:"name"`
+	ID string `param:"id" query:"id" header:"id" form:"id" json:"id" xml:"id"`
 }
 
 func (s *service) Do(c echo.Context) error {
@@ -49,7 +49,18 @@ func (s *service) Do(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/deep/index", map[string]interface{}{
-		"params": u,
-	})
+
+	var artists []artists_shared.Artist
+
+	linq.From(artists_shared.Artists).Where(func(c interface{}) bool {
+		return c.(artists_shared.Artist).Id == u.ID
+	}).Select(func(c interface{}) interface{} {
+		return c
+	}).ToSlice(&artists)
+
+	if len(artists) == 0 {
+		return c.JSON(http.StatusNotFound, nil)
+	}
+	return c.JSON(http.StatusNotFound, artists[0].Albums)
+
 }

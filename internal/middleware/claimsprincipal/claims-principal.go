@@ -117,9 +117,10 @@ func FinalAuthVerificationMiddlewareUsingClaimsMap(entrypointClaimsMap map[strin
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 
+			path := c.Path()
 			subLogger := log.With().
 				Bool("enableZeroTrust", enableZeroTrust).
-				Str("FullMethod", c.Path()).
+				Str("FullMethod", path).
 				Logger()
 			debugEvent := subLogger.Debug()
 
@@ -127,7 +128,7 @@ func FinalAuthVerificationMiddlewareUsingClaimsMap(entrypointClaimsMap map[strin
 			claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
 
 			authenticated := claimsPrincipal.HasClaimType(wellknown.ClaimTypeAuthenticated)
-			elem, ok := entrypointClaimsMap[c.Path()]
+			elem, ok := entrypointClaimsMap[path]
 			permissionDeniedFunc := func() error {
 				if !authenticated {
 					if !core_utils.IsNil(elem) {
@@ -135,6 +136,7 @@ func FinalAuthVerificationMiddlewareUsingClaimsMap(entrypointClaimsMap map[strin
 						if ok && directive == "login" {
 							return c.Redirect(http.StatusFound, "/login?redirect_url="+c.Request().URL.String())
 						}
+						return c.String(http.StatusUnauthorized, "Unauthorized")
 					}
 				}
 				return c.Redirect(http.StatusFound, "/unauthorized")

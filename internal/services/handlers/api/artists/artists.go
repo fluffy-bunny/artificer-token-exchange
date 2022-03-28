@@ -1,8 +1,8 @@
-package deep
+package artists
 
 import (
 	contracts_handler "echo-starter/internal/contracts/handler"
-	"echo-starter/internal/templates"
+	artists_shared "echo-starter/internal/services/handlers/api/artists/shared"
 	"echo-starter/internal/wellknown"
 	"net/http"
 	"reflect"
@@ -31,7 +31,7 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.DeepPath)
+		wellknown.ArtistsPath)
 }
 
 func (s *service) Ctor() {}
@@ -39,17 +39,13 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 
-type params struct {
-	ID   string `param:"id" query:"id" header:"id" form:"id" json:"id" xml:"id"`
-	Name string `param:"name" query:"name" header:"name" form:"name" json:"name" xml:"name"`
-}
-
 func (s *service) Do(c echo.Context) error {
-	u := new(params)
-	if err := c.Bind(u); err != nil {
-		return err
+	var artists []artists_shared.Artist
+	for _, artist := range artists_shared.Artists {
+		artists = append(artists, artists_shared.Artist{
+			Name: artist.Name,
+			Id:   artist.Id,
+		})
 	}
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/deep/index", map[string]interface{}{
-		"params": u,
-	})
+	return c.JSON(http.StatusOK, artists)
 }
