@@ -7,11 +7,13 @@ import (
 	"encoding/json"
 	"net/http"
 
-	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
+	contracts_auth "echo-starter/internal/contracts/auth"
 
+	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	middleware_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/claimsprincipal"
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
+	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
@@ -57,46 +59,56 @@ type EntryPointConfigEx struct {
 	OnUnauthorizedAction OnUnauthorizedAction
 }
 
-func AuthenticatedSessionToClaimsPrincipalMiddleware() echo.MiddlewareFunc {
+func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		// get authCookie service once during configuration
+		authCookie := contracts_auth.GetIAuthCookieFromContainer(root)
 		return func(c echo.Context) error {
-			sess := session.GetSession(c)
-			_, ok := sess.Values[wellknown.ClaimTypeAuthenticated]
-			if ok {
-				tryAddProfileClaim := func(sessVItem string, claimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal) {
-					pItem, ok := sess.Values[sessVItem]
-					if ok {
+			userID, err := authCookie.GetAuthCookieValue(c)
+			if err == nil {
+				sess := session.GetSession(c)
+				jsonClaims, ok := sess.Values[userID]
+				if !ok {
+					authCookie.DeleteAuthCookie(c)
+				} else {
+					if !core_utils.IsEmptyOrNil(jsonClaims) {
+
+						jsonClaimsStr := jsonClaims.(string)
+
+						scopedContainer := c.Get(echostarter_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
+						claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
+
 						claimsPrincipal.AddClaim(contracts_core_claimsprincipal.Claim{
-							Type:  sessVItem,
-							Value: pItem.(string)})
-					}
-				}
-				scopedContainer := c.Get(echostarter_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
-				claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
+							Type:  echostarter_wellknown.ClaimTypeAuthenticated,
+							Value: "*"})
 
-				claimsPrincipal.AddClaim(contracts_core_claimsprincipal.Claim{
-					Type:  echostarter_wellknown.ClaimTypeAuthenticated,
-					Value: "*"})
+						var claims []*contracts_claimsprincipal.Claim
+						err = json.Unmarshal([]byte(jsonClaimsStr), &claims)
+						if err == nil {
+							for _, claim := range claims {
+								claimsPrincipal.AddClaim(*claim)
+							}
+						}
 
-				tryAddProfileClaim("id:sub", claimsPrincipal)
-				tryAddProfileClaim("id:name", claimsPrincipal)
-				tryAddProfileClaim("id:email", claimsPrincipal)
-				tryAddProfileClaim("id:iss", claimsPrincipal)
-				jsonClaims, ok := sess.Values["claims"]
+						jsonClaims, ok := sess.Values["claims"]
 
-				if ok {
-					jsonClaimsS := jsonClaims.(string)
-					var claims []contracts_claimsprincipal.Claim
-					err := json.Unmarshal([]byte(jsonClaimsS), &claims)
-					if err != nil {
-						log.Error().Err(err).Msg("unmarshal claims")
-					} else {
-						for _, claim := range claims {
-							claimsPrincipal.AddClaim(claim)
+						if ok {
+							jsonClaimsS := jsonClaims.(string)
+							var claims []contracts_claimsprincipal.Claim
+							err := json.Unmarshal([]byte(jsonClaimsS), &claims)
+							if err != nil {
+								log.Error().Err(err).Msg("unmarshal claims")
+							} else {
+								for _, claim := range claims {
+									claimsPrincipal.AddClaim(claim)
+								}
+							}
 						}
 					}
+
 				}
 			}
+
 			return next(c)
 		}
 	}

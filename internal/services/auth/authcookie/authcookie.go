@@ -49,7 +49,8 @@ func (s *service) DeleteAuthCookie(c echo.Context) error {
 	cookie := new(http.Cookie)
 	cookie.Name = s.AppConfig.AuthCookieName
 	cookie.Value = ""
-	cookie.Expires = time.Now()
+	cookie.Expires = time.Now().Add(-24 * 365 * time.Hour)
+	cookie.MaxAge = -1
 	c.SetCookie(cookie)
 	return nil
 }

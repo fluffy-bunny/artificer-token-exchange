@@ -34,7 +34,9 @@ func AddScopedIHandler(builder *di.Builder) {
 		wellknown.HomePath)
 }
 
-func (s *service) Ctor() {}
+func (s *service) Ctor() {
+
+}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
