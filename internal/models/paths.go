@@ -5,17 +5,19 @@ import (
 )
 
 type Paths struct {
-	Home   string
-	Login  string
-	Logout string
-	Deep   string
+	Home     string
+	Login    string
+	Logout   string
+	Deep     string
+	Profiles string
 }
 
 func NewPaths() *Paths {
 	return &Paths{
-		Home:   wellknown.HomePath,
-		Login:  wellknown.LoginPath,
-		Logout: wellknown.LogoutPath,
-		Deep:   "/deep/a/b",
+		Home:     wellknown.HomePath,
+		Login:    wellknown.LoginPath,
+		Logout:   wellknown.LogoutPath,
+		Deep:     "/deep/a/b",
+		Profiles: wellknown.ProfilesPath,
 	}
 }

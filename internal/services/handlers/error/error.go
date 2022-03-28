@@ -1,4 +1,4 @@
-package home
+package error
 
 import (
 	contracts_handler "echo-starter/internal/contracts/handler"
@@ -31,18 +31,27 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.HomePath)
+		wellknown.ErrorPath)
 }
 
-func (s *service) Ctor() {
-
-}
+func (s *service) Ctor() {}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
+
+type params struct {
+	Message string `param:"msg" query:"msg" header:"msg" form:"msg" json:"msg" xml:"msg"`
+}
+
 func (s *service) Do(c echo.Context) error {
 
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/home/home", map[string]interface{}{
-		"claims": s.ClaimsPrincipal.GetClaims(),
+	u := new(params)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/error/index", map[string]interface{}{
+		"params": u,
 	})
+
 }

@@ -70,17 +70,20 @@ func main() {
 		appConfig.SessionEncryptionKey = core_utils.RandomString(32)
 		fmt.Printf("SESSION_ENCRYPTION_KEY: %v\n", appConfig.SessionEncryptionKey)
 	}
+
+	e.Use(middleware.Logger())
+	e.Use(middleware_container.EnsureScopedContainer(shared.RootContainer))
+
 	// we don't have a shared backend session store (i.e. redis), so fat cookies it is
 	sessionStore := sessions.NewCookieStore([]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey))
-	sessionStore.Options.MaxAge = 60
+	sessionStore.Options.MaxAge = appConfig.SessionMaxAgeSeconds
 
 	e.Use(session.Middleware(sessionStore))
 	e.Use(middleware_session.EnsureSlidingSession())
 	if appConfig.ApplicationEnvironment == contracts_config.Environment_Development {
 		e.Use(middleware_session.EnsureDevelopmentSession(appInstanceID))
 	}
-	e.Use(middleware_container.EnsureScopedContainer(shared.RootContainer))
-	e.Use(middleware.Logger())
+	e.Use(middleware_session.EnsureSlidingAuthCookie(shared.RootContainer))
 
 	app := e.Group("")
 	app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{

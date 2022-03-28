@@ -2,7 +2,7 @@
 
 [auth0-golang-web-app](https://github.com/auth0-samples/auth0-golang-web-app/)  
 [demo-echo-app](https://github.com/gtongy/demo-echo-app)  
-
+[cookie auth](https://www.sohamkamani.com/golang/session-cookie-authentication/)
 # Motivation  
 
 [ECHO](https://echo.labstack.com/) is a fantastic base framework to build upon.  This project adds a lot of design patterns found in [asp.net core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core).  

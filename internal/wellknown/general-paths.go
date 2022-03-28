@@ -6,4 +6,5 @@ const (
 	HealthPath    = "/health"
 	ReadinessPath = "/readiness"
 	DeepPath      = "/deep/:id/:name"
+	ProfilesPath  = "/profiles"
 )

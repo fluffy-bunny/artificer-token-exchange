@@ -15,6 +15,7 @@
                     {{ else }}
                         <li><a class="dropdown-item" href="{{ .paths.Login }}">Login</a></li>
                     {{end}}
+                       <li><a class="dropdown-item" href="{{ .paths.Profiles }}">Profiles</a></li>
                     </ul>
                 </li>
             </ul>

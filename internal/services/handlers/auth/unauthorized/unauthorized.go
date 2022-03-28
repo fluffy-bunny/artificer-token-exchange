@@ -1,6 +1,7 @@
-package home
+package unauthorized
 
 import (
+	contracts_auth "echo-starter/internal/contracts/auth"
 	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
@@ -14,6 +15,8 @@ import (
 
 type (
 	service struct {
+		Authenticator   contracts_auth.IOIDCAuthenticator               `inject:"authenticator"`
+		AuthCookie      contracts_auth.IAuthCookie                      `inject:""`
 		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
 	}
 )
@@ -31,18 +34,15 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.HomePath)
+		wellknown.UnauthorizedPath)
 }
 
-func (s *service) Ctor() {
-
-}
+func (s *service) Ctor() {}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 func (s *service) Do(c echo.Context) error {
-
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/home/home", map[string]interface{}{
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/auth/unauthorized/index", map[string]interface{}{
 		"claims": s.ClaimsPrincipal.GetClaims(),
 	})
 }

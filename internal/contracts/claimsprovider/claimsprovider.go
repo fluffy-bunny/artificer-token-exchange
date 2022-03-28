@@ -11,6 +11,7 @@ import (
 type (
 	// IClaimsProvider ...
 	IClaimsProvider interface {
-		GetClaims(userID string) ([]*contracts_claimsprincipal.Claim, error)
+		GetProfiles(userID string) ([]string, error)
+		GetClaims(userID string, profile string) ([]*contracts_claimsprincipal.Claim, error)
 	}
 )

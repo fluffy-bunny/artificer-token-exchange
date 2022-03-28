@@ -19,7 +19,8 @@ import (
 
 type (
 	service struct {
-		Authenticator contracts_auth.IOIDCAuthenticator `inject:"authenticator"`
+		Authenticator contracts_auth.IOIDCAuthenticator `inject:""`
+		AuthCookie    contracts_auth.IAuthCookie        `inject:""`
 	}
 )
 
@@ -44,6 +45,7 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 func (s *service) Do(c echo.Context) error {
+	s.AuthCookie.DeleteAuthCookie(c)
 	u := new(auth_shared.LoginParms)
 	if err := c.Bind(u); err != nil {
 		return err
@@ -70,7 +72,7 @@ func (s *service) Do(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	url := s.Authenticator.AuthCodeURL(state)
-	c.Redirect(http.StatusTemporaryRedirect, url)
+	c.Redirect(http.StatusFound, url)
 	return nil
 }
 func (s *service) generateRandomState() (string, error) {
