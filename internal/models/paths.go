@@ -6,6 +6,7 @@ import (
 
 type Paths struct {
 	Home     string
+	About    string
 	Login    string
 	Logout   string
 	Deep     string
@@ -15,6 +16,7 @@ type Paths struct {
 func NewPaths() *Paths {
 	return &Paths{
 		Home:     wellknown.HomePath,
+		About:    wellknown.AboutPath,
 		Login:    wellknown.LoginPath,
 		Logout:   wellknown.LogoutPath,
 		Deep:     "/deep/a/b",

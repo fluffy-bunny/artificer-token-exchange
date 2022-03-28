@@ -1,4 +1,4 @@
-{{define "views/home/home"}}
+{{define "views/home/index"}}
 {{template "header" .}}
 {{template "navbar" .}}
 <body>

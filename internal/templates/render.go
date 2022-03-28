@@ -31,6 +31,7 @@ func Render(c echo.Context, claimsPrincipal contracts_core_claimsprincipal.IClai
 		return claimsPrincipal.HasClaimType(wellknown.ClaimTypeAuthenticated)
 	}
 	data["paths"] = models.NewPaths()
+	data["claims"] = claimsPrincipal.GetClaims()
 	return c.Render(code, name, data)
 
 }
