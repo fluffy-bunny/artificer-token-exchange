@@ -32,7 +32,7 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.ArtistsIdPath)
+		wellknown.APIArtistsIdPath)
 }
 
 func (s *service) Ctor() {}

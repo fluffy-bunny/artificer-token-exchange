@@ -6,9 +6,13 @@ import (
 	services_auth_authcookie "echo-starter/internal/services/auth/authcookie"
 	services_auth_authenticator "echo-starter/internal/services/auth/authenticator"
 	services_handlers_about "echo-starter/internal/services/handlers/about"
+
+	// ARTISTS
+	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_api_artists "echo-starter/internal/services/handlers/api/artists"
 	services_handlers_api_artists_artist "echo-starter/internal/services/handlers/api/artists/artist"
 	services_handlers_api_artists_artist_albums "echo-starter/internal/services/handlers/api/artists/artist/albums"
+	services_handlers_artists "echo-starter/internal/services/handlers/artists"
 
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
 	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
@@ -78,6 +82,7 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 
 	// ARTISTS CRUD API
 	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_artists.AddScopedIHandler(builder)
 	services_handlers_api_artists.AddScopedIHandler(builder)
 	services_handlers_api_artists_artist.AddScopedIHandler(builder)
 	services_handlers_api_artists_artist_albums.AddScopedIHandler(builder)

@@ -5,3 +5,55 @@
 */
 // This file is intentionally blank
 // Use this file to add JavaScript to your project
+
+ 
+
+async function getArtists() {
+    let url = '/api/v1/artists';
+    try {
+        let res = await fetch(url,{
+            method: 'GET',
+            credentials: 'include'
+          });
+          payload =  await res.json();
+          console.log(payload);
+          alert(JSON.stringify(payload));
+          return payload
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+async function getArtist() {
+    let url = '/api/v1/artists/1';   
+    try {
+        let res = await fetch(url,{
+            method: 'GET',
+            credentials: 'include'
+          });
+        payload =  await res.json();
+        console.log(payload);
+        alert(JSON.stringify(payload));
+       
+
+        return payload
+    } catch (error) {
+        console.log(error);
+    }
+}
+async function getAlbums() {
+    let url = '/api/v1/artists/1/albums';  
+    try {
+        let res = await fetch(url,{
+            method: 'GET',
+            credentials: 'include'
+          });
+        payload =  await res.json();
+        console.log(payload);
+        alert(JSON.stringify(payload));
+
+        return payload
+    } catch (error) {
+        console.log(error);
+    }
+}
