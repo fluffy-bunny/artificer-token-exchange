@@ -5,6 +5,7 @@ go 1.18
 //replace github.com/fluffy-bunny/grpcdotnetgo => ../grpcdotnetgo
 
 require (
+	github.com/ahmetb/go-linq/v3 v3.2.0
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
 	github.com/coreos/go-oidc/v3 v3.1.0
@@ -22,7 +23,6 @@ require (
 require (
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/Microsoft/hcsshim v0.9.2 // indirect
-	github.com/ahmetb/go-linq/v3 v3.2.0 // indirect
 	github.com/bamzi/jobrunner v1.0.0 // indirect
 	github.com/containerd/cgroups v1.0.3 // indirect
 	github.com/containerd/continuity v0.2.2 // indirect
