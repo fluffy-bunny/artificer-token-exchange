@@ -1,4 +1,4 @@
-{{define "views/deep/deep"}}
+{{define "views/deep/index"}}
 {{template "header" .}}
 {{template "navbar" .}}
 <body>

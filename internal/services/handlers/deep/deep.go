@@ -45,14 +45,11 @@ type deepParams struct {
 }
 
 func (s *service) Do(c echo.Context) error {
-
 	u := new(deepParams)
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/deep/deep", map[string]interface{}{
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/deep/index", map[string]interface{}{
 		"params": u,
 	})
-
 }
