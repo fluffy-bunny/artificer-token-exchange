@@ -35,16 +35,31 @@ func (m *MockIClaimsProvider) EXPECT() *MockIClaimsProviderMockRecorder {
 }
 
 // GetClaims mocks base method.
-func (m *MockIClaimsProvider) GetClaims(arg0 string) ([]*claimsprincipal.Claim, error) {
+func (m *MockIClaimsProvider) GetClaims(arg0, arg1 string) ([]*claimsprincipal.Claim, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetClaims", arg0)
+	ret := m.ctrl.Call(m, "GetClaims", arg0, arg1)
 	ret0, _ := ret[0].([]*claimsprincipal.Claim)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetClaims indicates an expected call of GetClaims.
-func (mr *MockIClaimsProviderMockRecorder) GetClaims(arg0 interface{}) *gomock.Call {
+func (mr *MockIClaimsProviderMockRecorder) GetClaims(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClaims", reflect.TypeOf((*MockIClaimsProvider)(nil).GetClaims), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClaims", reflect.TypeOf((*MockIClaimsProvider)(nil).GetClaims), arg0, arg1)
+}
+
+// GetProfiles mocks base method.
+func (m *MockIClaimsProvider) GetProfiles(arg0 string) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetProfiles", arg0)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProfiles indicates an expected call of GetProfiles.
+func (mr *MockIClaimsProviderMockRecorder) GetProfiles(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProfiles", reflect.TypeOf((*MockIClaimsProvider)(nil).GetProfiles), arg0)
 }

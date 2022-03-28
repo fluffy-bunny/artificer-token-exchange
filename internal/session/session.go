@@ -18,10 +18,13 @@ func GetSession(c echo.Context) *sessions.Session {
 	return ss
 }
 func TerminateSession(c echo.Context) {
+
 	sess, err := session.Get(sessionName, c)
 	if err != nil {
 		panic(err)
 	}
+	sess.Options.MaxAge = -1
+
 	sess.Values = make(map[interface{}]interface{}) // wipe out the session
 	sess.Save(c.Request(), c.Response())
 

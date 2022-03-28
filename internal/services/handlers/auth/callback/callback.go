@@ -7,10 +7,13 @@ import (
 	"echo-starter/internal/session"
 	"echo-starter/internal/wellknown"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 
 	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
+
+	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -19,6 +22,7 @@ import (
 type (
 	service struct {
 		Authenticator  contracts_auth.IOIDCAuthenticator        `inject:""`
+		AuthCookie     contracts_auth.IAuthCookie               `inject:""`
 		ClaimsProvider contracts_claimsprovider.IClaimsProvider `inject:""`
 	}
 )
@@ -69,27 +73,43 @@ func (s *service) Do(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to verify ID Token.")
 	}
 
-	claims, err := s.ClaimsProvider.GetClaims(idToken.Subject)
+	profileClaims, err := s.ClaimsProvider.GetClaims(idToken.Subject, "")
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to fetch claims.")
 	}
-	jsonClaims, err := json.Marshal(claims)
+	jsonBytes, err := json.Marshal(profileClaims)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to marshal claims.")
+		return c.String(http.StatusInternalServerError, "Failed to marshal profileClaims.")
 	}
-	sess.Values["claims"] = string(jsonClaims)
-	for _, v := range claims {
-		sess.Values["claim:"+v.Type] = v.Value
-	}
-	var profile map[string]interface{}
-	if err := idToken.Claims(&profile); err != nil {
+	sess.Values["_profile"] = string(jsonBytes)
+
+	var identityProfile map[string]interface{}
+	if err := idToken.Claims(&identityProfile); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	sess.Values["authenticated"] = true
+	var identityClaims []*contracts_claimsprincipal.Claim
+	for k, v := range identityProfile {
+		switch typed := v.(type) {
+		case string:
+			identityClaims = append(identityClaims, &contracts_claimsprincipal.Claim{
+				Type:  k,
+				Value: typed,
+			})
+		case float64:
+			identityClaims = append(identityClaims, &contracts_claimsprincipal.Claim{
+				Type:  k,
+				Value: fmt.Sprintf("%f", typed),
+			})
 
-	for k, v := range profile {
-		sess.Values["id:"+k] = v
+		}
 	}
+
+	// we store the claims in the session in context of the userid
+	jsonBytes, err = json.Marshal(identityClaims)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to marshal identityClaims.")
+	}
+	sess.Values[idToken.Subject] = string(jsonBytes)
 
 	// NOTE: I have NEVER had the need to store an access token to what is a simple Authentication service. i.e. proof of life.
 	// imagine having you website login to google, but you aren't actually using any google services.  The services you are using are yours.
@@ -103,8 +123,11 @@ func (s *service) Do(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
+	// our auth cookie simply stores the userid which points to the entry in the session
+	// this is to prepare for when the session is backed by a session backend store and not a fat cookie store
+	s.AuthCookie.SetAuthCookieValue(c, idToken.Subject)
 
 	// Redirect to logged in page.
-	c.Redirect(http.StatusTemporaryRedirect, loginParams.RedirectURL)
+	c.Redirect(http.StatusFound, loginParams.RedirectURL)
 	return nil
 }
