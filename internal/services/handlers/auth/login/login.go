@@ -72,7 +72,7 @@ func (s *service) Do(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	url := s.Authenticator.AuthCodeURL(state)
-	c.Redirect(http.StatusTemporaryRedirect, url)
+	c.Redirect(http.StatusFound, url)
 	return nil
 }
 func (s *service) generateRandomState() (string, error) {

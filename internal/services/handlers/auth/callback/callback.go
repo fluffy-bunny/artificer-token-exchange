@@ -73,37 +73,43 @@ func (s *service) Do(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Failed to verify ID Token.")
 	}
 
-	claims, err := s.ClaimsProvider.GetClaims(idToken.Subject, "")
+	profileClaims, err := s.ClaimsProvider.GetClaims(idToken.Subject, "")
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Failed to fetch claims.")
 	}
-	var profile map[string]interface{}
-	if err := idToken.Claims(&profile); err != nil {
+	jsonBytes, err := json.Marshal(profileClaims)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to marshal profileClaims.")
+	}
+	sess.Values["_profile"] = string(jsonBytes)
+
+	var identityProfile map[string]interface{}
+	if err := idToken.Claims(&identityProfile); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	for k, v := range profile {
+	var identityClaims []*contracts_claimsprincipal.Claim
+	for k, v := range identityProfile {
 		switch typed := v.(type) {
 		case string:
-			claims = append(claims, &contracts_claimsprincipal.Claim{
+			identityClaims = append(identityClaims, &contracts_claimsprincipal.Claim{
 				Type:  k,
 				Value: typed,
 			})
 		case float64:
-			claims = append(claims, &contracts_claimsprincipal.Claim{
+			identityClaims = append(identityClaims, &contracts_claimsprincipal.Claim{
 				Type:  k,
 				Value: fmt.Sprintf("%f", typed),
 			})
 
 		}
-
 	}
 
-	jsonClaims, err := json.Marshal(claims)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to marshal claims.")
-	}
 	// we store the claims in the session in context of the userid
-	sess.Values[idToken.Subject] = string(jsonClaims)
+	jsonBytes, err = json.Marshal(identityClaims)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "Failed to marshal identityClaims.")
+	}
+	sess.Values[idToken.Subject] = string(jsonBytes)
 
 	// NOTE: I have NEVER had the need to store an access token to what is a simple Authentication service. i.e. proof of life.
 	// imagine having you website login to google, but you aren't actually using any google services.  The services you are using are yours.
@@ -122,6 +128,6 @@ func (s *service) Do(c echo.Context) error {
 	s.AuthCookie.SetAuthCookieValue(c, idToken.Subject)
 
 	// Redirect to logged in page.
-	c.Redirect(http.StatusTemporaryRedirect, loginParams.RedirectURL)
+	c.Redirect(http.StatusFound, loginParams.RedirectURL)
 	return nil
 }

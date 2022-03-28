@@ -90,16 +90,16 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 							}
 						}
 
-						jsonClaims, ok := sess.Values["claims"]
+						jsonProfileClaims, ok := sess.Values["_profile"]
 
 						if ok {
-							jsonClaimsS := jsonClaims.(string)
-							var claims []contracts_claimsprincipal.Claim
-							err := json.Unmarshal([]byte(jsonClaimsS), &claims)
+							jsonS := jsonProfileClaims.(string)
+							var profileClaims []contracts_claimsprincipal.Claim
+							err := json.Unmarshal([]byte(jsonS), &profileClaims)
 							if err != nil {
 								log.Error().Err(err).Msg("unmarshal claims")
 							} else {
-								for _, claim := range claims {
+								for _, claim := range profileClaims {
 									claimsPrincipal.AddClaim(claim)
 								}
 							}
@@ -130,12 +130,14 @@ func FinalAuthVerificationMiddlewareUsingClaimsMap(entrypointClaimsMap map[strin
 			elem, ok := entrypointClaimsMap[c.Path()]
 			permissionDeniedFunc := func() error {
 				if !authenticated {
-					directive, ok := elem.MetaData["onUnauthenticated"]
-					if ok && directive == "login" {
-						return c.Redirect(http.StatusFound, "/login?redirect_url="+c.Request().URL.String())
+					if !core_utils.IsNil(elem) {
+						directive, ok := elem.MetaData["onUnauthenticated"]
+						if ok && directive == "login" {
+							return c.Redirect(http.StatusFound, "/login?redirect_url="+c.Request().URL.String())
+						}
 					}
 				}
-				return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+				return c.Redirect(http.StatusFound, "/unauthorized")
 			}
 			if !ok && enableZeroTrust {
 				debugEvent.Msg("FullMethod not found in entrypoint claims map")

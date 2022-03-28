@@ -8,7 +8,12 @@ import (
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
 	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
 	services_handlers_auth_logout "echo-starter/internal/services/handlers/auth/logout"
+
+	services_handlers_auth_profiles "echo-starter/internal/services/handlers/auth/profiles"
+	services_handlers_auth_unauthorized "echo-starter/internal/services/handlers/auth/unauthorized"
 	services_handlers_deep "echo-starter/internal/services/handlers/deep"
+	services_handlers_error "echo-starter/internal/services/handlers/error"
+
 	services_handlers_home "echo-starter/internal/services/handlers/home"
 
 	middleware_claimsprincipal "echo-starter/internal/middleware/claimsprincipal"
@@ -50,10 +55,13 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	services_auth_authcookie.AddSingletonIAuthCookie(builder)
 	services_auth_authenticator.AddSingletonIOIDCAuthenticator(builder)
 	services_handlers_auth_login.AddScopedIHandler(builder)
+	services_handlers_auth_profiles.AddScopedIHandler(builder)
 	services_handlers_auth_callback.AddScopedIHandler(builder)
 	services_handlers_auth_logout.AddScopedIHandler(builder)
+	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
 	services_handlers_home.AddScopedIHandler(builder)
 	services_handlers_deep.AddScopedIHandler(builder)
+	services_handlers_error.AddScopedIHandler(builder)
 	services_handler.AddSingletonIHandlerFactory(builder)
 	services_core_claimsprincipal.AddScopedIClaimsPrincipal(builder)
 	services_claimsprovider.AddSingletonIClaimsProviderMock(builder, s.ctrl)

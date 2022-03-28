@@ -48,3 +48,18 @@ func (mr *MockIClaimsProviderMockRecorder) GetClaims(arg0, arg1 interface{}) *go
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClaims", reflect.TypeOf((*MockIClaimsProvider)(nil).GetClaims), arg0, arg1)
 }
+
+// GetProfiles mocks base method.
+func (m *MockIClaimsProvider) GetProfiles(arg0 string) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetProfiles", arg0)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetProfiles indicates an expected call of GetProfiles.
+func (mr *MockIClaimsProviderMockRecorder) GetProfiles(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProfiles", reflect.TypeOf((*MockIClaimsProvider)(nil).GetProfiles), arg0)
+}

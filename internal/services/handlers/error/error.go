@@ -1,21 +1,20 @@
-package logout
+package error
 
 import (
-	contracts_auth "echo-starter/internal/contracts/auth"
 	contracts_handler "echo-starter/internal/contracts/handler"
-	"echo-starter/internal/session"
+	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"net/http"
 	"reflect"
 
+	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	service struct {
-		Authenticator contracts_auth.IOIDCAuthenticator `inject:"authenticator"`
-		AuthCookie    contracts_auth.IAuthCookie        `inject:""`
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
 	}
 )
 
@@ -32,21 +31,27 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.LogoutPath)
+		wellknown.ErrorPath)
 }
 
 func (s *service) Ctor() {}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
+
+type params struct {
+	Message string `param:"msg" query:"msg" header:"msg" form:"msg" json:"msg" xml:"msg"`
+}
+
 func (s *service) Do(c echo.Context) error {
-	// TODO in larger systems there can be a session that holds may users, think a netflix profile, etc.
-	// the profile (or baby user) is removed fro the session vs the entire session
-	session.TerminateSession(c)
 
-	s.AuthCookie.DeleteAuthCookie(c)
+	u := new(params)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
 
-	// Redirect to home page.
-	c.Redirect(http.StatusFound, "/")
-	return nil
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/error/index", map[string]interface{}{
+		"params": u,
+	})
+
 }

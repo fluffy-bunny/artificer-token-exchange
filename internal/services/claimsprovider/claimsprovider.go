@@ -2,7 +2,6 @@ package claimsprovider
 
 import (
 	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
-	mocks_claimsprovider "echo-starter/internal/mocks/claimsprovider"
 
 	"echo-starter/internal/wellknown"
 
@@ -28,50 +27,14 @@ func assertImplementation() {
 	var _ contracts_claimsprovider.IClaimsProvider = (*service)(nil)
 }
 
-var reflectType = reflect.TypeOf((*service)(nil))
-var reflectTypeMock = reflect.TypeOf((*serviceMock)(nil))
+var mockProfileStore map[string][]*contracts_claimsprincipal.Claim
 
-// AddSingletonIClaimsProvider registers the *service as a singleton.
-func AddSingletonIClaimsProvider(builder *di.Builder) {
-	log.Info().Str("DI", "IClaimsProvider").Send()
-	contracts_claimsprovider.AddSingletonIClaimsProvider(builder, reflectType)
-}
-func AddSingletonIClaimsProviderMock2(builder *di.Builder, ctrl *gomock.Controller) {
-	log.Info().Str("DI", "IClaimsProvider - MOCK").Send()
-	mock := mocks_claimsprovider.NewMockIClaimsProvider(ctrl)
-	mock.EXPECT().
-		GetClaims(gomock.Any(), gomock.Any()).
-		DoAndReturn(func(userID string, profile string) ([]*contracts_claimsprincipal.Claim, error) {
-			return []*contracts_claimsprincipal.Claim{
-				{
-					Type:  wellknown.ClaimTypeDeep,
-					Value: wellknown.ClaimValueRead,
-				},
-				{
-					Type:  wellknown.ClaimTypeDeep,
-					Value: wellknown.ClaimValueReadWrite,
-				},
-				{
-					Type:  wellknown.ClaimTypeDeep,
-					Value: wellknown.ClaimValueReadWriteAll,
-				},
-			}, nil
-		}).
-		AnyTimes()
+func init() {
+	mockProfileStore = make(map[string][]*contracts_claimsprincipal.Claim)
 
-	contracts_claimsprovider.AddSingletonIClaimsProviderByObj(builder, mock)
-}
+	mockProfileStore[""] = []*contracts_claimsprincipal.Claim{}
 
-func AddSingletonIClaimsProviderMock(builder *di.Builder, ctrl *gomock.Controller) {
-	log.Info().Str("DI", "IClaimsProvider - MOCK").Send()
-	contracts_claimsprovider.AddSingletonIClaimsProvider(builder, reflectTypeMock)
-}
-func (s *service) Ctor() {}
-func (s *service) GetClaims(userID string, profile string) ([]*contracts_claimsprincipal.Claim, error) {
-	return nil, errors.New("not implemented")
-}
-func (s *serviceMock) GetClaims(userID string, profile string) ([]*contracts_claimsprincipal.Claim, error) {
-	return []*contracts_claimsprincipal.Claim{
+	mockProfileStore["profile1"] = []*contracts_claimsprincipal.Claim{
 		{
 			Type:  wellknown.ClaimTypeDeep,
 			Value: wellknown.ClaimValueRead,
@@ -84,5 +47,53 @@ func (s *serviceMock) GetClaims(userID string, profile string) ([]*contracts_cla
 			Type:  wellknown.ClaimTypeDeep,
 			Value: wellknown.ClaimValueReadWriteAll,
 		},
-	}, nil
+	}
+
+	mockProfileStore["profile2"] = []*contracts_claimsprincipal.Claim{
+		{
+			Type:  wellknown.ClaimTypeDeep,
+			Value: wellknown.ClaimValueRead,
+		},
+		{
+			Type:  wellknown.ClaimTypeDeep,
+			Value: wellknown.ClaimValueReadWrite,
+		},
+	}
+	mockProfileStore["profile3"] = []*contracts_claimsprincipal.Claim{
+		{
+			Type:  wellknown.ClaimTypeDeep,
+			Value: wellknown.ClaimValueRead,
+		},
+	}
+}
+
+var reflectType = reflect.TypeOf((*service)(nil))
+var reflectTypeMock = reflect.TypeOf((*serviceMock)(nil))
+
+// AddSingletonIClaimsProvider registers the *service as a singleton.
+func AddSingletonIClaimsProvider(builder *di.Builder) {
+	log.Info().Str("DI", "IClaimsProvider").Send()
+	contracts_claimsprovider.AddSingletonIClaimsProvider(builder, reflectType)
+}
+
+func AddSingletonIClaimsProviderMock(builder *di.Builder, ctrl *gomock.Controller) {
+	log.Info().Str("DI", "IClaimsProvider - MOCK").Send()
+	contracts_claimsprovider.AddSingletonIClaimsProvider(builder, reflectTypeMock)
+}
+func (s *service) Ctor() {}
+func (s *service) GetProfiles(userID string) ([]string, error) {
+	return []string{"profile1", "profile2", "profile3"}, nil
+}
+func (s *service) GetClaims(userID string, profile string) ([]*contracts_claimsprincipal.Claim, error) {
+	return nil, errors.New("not implemented")
+}
+func (s *serviceMock) GetProfiles(userID string) ([]string, error) {
+	return []string{"profile1", "profile2", "profile3"}, nil
+}
+func (s *serviceMock) GetClaims(userID string, profile string) ([]*contracts_claimsprincipal.Claim, error) {
+	claims, ok := mockProfileStore[profile]
+	if !ok {
+		return nil, errors.New("profile not found")
+	}
+	return claims, nil
 }
