@@ -7,6 +7,8 @@ import (
 	"errors"
 	"reflect"
 
+	services_oidc "echo-starter/internal/services/oidc"
+
 	"github.com/coreos/go-oidc/v3/oidc"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/rs/zerolog/log"
@@ -17,7 +19,9 @@ type (
 	service struct {
 		*oidc.Provider
 		oauth2.Config
-		AppConfig *contracts_config.Config `inject:"config"`
+		AppConfig      *contracts_config.Config `inject:"config"`
+		oidcProviderEx *services_oidc.Provider
+		issuer         string
 	}
 )
 
@@ -33,9 +37,15 @@ func AddSingletonIOIDCAuthenticator(builder *di.Builder) {
 	contracts_auth.AddSingletonIOIDCAuthenticator(builder, reflectType)
 }
 func (s *service) Ctor() {
+	s.issuer = "https://" + s.AppConfig.Oidc.Domain + "/"
+	oidcProviderEx, err := services_oidc.NewProvider(context.Background(), s.issuer)
+	if err != nil {
+		panic(err)
+	}
+	s.oidcProviderEx = oidcProviderEx
 	provider, err := oidc.NewProvider(
 		context.Background(),
-		"https://"+s.AppConfig.Oidc.Domain+"/",
+		s.issuer,
 	)
 	if err != nil {
 		panic(err)
@@ -51,6 +61,14 @@ func (s *service) Ctor() {
 	}
 	s.Config = conf
 }
+
+func (s *service) ValidateJWTAccessToken(accessToken string) (*services_oidc.AccessToken, error) {
+	verifier := services_oidc.NewJWTAccessTokenVerifier(s.issuer, s.oidcProviderEx.GetRemoteKeySet(), &oidc.Config{
+		SkipClientIDCheck: true,
+	})
+	return verifier.Verify(context.Background(), accessToken)
+}
+
 func (s *service) VerifyIDToken(ctx context.Context, token *oauth2.Token) (*oidc.IDToken, error) {
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
@@ -63,4 +81,9 @@ func (s *service) VerifyIDToken(ctx context.Context, token *oauth2.Token) (*oidc
 
 	return s.Verifier(oidcConfig).Verify(ctx, rawIDToken)
 
+}
+
+func (s *service) GetTokenSource(ctx context.Context, token *oauth2.Token) oauth2.TokenSource {
+	ts := s.Config.TokenSource(ctx, token)
+	return ts
 }

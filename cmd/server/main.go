@@ -3,13 +3,17 @@ package main
 import (
 	"echo-starter/internal/templates"
 	"fmt"
+	"net/http"
 
 	contracts_config "echo-starter/internal/contracts/config"
-	services_container "echo-starter/internal/services/container"
-
 	contracts_handler "echo-starter/internal/contracts/handler"
 	middleware_container "echo-starter/internal/middleware/container"
 	middleware_session "echo-starter/internal/middleware/session"
+	services_container "echo-starter/internal/services/container"
+	"encoding/base64"
+
+	"github.com/gorilla/securecookie"
+	"github.com/quasoft/memstore"
 
 	"echo-starter/internal/shared"
 	echostarter_utils "echo-starter/internal/utils"
@@ -21,7 +25,6 @@ import (
 
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
-	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -60,41 +63,64 @@ func main() {
 	//Set Renderer
 	e.Renderer = templates.GetTemplateRender("./templates")
 
-	if core_utils.IsEmptyOrNil(appConfig.SessionKey) {
-		fmt.Println("WARNING: SESSION_KEY must be set for production......")
-		appConfig.SessionKey = core_utils.RandomString(32)
-		fmt.Printf("SESSION_KEY: %v\n", appConfig.SessionKey)
+	// SECURE COOKIE
+	if core_utils.IsEmptyOrNil(appConfig.SecureCookieHashKey) {
+		fmt.Println("WARNING: SECURE_COOKIE_HASH_KEY must be set for production......")
+		key := securecookie.GenerateRandomKey(32)
+		encodedString := base64.StdEncoding.EncodeToString(key)
+		appConfig.SecureCookieHashKey = encodedString
+		fmt.Printf("SECURE_COOKIE_HASH_KEY: %v\n", appConfig.SecureCookieHashKey)
 	}
-	if core_utils.IsEmptyOrNil(appConfig.SessionEncryptionKey) {
-		fmt.Println("WARNING: SESSION_ENCRYPTION_KEY must be set for production......")
-		appConfig.SessionEncryptionKey = core_utils.RandomString(32)
-		fmt.Printf("SESSION_ENCRYPTION_KEY: %v\n", appConfig.SessionEncryptionKey)
+	if core_utils.IsEmptyOrNil(appConfig.SecureCookieEncryptionKey) {
+		fmt.Println("WARNING: SECURE_COOKIE_ENCRYPTION_KEY must be set for production......")
+		key := securecookie.GenerateRandomKey(32)
+		encodedString := base64.StdEncoding.EncodeToString(key)
+		appConfig.SecureCookieEncryptionKey = encodedString
+		fmt.Printf("SECURE_COOKIE_ENCRYPTION_KEY: %v\n", appConfig.SecureCookieEncryptionKey)
 	}
-
 	e.Use(middleware.Logger())
 	e.Use(middleware_container.EnsureScopedContainer(shared.RootContainer))
 
-	// we don't have a shared backend session store (i.e. redis), so fat cookies it is
-	sessionStore := sessions.NewCookieStore([]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey))
-	sessionStore.Options.MaxAge = appConfig.SessionMaxAgeSeconds
+	sessionMemStore := memstore.NewMemStore(
+		[]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey),
+	)
+	sessionMemStore.Options.Secure = true
+	sessionMemStore.Options.HttpOnly = true
+	sessionMemStore.Options.SameSite = http.SameSiteStrictMode
+	sessionMemStore.Options.MaxAge = appConfig.SessionMaxAgeSeconds
 
-	e.Use(session.Middleware(sessionStore))
+	e.Use(session.Middleware(sessionMemStore))
 	e.Use(middleware_session.EnsureSlidingSession(shared.RootContainer))
+
 	if appConfig.ApplicationEnvironment == contracts_config.Environment_Development {
 		e.Use(middleware_session.EnsureDevelopmentSession(appInstanceID))
 	}
-	e.Use(middleware_session.EnsureSlidingAuthCookie(shared.RootContainer))
+
+	apiGroup := e.Group("/api")
+	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup:    "header:X-XSRF-TOKEN",
+		CookiePath:     "/api",
+		CookieSecure:   true,
+		CookieHTTPOnly: true,
+		CookieSameSite: http.SameSiteStrictMode,
+	}))
 
 	app := e.Group("")
 	app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "form:csrf",
+		TokenLookup:    "form:csrf",
+		CookiePath:     "/",
+		CookieSecure:   true,
+		CookieHTTPOnly: true,
+		CookieSameSite: http.SameSiteStrictMode,
 	}))
+
 	startup.Configure(e, shared.RootContainer)
 	e.Use(middleware.Recover())
 
-	app.Static("/css", "./css")
-	app.Static("/assets", "./assets")
-	app.Static("/js", "./js")
+	e.Static("/css", "./css")
+	e.Static("/assets", "./assets")
+	e.Static("/js", "./js")
+	// TODO: need to register API handler separately
 	handlerFactory := contracts_handler.GetIHandlerFactoryFromContainer(shared.RootContainer)
 	handlerFactory.RegisterHandlers(app)
 

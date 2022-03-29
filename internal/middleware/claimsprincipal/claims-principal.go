@@ -9,7 +9,6 @@ import (
 
 	contracts_auth "echo-starter/internal/contracts/auth"
 
-	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	middleware_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/claimsprincipal"
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
@@ -17,6 +16,7 @@ import (
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/oauth2"
 )
 
 func recursiveAddClaim(claimsConfig *middleware_oidc.ClaimsConfig, claimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal) {
@@ -60,53 +60,49 @@ type EntryPointConfigEx struct {
 }
 
 func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.MiddlewareFunc {
+	// get authCookie service once during configuration
+
+	authenticator := contracts_auth.GetIOIDCAuthenticatorFromContainer(root)
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		// get authCookie service once during configuration
-		authCookie := contracts_auth.GetIAuthCookieFromContainer(root)
 		return func(c echo.Context) error {
-			userID, err := authCookie.GetAuthCookieValue(c)
-			if err == nil {
-				sess := session.GetSession(c)
-				jsonClaims, ok := sess.Values[userID]
-				if !ok {
-					authCookie.DeleteAuthCookie(c)
-				} else {
-					if !core_utils.IsEmptyOrNil(jsonClaims) {
-
-						jsonClaimsStr := jsonClaims.(string)
-
-						scopedContainer := c.Get(echostarter_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
-						claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
-
-						claimsPrincipal.AddClaim(contracts_core_claimsprincipal.Claim{
-							Type:  echostarter_wellknown.ClaimTypeAuthenticated,
-							Value: "*"})
-
-						var claims []*contracts_claimsprincipal.Claim
-						err = json.Unmarshal([]byte(jsonClaimsStr), &claims)
-						if err == nil {
-							for _, claim := range claims {
-								claimsPrincipal.AddClaim(*claim)
-							}
-						}
-
-						jsonProfileClaims, ok := sess.Values["_profile"]
-
-						if ok {
-							jsonS := jsonProfileClaims.(string)
-							var profileClaims []contracts_claimsprincipal.Claim
-							err := json.Unmarshal([]byte(jsonS), &profileClaims)
-							if err != nil {
-								log.Error().Err(err).Msg("unmarshal claims")
-							} else {
-								for _, claim := range profileClaims {
-									claimsPrincipal.AddClaim(claim)
-								}
-							}
-						}
-					}
-
+			for {
+				sess := session.GetAuthSession(c)
+				var terminateAuthSession = func() {
+					sess.Values = make(map[interface{}]interface{})
+					sess.Save(c.Request(), c.Response())
 				}
+
+				authArtifacts, ok := sess.Values["tokens"]
+				if !ok || core_utils.IsNil(authArtifacts) {
+					break
+				}
+				var token *oauth2.Token = &oauth2.Token{}
+				authArtifactsStr := authArtifacts.(string)
+				err := json.Unmarshal([]byte(authArtifactsStr), &token)
+				if err != nil {
+					log.Error().Err(err).Msg("unmarshal token")
+					terminateAuthSession()
+					break
+				}
+				accessToken, err := authenticator.ValidateJWTAccessToken(token.AccessToken)
+				if err != nil {
+					log.Error().Err(err).Msg("ValidateJWTAccessToken failed")
+					terminateAuthSession()
+					break
+				}
+
+				accessTokenClaims := accessToken.ToClaims()
+				scopedContainer := c.Get(echostarter_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
+				claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
+				for _, claim := range accessTokenClaims {
+					claimsPrincipal.AddClaim(*claim)
+				}
+
+				claimsPrincipal.AddClaim(contracts_core_claimsprincipal.Claim{
+					Type:  echostarter_wellknown.ClaimTypeAuthenticated,
+					Value: "*"})
+
+				break
 			}
 
 			return next(c)
