@@ -24,11 +24,12 @@ RUN mkdir /css
 RUN mkdir /js
 RUN mkdir /assets
 RUN mkdir /templates
-COPY server .
 COPY css/ ./css/
 COPY js/ ./js/
 COPY assets/ ./assets/
 COPY templates/ ./templates/
+COPY server ./
+
 
 ENV PATH=/app:${PATH}
 ENV PORT="8081"
