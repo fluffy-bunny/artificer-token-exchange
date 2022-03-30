@@ -12,6 +12,7 @@ type Paths struct {
 	Deep     string
 	Profiles string
 	Artists  string
+	Accounts string
 }
 
 func NewPaths() *Paths {
@@ -23,5 +24,6 @@ func NewPaths() *Paths {
 		Deep:     "/deep/a/b",
 		Profiles: wellknown.ProfilesPath,
 		Artists:  wellknown.ArtistsPath,
+		Accounts: wellknown.AccountsPath,
 	}
 }

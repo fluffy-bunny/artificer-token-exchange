@@ -30,7 +30,10 @@ async function postArtist() {
         let res = await fetch(url,{
             method: 'POST',
             credentials: 'include',
-            headers: {"X-Csrf-Token": csrf },
+            headers: {
+                "X-Csrf-Token": csrf,
+                "Content-Type": "application/json" 
+            },
             body: JSON.stringify({ name: 'test' }),
           });
         payload =  await res.json();
