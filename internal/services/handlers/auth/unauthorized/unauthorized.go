@@ -16,7 +16,6 @@ import (
 type (
 	service struct {
 		Authenticator   contracts_auth.IOIDCAuthenticator               `inject:"authenticator"`
-		AuthCookie      contracts_auth.IAuthCookie                      `inject:""`
 		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
 	}
 )

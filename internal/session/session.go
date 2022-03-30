@@ -7,8 +7,23 @@ import (
 )
 
 const (
-	sessionName = "_session"
+	sessionName     = "_session"
+	authSessionName = "_authSession"
 )
+
+func GetAuthSession(c echo.Context) *sessions.Session {
+	ss, err := session.Get(authSessionName, c)
+	if err != nil {
+		panic(err)
+	}
+	return ss
+}
+func TerminateAuthSession(c echo.Context) {
+	sess := GetAuthSession(c)
+	sess.Options.MaxAge = -1
+	sess.Values = make(map[interface{}]interface{}) // wipe out the session
+	sess.Save(c.Request(), c.Response())
+}
 
 func GetSession(c echo.Context) *sessions.Session {
 	ss, err := session.Get(sessionName, c)
@@ -27,5 +42,4 @@ func TerminateSession(c echo.Context) {
 
 	sess.Values = make(map[interface{}]interface{}) // wipe out the session
 	sess.Save(c.Request(), c.Response())
-
 }

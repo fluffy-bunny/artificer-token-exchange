@@ -6,6 +6,7 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{ .paths.Artists }}">Artists</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{ .paths.Deep }}">Deep</a></li>
                 <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{ .paths.About }}">About</a></li>
                 <li class="nav-item dropdown">
@@ -16,6 +17,7 @@
                     {{ else }}
                         <li><a class="dropdown-item" href="{{ .paths.Login }}">Login</a></li>
                     {{end}}
+                       <li><a class="dropdown-item" href="{{ .paths.Accounts }}">Accounts</a></li>
                        <li><a class="dropdown-item" href="{{ .paths.Profiles }}">Profiles</a></li>
                     </ul>
                 </li>

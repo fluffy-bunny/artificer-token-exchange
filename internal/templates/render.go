@@ -32,6 +32,13 @@ func Render(c echo.Context, claimsPrincipal contracts_core_claimsprincipal.IClai
 	}
 	data["paths"] = models.NewPaths()
 	data["claims"] = claimsPrincipal.GetClaims()
+	type auth struct {
+		CSRF string `param:"csrf" query:"csrf" header:"csrf" form:"csrf" json:"csrf" xml:"csrf"`
+	}
+	authArtifacts := &auth{
+		CSRF: c.Get("csrf").(string),
+	}
+	data["security"] = authArtifacts
 	return c.Render(code, name, data)
 
 }

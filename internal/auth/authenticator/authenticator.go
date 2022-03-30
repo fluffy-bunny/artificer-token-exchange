@@ -31,7 +31,7 @@ func New(config *contracts_config.Config) (*Authenticator, error) {
 		ClientSecret: config.Oidc.ClientSecret,
 		RedirectURL:  config.Oidc.CallbackURL,
 		Endpoint:     provider.Endpoint(),
-		Scopes:       []string{oidc.ScopeOpenID, "profile"},
+		Scopes:       []string{oidc.ScopeOpenID, oidc.ScopeOfflineAccess},
 	}
 
 	return &Authenticator{

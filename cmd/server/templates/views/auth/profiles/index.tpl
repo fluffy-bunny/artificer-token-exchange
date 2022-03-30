@@ -8,7 +8,7 @@
         <h1>Switch Profiles</h1>
          
         <div class="alert alert-success" role="alert">
-        {{ $csrf := .authArtifacts.CSRF }}
+        {{ $csrf := .security.CSRF }}
         {{range $profile := .profiles}}
             <form id="account" method="post">
             <input type="hidden" name="csrf" value="{{ $csrf }}">
