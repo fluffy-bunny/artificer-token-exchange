@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"time"
 
+	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -20,7 +21,8 @@ import (
 
 type (
 	service struct {
-		OIDCAuthenticator contracts_auth.IOIDCAuthenticator `inject:"oidcAuthenticator"`
+		Logger            contracts_logger.ILogger          `inject:""`
+		OIDCAuthenticator contracts_auth.IOIDCAuthenticator `inject:""`
 	}
 )
 

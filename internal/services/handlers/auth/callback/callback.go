@@ -11,14 +11,15 @@ import (
 	"net/http"
 	"reflect"
 
+	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	service struct {
-		Authenticator contracts_auth.IOIDCAuthenticator `inject:""`
-		//AuthCookie     contracts_auth.IAuthCookie               `inject:""`
+		Logger         contracts_logger.ILogger                 `inject:""`
+		Authenticator  contracts_auth.IOIDCAuthenticator        `inject:""`
 		ClaimsProvider contracts_claimsprovider.IClaimsProvider `inject:""`
 	}
 )

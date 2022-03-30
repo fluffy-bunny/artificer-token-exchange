@@ -10,6 +10,9 @@ import (
 
 	core_services_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/timeutils"
 
+	services_contextaccessor "echo-starter/internal/services/contextaccessor"
+	services_logger "echo-starter/internal/services/logger"
+
 	// ACCOUNTS
 	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_accounts "echo-starter/internal/services/handlers/accounts"
@@ -70,6 +73,10 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 
 	core_services_timeutils.AddTimeParse(builder)
 	services_cookies.AddSingletonISecureCookie(builder)
+
+	services_contextaccessor.AddScopedIEchoContextAccessor(builder)
+	services_logger.AddILogger(builder)
+
 	// AUTH SERVICES
 	//----------------------------------------------------------------------------------------------------------------------
 	services_auth_authenticator.AddSingletonIOIDCAuthenticator(builder)
