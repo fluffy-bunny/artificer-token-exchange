@@ -86,7 +86,7 @@ jobs:
     - name: Make Upload folder
       run: |
         mkdir -p ./artifacts
-        copy ./${{ env.BINARY }} ./artifacts/
+        cp ./${{ env.BINARY }} ./artifacts/
         cp ./cmd/server/templates/ ./artifacts/templates/
         cp ./cmd/server/assets/ ./artifacts/assets/
         cp ./cmd/server/css/ ./artifacts/css/
