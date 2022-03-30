@@ -39,13 +39,13 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 
-type deepParams struct {
+type params struct {
 	ID   string `param:"id" query:"id" header:"id" form:"id" json:"id" xml:"id"`
 	Name string `param:"name" query:"name" header:"name" form:"name" json:"name" xml:"name"`
 }
 
 func (s *service) Do(c echo.Context) error {
-	u := new(deepParams)
+	u := new(params)
 	if err := c.Bind(u); err != nil {
 		return err
 	}

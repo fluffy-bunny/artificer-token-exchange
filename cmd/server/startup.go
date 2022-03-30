@@ -3,23 +3,38 @@ package main
 import (
 	echostarter_auth "echo-starter/internal/auth"
 	tex_config "echo-starter/internal/contracts/config"
-	services_auth_authcookie "echo-starter/internal/services/auth/authcookie"
 	services_auth_authenticator "echo-starter/internal/services/auth/authenticator"
+	services_cookies "echo-starter/internal/services/cookies"
 	services_handlers_about "echo-starter/internal/services/handlers/about"
+	"echo-starter/internal/shared"
+
+	core_services_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/timeutils"
+
+	// ACCOUNTS
+	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_accounts "echo-starter/internal/services/handlers/accounts"
+	services_handlers_api_accounts "echo-starter/internal/services/handlers/api/accounts"
+
+	// ARTISTS
+	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_api_artists "echo-starter/internal/services/handlers/api/artists"
+	services_handlers_api_artists_artist "echo-starter/internal/services/handlers/api/artists/artist"
+	services_handlers_api_artists_artist_albums "echo-starter/internal/services/handlers/api/artists/artist/albums"
+	services_handlers_artists "echo-starter/internal/services/handlers/artists"
+
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
 	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
 	services_handlers_auth_logout "echo-starter/internal/services/handlers/auth/logout"
+
+	middleware_claimsprincipal "echo-starter/internal/middleware/claimsprincipal"
+	middleware_session "echo-starter/internal/middleware/session"
+	services_claimsprovider "echo-starter/internal/services/claimsprovider"
+	services_handler "echo-starter/internal/services/handler"
 	services_handlers_auth_profiles "echo-starter/internal/services/handlers/auth/profiles"
 	services_handlers_auth_unauthorized "echo-starter/internal/services/handlers/auth/unauthorized"
 	services_handlers_deep "echo-starter/internal/services/handlers/deep"
 	services_handlers_error "echo-starter/internal/services/handlers/error"
-
 	services_handlers_home "echo-starter/internal/services/handlers/home"
-
-	middleware_claimsprincipal "echo-starter/internal/middleware/claimsprincipal"
-	services_handler "echo-starter/internal/services/handler"
-
-	services_claimsprovider "echo-starter/internal/services/claimsprovider"
 
 	core_contracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/core"
 	services_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
@@ -52,17 +67,38 @@ func (s *Startup) GetConfigOptions() *core_contracts.ConfigOptions {
 }
 func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	di.AddSingletonTypeByObj(builder, s.config)
-	services_auth_authcookie.AddSingletonIAuthCookie(builder)
+
+	core_services_timeutils.AddTimeParse(builder)
+	services_cookies.AddSingletonISecureCookie(builder)
+	// AUTH SERVICES
+	//----------------------------------------------------------------------------------------------------------------------
 	services_auth_authenticator.AddSingletonIOIDCAuthenticator(builder)
+
+	services_handlers_home.AddScopedIHandler(builder)
+	services_handlers_deep.AddScopedIHandler(builder)
+	services_handlers_error.AddScopedIHandler(builder)
+	services_handlers_about.AddScopedIHandler(builder)
+
+	// AUTH HANDLERS
+	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_auth_login.AddScopedIHandler(builder)
 	services_handlers_auth_profiles.AddScopedIHandler(builder)
 	services_handlers_auth_callback.AddScopedIHandler(builder)
 	services_handlers_auth_logout.AddScopedIHandler(builder)
 	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
-	services_handlers_home.AddScopedIHandler(builder)
-	services_handlers_deep.AddScopedIHandler(builder)
-	services_handlers_error.AddScopedIHandler(builder)
-	services_handlers_about.AddScopedIHandler(builder)
+
+	// ACCOUNT SERVICES
+	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_accounts.AddScopedIHandler(builder)
+	services_handlers_api_accounts.AddScopedIHandler(builder)
+
+	// ARTISTS CRUD API
+	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_artists.AddScopedIHandler(builder)
+	services_handlers_api_artists.AddScopedIHandler(builder)
+	services_handlers_api_artists_artist.AddScopedIHandler(builder)
+	services_handlers_api_artists_artist_albums.AddScopedIHandler(builder)
+
 	services_handler.AddSingletonIHandlerFactory(builder)
 	services_core_claimsprincipal.AddScopedIClaimsPrincipal(builder)
 	services_claimsprovider.AddSingletonIClaimsProviderMock(builder, s.ctrl)
@@ -77,7 +113,7 @@ func (s *Startup) Configure(e *echo.Echo, root di.Container) error {
 	}))
 	// DevelopmentMiddlewareUsingClaimsMap adds all the needed claims so that FinalAuthVerificationMiddlewareUsingClaimsMap succeeds
 	//e.Use(middleware_claimsprincipal.DevelopmentMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
-
+	e.Use(middleware_session.EnsureAuthTokenRefresh(shared.RootContainer))
 	e.Use(middleware_claimsprincipal.AuthenticatedSessionToClaimsPrincipalMiddleware(root))
 	e.Use(middleware_claimsprincipal.FinalAuthVerificationMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
 	return nil

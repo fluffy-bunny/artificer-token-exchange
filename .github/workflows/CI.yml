@@ -83,10 +83,23 @@ jobs:
       run: |
         go build -mod=mod -v -a -tags netgo -ldflags "-X 'main.version=${{needs.pre_flight.outputs.new_tag}}' -extldflags '-static'" ${{ env.BUILD_PATH }}
     
-    - uses: actions/upload-artifact@v2
+    - name: Make Upload folder
+      run: |
+        mkdir -p ./artifacts
+        cp -r ./${{ env.BINARY }} ./artifacts/
+        cp -r ./cmd/server/templates/ ./artifacts/
+        cp -r ./cmd/server/assets/ ./artifacts/ 
+        cp -r ./cmd/server/css/ ./artifacts/ 
+        cp -r ./cmd/server/js/ ./artifacts/ 
+        cd ./artifacts/
+        ls -R
+
+    - uses: actions/upload-artifact@v3
       with:
-        name: build
-        path: ./${{ env.BINARY }} 
+        name: artifacts
+        path: |
+          ./artifacts/
+
 
     - name: Test
       run: go test -v ./...
@@ -107,20 +120,20 @@ jobs:
           submodules: true
 
       - name: Download Build Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: build
-          path: cmd/server
+          name: artifacts
+          path: artifacts
 
       - name: inspect build folder
         run: |
-          cd ./cmd/server
-          ls -al
+          cd ./artifacts
+          ls -R
 
       # If we ever have more than 1 file, tar before actions/upload-artifact
       - name: Fix Execute Bit
         run: |
-          chmod +x cmd/server/${{ env.BINARY }}
+          chmod +x ./artifacts/${{ env.BINARY }}
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -148,7 +161,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:
-          context: ./cmd/server
+          context: ./artifacts
           file: ./cmd/server/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}},${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
@@ -158,7 +171,7 @@ jobs:
         if: github.ref != 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:
-          context: ./cmd/server
+          context: ./artifacts
           file: ./cmd/server/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}}
