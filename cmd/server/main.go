@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	contracts_config "echo-starter/internal/contracts/config"
 	contracts_handler "echo-starter/internal/contracts/handler"
 	middleware_container "echo-starter/internal/middleware/container"
+	middleware_logger "echo-starter/internal/middleware/logger"
+
 	middleware_session "echo-starter/internal/middleware/session"
 	services_container "echo-starter/internal/services/container"
 	"encoding/base64"
@@ -30,6 +33,9 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/pkgerrors"
 )
 
 var version = "Development"
@@ -51,6 +57,28 @@ func main() {
 		appConfig.Oidc.CallbackURL = fmt.Sprintf("http://localhost:%v%s",
 			appConfig.Port,
 			wellknown.OIDCCallbackPath)
+	}
+	if appConfig.PrettyLog {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	switch strings.ToLower(appConfig.LogLevel) {
+	case "debug":
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	case "info":
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	case "warn":
+		zerolog.SetGlobalLevel(zerolog.WarnLevel)
+	case "error":
+		zerolog.SetGlobalLevel(zerolog.ErrorLevel)
+	case "fatal":
+		zerolog.SetGlobalLevel(zerolog.FatalLevel)
+	case "panic":
+		zerolog.SetGlobalLevel(zerolog.PanicLevel)
+	case "trace":
+		zerolog.SetGlobalLevel(zerolog.TraceLevel)
 	}
 	fmt.Println(echostarter_utils.PrettyJSON(appConfig))
 	builder, _ := di.NewBuilder(di.App, di.Request, "transient")
@@ -83,8 +111,10 @@ func main() {
 		appConfig.SecureCookieEncryptionKey = encodedString
 		fmt.Printf("SECURE_COOKIE_ENCRYPTION_KEY: %v\n", appConfig.SecureCookieEncryptionKey)
 	}
-	e.Use(middleware.Logger())
+	e.Use(middleware_logger.EnsureContextLogger(shared.RootContainer))
+	e.Use(middleware_logger.EnsureContextLoggerCorrelation(shared.RootContainer))
 	e.Use(middleware_container.EnsureScopedContainer(shared.RootContainer))
+	e.Use(middleware.Logger())
 
 	sessionMemStore := memstore.NewMemStore(
 		[]byte(appConfig.SessionKey), []byte(appConfig.SessionEncryptionKey),
@@ -121,5 +151,8 @@ func main() {
 	handlerFactory.RegisterHandlers(app)
 
 	port := startup.GetPort()
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", port)))
+	err = e.Start(fmt.Sprintf(":%v", port))
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to start server")
+	}
 }
