@@ -83,10 +83,16 @@ jobs:
       run: |
         go build -mod=mod -v -a -tags netgo -ldflags "-X 'main.version=${{needs.pre_flight.outputs.new_tag}}' -extldflags '-static'" ${{ env.BUILD_PATH }}
     
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: build
-        path: ./${{ env.BINARY }} 
+        path: |
+          ./${{ env.BINARY }} 
+          ./cmd/server/templates/
+          ./cmd/server/assets/
+          ./cmd/server/css/
+          ./cmd/server/js/
+
 
     - name: Test
       run: go test -v ./...
@@ -107,15 +113,15 @@ jobs:
           submodules: true
 
       - name: Download Build Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
-          path: cmd/server
+          path: build
 
       - name: inspect build folder
         run: |
-          cd ./cmd/server
-          ls -al
+          cd ./build
+          ls -R
 
       # If we ever have more than 1 file, tar before actions/upload-artifact
       - name: Fix Execute Bit
@@ -148,7 +154,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v2
         with:
-          context: ./cmd/server
+          context: ./build
           file: ./cmd/server/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:${{needs.pre_flight.outputs.new_tag}},${{ secrets.DOCKER_HUB_USERNAME }}/${{env.DOCKER_IMAGE_NAME}}:latest
