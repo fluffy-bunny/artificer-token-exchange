@@ -83,6 +83,17 @@ jobs:
       run: |
         go build -mod=mod -v -a -tags netgo -ldflags "-X 'main.version=${{needs.pre_flight.outputs.new_tag}}' -extldflags '-static'" ${{ env.BUILD_PATH }}
     
+    - name: Make Upload folder
+      run: |
+        mkdir -p ./artifacts
+        copy ./${{ env.BINARY }} ./artifacts/
+        cp ./cmd/server/templates/ ./artifacts/templates/
+        cp ./cmd/server/assets/ ./artifacts/assets/
+        cp ./cmd/server/css/ ./artifacts/css/
+        cp ./cmd/server/js/ ./artifacts/js/
+        cd ./artifacts/
+        ls -R
+
     - uses: actions/upload-artifact@v3
       with:
         name: build
@@ -92,6 +103,7 @@ jobs:
           ./cmd/server/assets/
           ./cmd/server/css/
           ./cmd/server/js/
+          ./artifacts/
 
 
     - name: Test
