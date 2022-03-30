@@ -82,12 +82,8 @@ func (s *service) get(c echo.Context) error {
 		c.Redirect(http.StatusFound, "/error?message=error+retrieving+profiles")
 
 	}
-	authArtifacts := &auth{
-		CSRF: c.Get("csrf").(string),
-	}
 	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/auth/profiles/index", map[string]interface{}{
-		"profiles":      profiles,
-		"authArtifacts": authArtifacts,
+		"profiles": profiles,
 	})
 
 }

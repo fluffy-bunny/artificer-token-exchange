@@ -24,6 +24,23 @@ async function getArtists() {
         console.log(error);
     }
 }
+async function postArtist() {
+    let url = '/api/v1/artists/1';   
+    try {
+        let res = await fetch(url,{
+            method: 'POST',
+            credentials: 'include',
+            headers: {"X-Csrf-Token": csrf },
+            body: JSON.stringify({ name: 'test' }),
+          });
+        payload =  await res.json();
+        console.log(payload);
+        alert(JSON.stringify(payload));
+        return payload
+    } catch (error) {s
+        console.log(error);
+    }
+}
 async function getArtist() {
     let url = '/api/v1/artists/1';   
     try {

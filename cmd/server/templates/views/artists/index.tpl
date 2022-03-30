@@ -1,6 +1,7 @@
 {{define "views/artists/index"}}
 {{template "header" .}}
 {{template "navbar" .}}
+{{ template "csfr" .}}
 <body>
 <!-- Page content-->
 <div class="container">
@@ -9,13 +10,14 @@
         <button type="button" id="btnArtists">Artists</button>
         <button type="button" id="btnArtist">Artist</button>
         <button type="button" id="btnAlbums">Albums</button>
+        <button type="button" id="btnPostArtist">Post Artist</button>
     </div>
 </div>
 </body>
 
 {{template "footer" .}}
      <script>
-	    
+	    {{.csfr}}
 	    // get reference to button
 	    var btn = document.getElementById("btnArtists");
 	    // add event listener for the button, for action "click"
@@ -30,6 +32,11 @@
 	    var btn = document.getElementById("btnAlbums");
 	    // add event listener for the button, for action "click"
 	    btn.addEventListener("click", getAlbums);
+
+         // get reference to button
+	    var btn = document.getElementById("btnPostArtist");
+	    // add event listener for the button, for action "click"
+	    btn.addEventListener("click", postArtist);
 
     </script>
 {{end}}

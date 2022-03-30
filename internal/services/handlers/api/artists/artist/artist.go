@@ -4,6 +4,8 @@ import (
 	contracts_handler "echo-starter/internal/contracts/handler"
 	artists_shared "echo-starter/internal/services/handlers/api/artists/shared"
 	"echo-starter/internal/wellknown"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 
@@ -31,6 +33,7 @@ func AddScopedIHandler(builder *di.Builder) {
 		reflectType,
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
+			contracts_handler.POST,
 		},
 		wellknown.APIArtistsIdPath)
 }
@@ -45,6 +48,28 @@ type params struct {
 }
 
 func (s *service) Do(c echo.Context) error {
+	switch c.Request().Method {
+	case http.MethodGet:
+		return s.get(c)
+	case http.MethodPost:
+		return s.post(c)
+	default:
+		return echo.NewHTTPError(http.StatusMethodNotAllowed)
+	}
+}
+func (s *service) post(c echo.Context) error {
+	fmt.Println("artist: post")
+	decoder := json.NewDecoder(c.Request().Body)
+	var body map[string]interface{}
+	if err := decoder.Decode(&body); err != nil {
+		return err
+	}
+	fmt.Println(body)
+	return c.JSON(http.StatusOK, body)
+
+}
+func (s *service) get(c echo.Context) error {
+
 	u := new(params)
 	if err := c.Bind(u); err != nil {
 		return err

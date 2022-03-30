@@ -96,18 +96,9 @@ func main() {
 		e.Use(middleware_session.EnsureDevelopmentSession(appInstanceID))
 	}
 
-	apiGroup := e.Group("/api")
-	apiGroup.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup:    "header:X-XSRF-TOKEN",
-		CookiePath:     "/api",
-		CookieSecure:   true,
-		CookieHTTPOnly: true,
-		CookieSameSite: http.SameSiteStrictMode,
-	}))
-
 	app := e.Group("")
 	app.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup:    "form:csrf",
+		TokenLookup:    "header:X-Csrf-Token,form:csrf",
 		CookiePath:     "/",
 		CookieSecure:   true,
 		CookieHTTPOnly: true,
