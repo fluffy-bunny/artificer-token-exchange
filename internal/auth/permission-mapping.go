@@ -26,6 +26,22 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/assets*")
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/js*")
 
+	// ACCOUNTS
+	//---------------------------------------------------------------------------------------------------
+	entryPointClaimsBuilder.GetClaimsConfig(wellknown.AccountsPath).
+		WithGrpcEntrypointPermissionsClaimFactsMapOR(
+			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+		)
+	entryPointClaimsBuilder.AddMetaData(wellknown.AccountsPath, map[string]interface{}{
+		"onUnauthenticated": "login",
+	})
+	entryPointClaimsBuilder.GetClaimsConfig(wellknown.APIAccountsPath).
+		WithGrpcEntrypointPermissionsClaimFactsMapOR(
+			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+		)
+
+	// ARTISTS
+	//---------------------------------------------------------------------------------------------------
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.ArtistsPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
 			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),

@@ -74,3 +74,23 @@ async function getAlbums() {
         console.log(error);
     }
 }
+async function postAccountsForceRefresh() {
+    let url = '/api/v1/accounts';   
+    try {
+        let res = await fetch(url,{
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                    "X-Csrf-Token": csrf,
+                    "Content-Type": "application/json" 
+                },
+            body: JSON.stringify({ directive: 'force-refresh' }),
+          });
+        payload =  await res.json();
+        console.log(payload);
+        alert(JSON.stringify(payload));
+        return payload
+    } catch (error) {s
+        console.log(error);
+    }
+}

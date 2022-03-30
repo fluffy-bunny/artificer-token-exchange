@@ -10,6 +10,11 @@ import (
 
 	core_services_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/timeutils"
 
+	// ACCOUNTS
+	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_accounts "echo-starter/internal/services/handlers/accounts"
+	services_handlers_api_accounts "echo-starter/internal/services/handlers/api/accounts"
+
 	// ARTISTS
 	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_api_artists "echo-starter/internal/services/handlers/api/artists"
@@ -81,6 +86,11 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	services_handlers_auth_callback.AddScopedIHandler(builder)
 	services_handlers_auth_logout.AddScopedIHandler(builder)
 	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
+
+	// ACCOUNT SERVICES
+	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_accounts.AddScopedIHandler(builder)
+	services_handlers_api_accounts.AddScopedIHandler(builder)
 
 	// ARTISTS CRUD API
 	//----------------------------------------------------------------------------------------------------------------------

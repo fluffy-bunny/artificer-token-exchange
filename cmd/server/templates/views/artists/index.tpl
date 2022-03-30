@@ -17,7 +17,6 @@
 
 {{template "footer" .}}
      <script>
-	    {{.csfr}}
 	    // get reference to button
 	    var btn = document.getElementById("btnArtists");
 	    // add event listener for the button, for action "click"
