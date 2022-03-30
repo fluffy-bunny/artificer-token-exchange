@@ -4,6 +4,7 @@ import (
 	"echo-starter/internal/templates"
 	"fmt"
 	"net/http"
+	"os"
 
 	contracts_config "echo-starter/internal/contracts/config"
 	contracts_handler "echo-starter/internal/contracts/handler"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/gorilla/securecookie"
 	"github.com/quasoft/memstore"
+	"github.com/ziflex/lecho"
 
 	"echo-starter/internal/shared"
 	echostarter_utils "echo-starter/internal/utils"
@@ -60,6 +62,9 @@ func main() {
 	shared.RootContainer = builder.Build()
 
 	e := echo.New()
+	//use our own zerolog logger
+	e.Logger = lecho.New(os.Stdout)
+
 	//Set Renderer
 	e.Renderer = templates.GetTemplateRender("./templates")
 
