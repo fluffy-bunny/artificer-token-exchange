@@ -4,11 +4,9 @@ import (
 	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
 	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/wellknown"
-	"encoding/json"
 	"net/http"
 	"reflect"
 
-	"echo-starter/internal/session"
 	"echo-starter/internal/templates"
 	"errors"
 
@@ -93,28 +91,11 @@ type postParams struct {
 }
 
 func (s *service) post(c echo.Context) error {
-	sess := session.GetSession(c)
-	userId, err := s.getUserId(c)
-	if err != nil {
-		c.Redirect(http.StatusFound, "/error?message=no+sub+claim+found")
-	}
 	u := new(postParams)
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	profileClaims, err := s.ClaimsProvider.GetClaims(userId, u.Profile)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to fetch claims.")
-	}
-	jsonBytes, err := json.Marshal(profileClaims)
-	if err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to marshal profileClaims.")
-	}
-	sess.Values["_profile"] = string(jsonBytes)
-	err = sess.Save(c.Request(), c.Response())
-	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
+	c.Logger().Debug(u)
 
 	return c.Redirect(http.StatusFound, "/")
 }
