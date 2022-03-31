@@ -11,6 +11,7 @@
         <button type="button" id="btnArtist">Artist</button>
         <button type="button" id="btnAlbums">Albums</button>
         <button type="button" id="btnPostArtist">Post Artist</button>
+        <button type="button" id="btnPostArtistForgotCsrf">Post Artist - Forgot CSRF</button>
     </div>
 </div>
 </body>
@@ -37,5 +38,10 @@
 	    // add event listener for the button, for action "click"
 	    btn.addEventListener("click", postArtist);
 
+         // get reference to button
+	    var btn = document.getElementById("btnPostArtistForgotCsrf");
+	    // add event listener for the button, for action "click"
+	    btn.addEventListener("click", postArtistForgotCsrf);
+ 
     </script>
 {{end}}

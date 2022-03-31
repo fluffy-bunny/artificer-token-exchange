@@ -2,18 +2,14 @@ package claimsprovider
 
 import (
 	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
-
 	"echo-starter/internal/wellknown"
-
 	"errors"
 	"reflect"
 
 	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
-	"github.com/golang/mock/gomock"
-
-	"github.com/rs/zerolog/log"
-
 	di "github.com/fluffy-bunny/sarulabsdi"
+	"github.com/golang/mock/gomock"
+	"github.com/rs/zerolog/log"
 )
 
 type (

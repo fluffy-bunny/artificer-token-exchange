@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
+	asciitree "github.com/tufin/asciitree"
 )
 
 func FilePathWalkDir(root string) ([]string, error) {
@@ -25,8 +28,10 @@ func DumpPath(root string) {
 	fmt.Println("==========================================================")
 	fmt.Println("Dumping files in " + root)
 	fmt.Println("==========================================================")
+	tree := asciitree.Tree{}
 	for _, file := range files {
-		fmt.Println(file)
+		tree.Add("/" + strings.ReplaceAll(file, "\\", "/"))
 	}
+	tree.Fprint(os.Stdout, true, "")
 	fmt.Println("==========================================================")
 }

@@ -9,9 +9,24 @@
         <p class="lead">A complete project boilerplate built with Bootstrap</p>
         <p>Bootstrap v5.1.3</p>
         <div class="alert alert-success" role="alert">
-        {{range $claim := .claims}}
-            <div>{{ $claim }}</div>
-        {{end}}
+                 <table class="table table-striped">
+                <thead>
+                <tr>
+                <th class="text-start" scope="col">#</th>
+                <th class="text-start" scope="col">Type</th>
+                <th class="text-start" scope="col">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+            {{range $idx,$claim := .claims}}
+                <tr>
+                <th class="text-start" scope="row">{{$idx}}</th>
+                <td class="text-start">{{$claim.Type}}</td>
+                <td class="text-start">{{$claim.Value}}</td>
+                </tr>
+            {{end}}
+            </tbody>
+            </table>
         </div>
     </div>
 </div>

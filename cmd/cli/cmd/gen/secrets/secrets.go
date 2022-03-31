@@ -5,7 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package secrets
 
 import (
-	"echo-starter/internal/utils"
+	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
+
 	"encoding/base64"
 	"fmt"
 
@@ -32,7 +33,7 @@ to quickly create a Cobra application.`,
 			Length int
 			Encode string // base64 encoded
 		}
-		fmt.Println(utils.PrettyJSON(&output{
+		fmt.Println(core_utils.PrettyJSON(&output{
 			Secret: encodedString,
 			Length: length,
 			Encode: "base64",
