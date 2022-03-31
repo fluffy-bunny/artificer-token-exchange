@@ -22,6 +22,7 @@ require (
 	github.com/rs/xid v1.3.0
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.4.0
+	github.com/tufin/asciitree v0.0.0-20210127111056-bf70173ef677
 	github.com/ziflex/lecho v1.2.0
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	gopkg.in/square/go-jose.v2 v2.5.1
@@ -84,7 +85,6 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tkuchiki/go-timezone v0.2.2 // indirect
 	github.com/tkuchiki/parsetime v0.3.0 // indirect
-	github.com/tufin/asciitree v0.0.0-20210127111056-bf70173ef677 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
