@@ -3,6 +3,33 @@
 [auth0-golang-web-app](https://github.com/auth0-samples/auth0-golang-web-app/)  
 [demo-echo-app](https://github.com/gtongy/demo-echo-app)  
 [cookie auth](https://www.sohamkamani.com/golang/session-cookie-authentication/)
+
+# TLDR
+You can run the app live via docker-compose.  I haven't tested it with Auth0 where the login only sends an access_token as a reference (not jwt) and no refresh_token;
+So make sure your Auth0 setup delivers a JWT access_token with a refresh_token.
+
+## Docker-Compose
+
+### Secrets
+place the following Auth0 env variables in your OS envs.  
+```env
+AUTH0_CLIENT_ID=M8x**REDACTED**4Zwk
+AUTH0_CLIENT_SECRET=mbTS7_63xBUx**REDACTED**lYgmRwXPbMy8ai9Pd
+AUTH0_DOMAIN={{yourdomain}}.auth0.com
+```
+example with none working secrets
+```.env
+AUTH0_CLIENT_ID=M8xSKujdhflsjdfPd3yfkBTjnajz4Zwk
+AUTH0_CLIENT_SECRET=mbTS7_63xBUxkjlhdsjkdfhksdjdfhnvyoWlYgmRwXPbMy8ai9Pd
+AUTH0_DOMAIN=foo.auth0.com
+```
+
+```bash
+docker-compose pull
+docker-compose up
+```
+naviage to the following [echo-starter](http://localhost:1323)  
+
 # Motivation  
 
 [ECHO](https://echo.labstack.com/) is a fantastic base framework to build upon.  This project adds a lot of design patterns found in [asp.net core](https://docs.microsoft.com/en-us/aspnet/core/introduction-to-aspnet-core).  
@@ -33,19 +60,5 @@ IMemoryCache
 func ContainerAccessor vs aps.net's IServiceProvider  
 etc.   
 
-## Docker-Compose
 
-### Secrets
-place the following Auth0 env variables in your OS envs.  
-```env
-AUTH0_CLIENT_ID=M8x**REDACTED**4Zwk
-AUTH0_CLIENT_SECRET=mbTS7_63xBUx**REDACTED**lYgmRwXPbMy8ai9Pd
-AUTH0_DOMAIN={{yourdomain}}.auth0.com
-```
-example with none working secrets
-```.env
-AUTH0_CLIENT_ID=M8xSKujdhflsjdfPd3yfkBTjnajz4Zwk
-AUTH0_CLIENT_SECRET=mbTS7_63xBUxkjlhdsjkdfhksdjdfhnvyoWlYgmRwXPbMy8ai9Pd
-AUTH0_DOMAIN=foo.auth0.com
-```
 
