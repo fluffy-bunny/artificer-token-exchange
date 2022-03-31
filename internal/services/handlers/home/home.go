@@ -1,17 +1,18 @@
 package home
 
 import (
-	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"net/http"
 	"reflect"
 
-	contracts_container "echo-starter/internal/contracts/container"
-
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	contracts_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/timeutils"
+	contracts_container "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/container"
+	contracts_contextaccessor "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/contextaccessor"
+	contracts_cookies "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/cookies"
+	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
@@ -20,11 +21,13 @@ type (
 	service struct {
 		// Required and Useful services that the runtime registers
 		//---------------------------------------------------------------------------------------------
-		ContainerAccessor contracts_container.ContainerAccessor           `inject:""`
-		TimeNow           contracts_timeutils.TimeNow                     `inject:""`
-		TimeParse         contracts_timeutils.TimeParse                   `inject:""`
-		Logger            contracts_logger.ILogger                        `inject:""`
-		ClaimsPrincipal   contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
+		ContainerAccessor   contracts_container.ContainerAccessor           `inject:""`
+		TimeNow             contracts_timeutils.TimeNow                     `inject:""`
+		TimeParse           contracts_timeutils.TimeParse                   `inject:""`
+		Logger              contracts_logger.ILogger                        `inject:""`
+		ClaimsPrincipal     contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
+		SecureCookie        contracts_cookies.ISecureCookie                 `inject:""`
+		EchoContextAccessor contracts_contextaccessor.IEchoContextAccessor  `inject:""`
 		//---------------------------------------------------------------------------------------------
 	}
 )

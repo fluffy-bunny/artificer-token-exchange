@@ -5,8 +5,7 @@ import (
 	"echo-starter/internal/session"
 	"encoding/json"
 
-	contracts_auth "echo-starter/internal/contracts/auth"
-
+	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -15,7 +14,7 @@ import (
 )
 
 func EnsureAuthTokenRefresh(container di.Container) echo.MiddlewareFunc {
-	authenticator := contracts_auth.GetIOIDCAuthenticatorFromContainer(container)
+	authenticator := core_contracts_oidc.GetIOIDCAuthenticatorFromContainer(container)
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return func(c echo.Context) error {

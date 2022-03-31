@@ -2,9 +2,7 @@ package login
 
 import (
 	"crypto/rand"
-	contracts_auth "echo-starter/internal/contracts/auth"
 	auth_shared "echo-starter/internal/contracts/auth/shared"
-	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/session"
 	"echo-starter/internal/wellknown"
 	"encoding/base64"
@@ -12,7 +10,10 @@ import (
 	"net/http"
 	"reflect"
 
+	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
+	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -20,8 +21,8 @@ import (
 
 type (
 	service struct {
-		Logger        contracts_logger.ILogger          `inject:"logger"`
-		Authenticator contracts_auth.IOIDCAuthenticator `inject:""`
+		Logger        contracts_logger.ILogger               `inject:""`
+		Authenticator core_contracts_oidc.IOIDCAuthenticator `inject:""`
 	}
 )
 

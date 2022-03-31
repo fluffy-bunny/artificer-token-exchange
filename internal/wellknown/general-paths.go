@@ -3,8 +3,8 @@ package wellknown
 const (
 	HomePath               = "/"
 	AboutPath              = "/about"
-	HealthPath             = "/health"
-	ReadinessPath          = "/readiness"
+	HealthzPath            = "/healthz"
+	ReadyPath              = "/ready"
 	DeepPath               = "/deep/:id/:name"
 	ProfilesPath           = "/profiles"
 	ArtistsPath            = "/artists"

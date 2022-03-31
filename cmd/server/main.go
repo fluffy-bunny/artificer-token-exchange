@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"echo-starter/internal/runtime"
+	"github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/runtime"
 
 	"github.com/rs/zerolog/log"
 )

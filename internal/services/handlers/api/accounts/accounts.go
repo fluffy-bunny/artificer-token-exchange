@@ -1,8 +1,6 @@
 package accounts
 
 import (
-	contracts_auth "echo-starter/internal/contracts/auth"
-	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/session"
 	"echo-starter/internal/wellknown"
 	"encoding/json"
@@ -11,7 +9,10 @@ import (
 	"reflect"
 	"time"
 
+	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
+	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -21,8 +22,8 @@ import (
 
 type (
 	service struct {
-		Logger            contracts_logger.ILogger          `inject:""`
-		OIDCAuthenticator contracts_auth.IOIDCAuthenticator `inject:""`
+		Logger            contracts_logger.ILogger               `inject:""`
+		OIDCAuthenticator core_contracts_oidc.IOIDCAuthenticator `inject:""`
 	}
 )
 

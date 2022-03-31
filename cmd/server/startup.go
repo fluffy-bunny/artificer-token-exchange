@@ -3,18 +3,30 @@ package main
 import (
 	echostarter_auth "echo-starter/internal/auth"
 	tex_config "echo-starter/internal/contracts/config"
-	"echo-starter/internal/contracts/startup"
-	services_auth_authenticator "echo-starter/internal/services/auth/authenticator"
-	services_cookies "echo-starter/internal/services/cookies"
+	"echo-starter/internal/wellknown"
+	"encoding/base64"
+	"fmt"
+	"os"
+	"strconv"
+
+	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
+
 	services_handlers_about "echo-starter/internal/services/handlers/about"
+	app_session "echo-starter/internal/session"
+
 	"net/http"
 
-	core_services_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/timeutils"
+	"github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/startup"
+	echo_contracts_startup "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/startup"
+
+	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/quasoft/memstore"
 
-	services_contextaccessor "echo-starter/internal/services/contextaccessor"
-	services_logger "echo-starter/internal/services/logger"
+	services_handlers_healthz "echo-starter/internal/services/handlers/healthz"
+	services_handlers_ready "echo-starter/internal/services/handlers/ready"
+	services_probes_database "echo-starter/internal/services/probes/database"
+	services_probes_oidc "echo-starter/internal/services/probes/oidc"
 
 	// ACCOUNTS
 	//----------------------------------------------------------------------------------------------------------------------
@@ -28,14 +40,21 @@ import (
 	services_handlers_api_artists_artist_albums "echo-starter/internal/services/handlers/api/artists/artist/albums"
 	services_handlers_artists "echo-starter/internal/services/handlers/artists"
 
+	//----------------------------------------------------------------------------------------------------------------------
+
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
 	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
 	services_handlers_auth_logout "echo-starter/internal/services/handlers/auth/logout"
 
+	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+	core_services_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/oidc"
+
+	core_contracts_session "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/session"
+	core_middleware_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/middleware/claimsprincipal"
+
 	middleware_claimsprincipal "echo-starter/internal/middleware/claimsprincipal"
 	middleware_session "echo-starter/internal/middleware/session"
 	services_claimsprovider "echo-starter/internal/services/claimsprovider"
-	services_handler "echo-starter/internal/services/handler"
 	services_handlers_auth_profiles "echo-starter/internal/services/handlers/auth/profiles"
 	services_handlers_auth_unauthorized "echo-starter/internal/services/handlers/auth/unauthorized"
 	services_handlers_deep "echo-starter/internal/services/handlers/deep"
@@ -43,7 +62,8 @@ import (
 	services_handlers_home "echo-starter/internal/services/handlers/home"
 
 	core_contracts "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/core"
-	services_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
+	contracts_cookies "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/cookies"
+	core_middleware_session "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/middleware/session"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -58,10 +78,10 @@ type Startup struct {
 }
 
 func assertImplementation() {
-	var _ startup.IStartup = (*Startup)(nil)
+	var _ echo_contracts_startup.IStartup = (*Startup)(nil)
 }
 
-func NewStartup() startup.IStartup {
+func NewStartup() echo_contracts_startup.IStartup {
 	return &Startup{
 		config: &tex_config.Config{},
 		ctrl:   gomock.NewController(nil),
@@ -70,7 +90,7 @@ func NewStartup() startup.IStartup {
 func (s *Startup) SetContainer(container di.Container) {
 	s.container = container
 }
-func (s *Startup) GetSessionStore() sessions.Store {
+func (s *Startup) getSessionStore() sessions.Store {
 	sessionMemStore := memstore.NewMemStore(
 		[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey),
 	)
@@ -91,34 +111,69 @@ func (s *Startup) RegisterStaticRoutes(e *echo.Echo) error {
 func (s *Startup) GetOptions() *startup.Options {
 	return &startup.Options{
 		Listener: nil,
+		Port:     s.config.Port,
 	}
 }
-func (s *Startup) GetPort() int {
-	return s.config.Port
-}
+
 func (s *Startup) GetConfigOptions() *core_contracts.ConfigOptions {
+	prettyLog, err := strconv.ParseBool(os.Getenv("PRETTY_LOG"))
+	if err != nil {
+		prettyLog = false
+	}
+
 	return &core_contracts.ConfigOptions{
-		RootConfig:  []byte(tex_config.ConfigDefaultJSON),
-		Destination: s.config,
+		RootConfig:             []byte(tex_config.ConfigDefaultJSON),
+		Destination:            s.config,
+		LogLevel:               os.Getenv("LOG_LEVEL"),
+		PrettyLog:              prettyLog,
+		ApplicationEnvironment: os.Getenv("APPLICATION_ENVIRONMENT"),
 	}
 }
-func (s *Startup) ConfigureServices(builder *di.Builder) error {
-	di.AddSingletonTypeByObj(builder, s.config)
+func (s *Startup) addSecureCookieOptions(builder *di.Builder) {
+	// map our config to accessor funcs that other services need
+	// SECURE COOKIE
+	if core_utils.IsEmptyOrNil(s.config.SecureCookieHashKey) {
+		fmt.Println("WARNING: SECURE_COOKIE_HASH_KEY must be set for production......")
+		key := securecookie.GenerateRandomKey(32)
+		encodedString := base64.StdEncoding.EncodeToString(key)
+		s.config.SecureCookieHashKey = encodedString
+		fmt.Printf("SECURE_COOKIE_HASH_KEY: %v\n", s.config.SecureCookieHashKey)
+	}
+	if core_utils.IsEmptyOrNil(s.config.SecureCookieEncryptionKey) {
+		fmt.Println("WARNING: SECURE_COOKIE_ENCRYPTION_KEY must be set for production......")
+		key := securecookie.GenerateRandomKey(32)
+		encodedString := base64.StdEncoding.EncodeToString(key)
+		s.config.SecureCookieEncryptionKey = encodedString
+		fmt.Printf("SECURE_COOKIE_ENCRYPTION_KEY: %v\n", s.config.SecureCookieEncryptionKey)
+	}
 
-	core_services_timeutils.AddTimeParse(builder)
-	services_cookies.AddSingletonISecureCookie(builder)
-
-	services_contextaccessor.AddScopedIEchoContextAccessor(builder)
-	services_logger.AddILogger(builder)
-
+	contracts_cookies.AddSecureCookieConfigAccessorFunc(builder, func() *contracts_cookies.SecureCookieConfig {
+		return &contracts_cookies.SecureCookieConfig{
+			SecureCookieHashKey:       s.config.SecureCookieHashKey,
+			SecureCookieEncryptionKey: s.config.SecureCookieEncryptionKey,
+		}
+	})
+}
+func (s *Startup) addAuthServices(builder *di.Builder) {
 	// AUTH SERVICES
 	//----------------------------------------------------------------------------------------------------------------------
-	services_auth_authenticator.AddSingletonIOIDCAuthenticator(builder)
+	core_contracts_oidc.AddGetOIDCAuthenticatorConfigFunc(builder, func() *core_contracts_oidc.AuthenticatorConfig {
+		if core_utils.IsEmptyOrNil(s.config.Oidc.CallbackURL) {
+			// primarily for development
+			port := s.config.Port
+			s.config.Oidc.CallbackURL = fmt.Sprintf("http://localhost:%v%s",
+				port,
+				wellknown.OIDCCallbackPath)
+		}
 
-	services_handlers_home.AddScopedIHandler(builder)
-	services_handlers_deep.AddScopedIHandler(builder)
-	services_handlers_error.AddScopedIHandler(builder)
-	services_handlers_about.AddScopedIHandler(builder)
+		return &core_contracts_oidc.AuthenticatorConfig{
+			Domain:       s.config.Oidc.Domain,
+			ClientID:     s.config.Oidc.ClientID,
+			ClientSecret: s.config.Oidc.ClientSecret,
+			CallbackURL:  s.config.Oidc.CallbackURL,
+		}
+	})
+	core_services_oidc.AddSingletonIOIDCAuthenticator(builder)
 
 	// AUTH HANDLERS
 	//----------------------------------------------------------------------------------------------------------------------
@@ -127,6 +182,19 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	services_handlers_auth_callback.AddScopedIHandler(builder)
 	services_handlers_auth_logout.AddScopedIHandler(builder)
 	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
+}
+
+func (s *Startup) addAppHandlers(builder *di.Builder) {
+
+	services_handlers_healthz.AddScopedIHandler(builder)
+	services_handlers_ready.AddScopedIHandler(builder)
+	services_probes_database.AddSingletonIProbe(builder)
+	services_probes_oidc.AddSingletonIProbe(builder)
+
+	services_handlers_home.AddScopedIHandler(builder)
+	services_handlers_deep.AddScopedIHandler(builder)
+	services_handlers_error.AddScopedIHandler(builder)
+	services_handlers_about.AddScopedIHandler(builder)
 
 	// ACCOUNT SERVICES
 	//----------------------------------------------------------------------------------------------------------------------
@@ -140,8 +208,25 @@ func (s *Startup) ConfigureServices(builder *di.Builder) error {
 	services_handlers_api_artists_artist.AddScopedIHandler(builder)
 	services_handlers_api_artists_artist_albums.AddScopedIHandler(builder)
 
-	services_handler.AddSingletonIHandlerFactory(builder)
-	services_core_claimsprincipal.AddScopedIClaimsPrincipal(builder)
+}
+
+func (s *Startup) ConfigureServices(builder *di.Builder) error {
+	// add our config as a sigleton object
+	di.AddSingletonTypeByObj(builder, s.config)
+
+	// Add our main session accessor func
+	core_contracts_session.AddGetSessionFunc(builder, app_session.GetSession)
+	core_contracts_session.AddGetSessionStoreFunc(builder, s.getSessionStore)
+
+	// Add our secure cookie configs
+	s.addSecureCookieOptions(builder)
+
+	// add our auth services
+	s.addAuthServices(builder)
+
+	// add our app handlers
+	s.addAppHandlers(builder)
+
 	services_claimsprovider.AddSingletonIClaimsProviderMock(builder, s.ctrl)
 	return nil
 }
@@ -156,6 +241,9 @@ func (s *Startup) Configure(e *echo.Echo, root di.Container) error {
 	//e.Use(middleware_claimsprincipal.DevelopmentMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
 	e.Use(middleware_session.EnsureAuthTokenRefresh(s.container))
 	e.Use(middleware_claimsprincipal.AuthenticatedSessionToClaimsPrincipalMiddleware(root))
-	e.Use(middleware_claimsprincipal.FinalAuthVerificationMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
+	e.Use(core_middleware_claimsprincipal.FinalAuthVerificationMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
+	// only after we pass auth do we slide out the auth session
+	e.Use(core_middleware_session.EnsureSlidingSession(root, app_session.GetAuthSession))
+
 	return nil
 }
