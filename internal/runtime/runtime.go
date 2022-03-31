@@ -158,6 +158,7 @@ func (s *Runtime) Run() error {
 	handlerDefinitions := contracts_handler.GetIHandlerDefinitions(s.Container)
 
 	t := table.NewWriter()
+	t.SetTitle("Handler Definitions")
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Verbs", "Path"})
 
