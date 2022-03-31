@@ -15,8 +15,8 @@ import (
 )
 
 func EnsureAuthTokenRefresh(container di.Container) echo.MiddlewareFunc {
+	authenticator := contracts_auth.GetIOIDCAuthenticatorFromContainer(container)
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		authenticator := contracts_auth.GetIOIDCAuthenticatorFromContainer(container)
 
 		return func(c echo.Context) error {
 			authSession := session.GetAuthSession(c)

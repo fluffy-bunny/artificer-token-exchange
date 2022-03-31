@@ -3,12 +3,15 @@ package main
 import (
 	echostarter_auth "echo-starter/internal/auth"
 	tex_config "echo-starter/internal/contracts/config"
+	"echo-starter/internal/contracts/startup"
 	services_auth_authenticator "echo-starter/internal/services/auth/authenticator"
 	services_cookies "echo-starter/internal/services/cookies"
 	services_handlers_about "echo-starter/internal/services/handlers/about"
-	"echo-starter/internal/shared"
+	"net/http"
 
 	core_services_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/timeutils"
+	"github.com/gorilla/sessions"
+	"github.com/quasoft/memstore"
 
 	services_contextaccessor "echo-starter/internal/services/contextaccessor"
 	services_logger "echo-starter/internal/services/logger"
@@ -49,14 +52,45 @@ import (
 )
 
 type Startup struct {
-	config *tex_config.Config
-	ctrl   *gomock.Controller
+	config    *tex_config.Config
+	ctrl      *gomock.Controller
+	container di.Container
 }
 
-func NewStartup() *Startup {
+func assertImplementation() {
+	var _ startup.IStartup = (*Startup)(nil)
+}
+
+func NewStartup() startup.IStartup {
 	return &Startup{
 		config: &tex_config.Config{},
 		ctrl:   gomock.NewController(nil),
+	}
+}
+func (s *Startup) SetContainer(container di.Container) {
+	s.container = container
+}
+func (s *Startup) GetSessionStore() sessions.Store {
+	sessionMemStore := memstore.NewMemStore(
+		[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey),
+	)
+	sessionMemStore.Options.Secure = true
+	sessionMemStore.Options.HttpOnly = true
+	sessionMemStore.Options.SameSite = http.SameSiteStrictMode
+	sessionMemStore.Options.MaxAge = s.config.SessionMaxAgeSeconds
+	return sessionMemStore
+
+}
+func (s *Startup) RegisterStaticRoutes(e *echo.Echo) error {
+	e.Static("/css", "./css")
+	e.Static("/assets", "./assets")
+	e.Static("/js", "./js")
+	return nil
+}
+
+func (s *Startup) GetOptions() *startup.Options {
+	return &startup.Options{
+		Listener: nil,
 	}
 }
 func (s *Startup) GetPort() int {
@@ -120,7 +154,7 @@ func (s *Startup) Configure(e *echo.Echo, root di.Container) error {
 	}))
 	// DevelopmentMiddlewareUsingClaimsMap adds all the needed claims so that FinalAuthVerificationMiddlewareUsingClaimsMap succeeds
 	//e.Use(middleware_claimsprincipal.DevelopmentMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
-	e.Use(middleware_session.EnsureAuthTokenRefresh(shared.RootContainer))
+	e.Use(middleware_session.EnsureAuthTokenRefresh(s.container))
 	e.Use(middleware_claimsprincipal.AuthenticatedSessionToClaimsPrincipalMiddleware(root))
 	e.Use(middleware_claimsprincipal.FinalAuthVerificationMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
 	return nil
