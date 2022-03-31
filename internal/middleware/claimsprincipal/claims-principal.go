@@ -2,15 +2,13 @@ package claimsprincipal
 
 import (
 	"echo-starter/internal/session"
-	"echo-starter/internal/wellknown"
-	echostarter_wellknown "echo-starter/internal/wellknown"
 	"encoding/json"
-	"net/http"
 
-	contracts_auth "echo-starter/internal/contracts/auth"
+	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+
+	core_wellknown "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/wellknown"
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
-	middleware_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/claimsprincipal"
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
@@ -31,22 +29,6 @@ func recursiveAddClaim(claimsConfig *middleware_oidc.ClaimsConfig, claimsPrincip
 	}
 }
 
-// DevelopmentMiddlewareUsingClaimsMap use this in development if you are making an api only service
-// it literally just adds the claims to the principal that the api demands it has to be authorized.
-func DevelopmentMiddlewareUsingClaimsMap(entrypointClaimsMap map[string]*middleware_oidc.EntryPointConfig, enableZeroTrust bool) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			scopedContainer := c.Get(echostarter_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
-			claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
-			elem, ok := entrypointClaimsMap[c.Path()]
-			if ok {
-				recursiveAddClaim(elem.ClaimsConfig, claimsPrincipal)
-			}
-			return next(c)
-		}
-	}
-}
-
 type OnUnauthorizedAction int64
 
 const (
@@ -62,7 +44,7 @@ type EntryPointConfigEx struct {
 func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.MiddlewareFunc {
 	// get authCookie service once during configuration
 
-	authenticator := contracts_auth.GetIOIDCAuthenticatorFromContainer(root)
+	authenticator := core_contracts_oidc.GetIOIDCAuthenticatorFromContainer(root)
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			for {
@@ -92,59 +74,19 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 				}
 
 				accessTokenClaims := accessToken.ToClaims()
-				scopedContainer := c.Get(echostarter_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
+				scopedContainer := c.Get(core_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
 				claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
 				for _, claim := range accessTokenClaims {
 					claimsPrincipal.AddClaim(*claim)
 				}
 
 				claimsPrincipal.AddClaim(contracts_core_claimsprincipal.Claim{
-					Type:  echostarter_wellknown.ClaimTypeAuthenticated,
+					Type:  core_wellknown.ClaimTypeAuthenticated,
 					Value: "*"})
 
 				break
 			}
 
-			return next(c)
-		}
-	}
-}
-func FinalAuthVerificationMiddlewareUsingClaimsMap(entrypointClaimsMap map[string]*middleware_oidc.EntryPointConfig, enableZeroTrust bool) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-
-			path := c.Path()
-			subLogger := log.With().
-				Bool("enableZeroTrust", enableZeroTrust).
-				Str("FullMethod", path).
-				Logger()
-			debugEvent := subLogger.Debug()
-
-			scopedContainer := c.Get(echostarter_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
-			claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
-
-			authenticated := claimsPrincipal.HasClaimType(wellknown.ClaimTypeAuthenticated)
-			elem, ok := entrypointClaimsMap[path]
-			permissionDeniedFunc := func() error {
-				if !authenticated {
-					if !core_utils.IsNil(elem) {
-						directive, ok := elem.MetaData["onUnauthenticated"]
-						if ok && directive == "login" {
-							return c.Redirect(http.StatusFound, "/login?redirect_url="+c.Request().URL.String())
-						}
-						return c.String(http.StatusUnauthorized, "Unauthorized")
-					}
-				}
-				return c.Redirect(http.StatusFound, "/unauthorized")
-			}
-			if !ok && enableZeroTrust {
-				debugEvent.Msg("FullMethod not found in entrypoint claims map")
-				return permissionDeniedFunc()
-			}
-			if !middleware_claimsprincipal.Validate(debugEvent, elem.ClaimsConfig, claimsPrincipal) {
-				debugEvent.Msg("ClaimsConfig validation failed")
-				return permissionDeniedFunc()
-			}
 			return next(c)
 		}
 	}

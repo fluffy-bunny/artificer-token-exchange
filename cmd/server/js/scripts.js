@@ -22,6 +22,27 @@ async function getArtists() {
 
     } catch (error) {
         console.log(error);
+        alert(error)
+    }
+}
+async function postArtistForgotCsrf() {
+    let url = '/api/v1/artists/1';   
+    try {
+        let res = await fetch(url,{
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({ name: 'test' }),
+          });
+        payload =  await res.json();
+        console.log(payload);
+        alert(JSON.stringify(payload));
+        return payload
+    } catch (error) {s
+        console.log(error);
+        alert(error)
     }
 }
 async function postArtist() {
@@ -42,6 +63,7 @@ async function postArtist() {
         return payload
     } catch (error) {s
         console.log(error);
+        alert(error)
     }
 }
 async function getArtist() {
@@ -54,11 +76,10 @@ async function getArtist() {
         payload =  await res.json();
         console.log(payload);
         alert(JSON.stringify(payload));
-       
-
         return payload
     } catch (error) {
         console.log(error);
+        alert(error)
     }
 }
 async function getAlbums() {
@@ -75,6 +96,7 @@ async function getAlbums() {
         return payload
     } catch (error) {
         console.log(error);
+        alert(error)
     }
 }
 async function postAccountsForceRefresh() {
@@ -95,5 +117,6 @@ async function postAccountsForceRefresh() {
         return payload
     } catch (error) {s
         console.log(error);
+        alert(error)
     }
 }

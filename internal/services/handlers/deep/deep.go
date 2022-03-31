@@ -1,7 +1,6 @@
 package deep
 
 import (
-	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"net/http"
@@ -9,14 +8,15 @@ import (
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
+	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	service struct {
-		Logger          contracts_logger.ILogger                        `inject:"logger"`
-		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
+		Logger          contracts_logger.ILogger                        `inject:""`
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
 	}
 )
 

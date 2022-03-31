@@ -1,22 +1,20 @@
-package accounts
+package healthz
 
 import (
-	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"net/http"
 	"reflect"
 
-	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
-	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
+
+	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	service struct {
-		Logger          contracts_logger.ILogger                        `inject:""`
-		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
+		Logger contracts_logger.ILogger `inject:""`
 	}
 )
 
@@ -33,15 +31,14 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.AccountsPath)
+		wellknown.HealthzPath)
 }
 
-func (s *service) Ctor() {
-
-}
+func (s *service) Ctor() {}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
+
 func (s *service) Do(c echo.Context) error {
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/accounts/index", map[string]interface{}{})
+	return c.JSON(http.StatusOK, "ok")
 }

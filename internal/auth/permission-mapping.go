@@ -3,6 +3,7 @@ package auth
 import (
 	"echo-starter/internal/wellknown"
 
+	core_wellknown "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/wellknown"
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
 	services_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/claimsprincipal"
 )
@@ -13,8 +14,8 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 	// HEALTH SERVICE START
 	//---------------------------------------------------------------------------------------------------
 	// health check is open to anyone
-	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.HealthPath)
-	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.ReadinessPath)
+	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.HealthzPath)
+	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.ReadyPath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.LoginPath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.LogoutPath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.OIDCCallbackPath)
@@ -30,41 +31,41 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 	//---------------------------------------------------------------------------------------------------
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.AccountsPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
 	entryPointClaimsBuilder.AddMetaData(wellknown.AccountsPath, map[string]interface{}{
 		"onUnauthenticated": "login",
 	})
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.APIAccountsPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
 
 	// ARTISTS
 	//---------------------------------------------------------------------------------------------------
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.ArtistsPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
 	entryPointClaimsBuilder.AddMetaData(wellknown.ArtistsPath, map[string]interface{}{
 		"onUnauthenticated": "login",
 	})
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.APIArtistsPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.APIArtistsIdPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.APIArtistsIdAlbumsPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
 
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.ProfilesPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
 	entryPointClaimsBuilder.AddMetaData(wellknown.ProfilesPath, map[string]interface{}{
 		"onUnauthenticated": "login",
@@ -72,7 +73,7 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.DeepPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
-			services_claimsprincipal.NewClaimFactType(wellknown.ClaimTypeAuthenticated),
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		).GetChild().
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
 			services_claimsprincipal.NewClaimFactTypeAndValue(wellknown.ClaimTypeDeep, wellknown.ClaimValueRead),

@@ -1,11 +1,12 @@
 package error
 
 import (
-	contracts_handler "echo-starter/internal/contracts/handler"
 	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"net/http"
 	"reflect"
+
+	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
@@ -15,8 +16,8 @@ import (
 
 type (
 	service struct {
-		Logger          contracts_logger.ILogger                        `inject:"logger"`
-		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
+		Logger          contracts_logger.ILogger                        `inject:""`
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
 	}
 )
 
