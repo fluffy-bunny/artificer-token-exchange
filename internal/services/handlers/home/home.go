@@ -7,16 +7,25 @@ import (
 	"net/http"
 	"reflect"
 
+	contracts_container "echo-starter/internal/contracts/container"
+
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
+	contracts_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/timeutils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
 )
 
 type (
 	service struct {
-		Logger          contracts_logger.ILogger                        `inject:"logger"`
-		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:"claimsPrincipal"`
+		// Required and Useful services that the runtime registers
+		//---------------------------------------------------------------------------------------------
+		ContainerAccessor contracts_container.ContainerAccessor           `inject:""`
+		TimeNow           contracts_timeutils.TimeNow                     `inject:""`
+		TimeParse         contracts_timeutils.TimeParse                   `inject:""`
+		Logger            contracts_logger.ILogger                        `inject:""`
+		ClaimsPrincipal   contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
+		//---------------------------------------------------------------------------------------------
 	}
 )
 
@@ -43,5 +52,6 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 func (s *service) Do(c echo.Context) error {
+	s.Logger.Info().Str("timeNow", s.TimeNow().String()).Send()
 	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/home/index", map[string]interface{}{})
 }

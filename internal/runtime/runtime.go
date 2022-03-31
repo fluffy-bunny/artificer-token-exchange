@@ -10,9 +10,10 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
-	"os"
+	"github.com/jedib0t/go-pretty/v6/table"
 
 	services_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/timeutils"
 
@@ -154,7 +155,29 @@ func (s *Runtime) Run() error {
 	// register our handlers
 	handlerFactory := contracts_handler.GetIHandlerFactoryFromContainer(s.Container)
 	handlerFactory.RegisterHandlers(app)
+	handlerDefinitions := contracts_handler.GetIHandlerDefinitions(s.Container)
 
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"Verbs", "Path"})
+
+	for _, handlerDefinition := range handlerDefinitions {
+		metaData := handlerDefinition.MetaData
+		httpVerbs, _ := metaData["httpVerbs"].([]contracts_handler.HTTPVERB)
+		verbBldr := strings.Builder{}
+
+		for idx, verb := range httpVerbs {
+			verbBldr.WriteString(verb.String())
+			if idx < len(httpVerbs)-1 {
+				verbBldr.WriteString(",")
+			}
+		}
+		path, _ := metaData["path"].(string)
+
+		t.AppendRow([]interface{}{verbBldr.String(), string(path)})
+
+	}
+	t.Render()
 	// Finally start the server
 	//----------------------------------------------------------------------------------
 	port := s.Startup.GetPort()

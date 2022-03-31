@@ -15,6 +15,7 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1
+	github.com/jedib0t/go-pretty/v6 v6.3.0
 	github.com/labstack/echo-contrib v0.12.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b
@@ -58,6 +59,7 @@ require (
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/moby/locker v1.0.1 // indirect
 	github.com/moby/sys/mountinfo v0.5.0 // indirect
@@ -70,6 +72,7 @@ require (
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/reugn/async v0.0.0-20200819063434-15e5b3951cd7 // indirect
+	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
@@ -81,6 +84,7 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tkuchiki/go-timezone v0.2.2 // indirect
 	github.com/tkuchiki/parsetime v0.3.0 // indirect
+	github.com/tufin/asciitree v0.0.0-20210127111056-bf70173ef677 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	go.opencensus.io v0.23.0 // indirect
