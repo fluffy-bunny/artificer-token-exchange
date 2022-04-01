@@ -23,6 +23,8 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/quasoft/memstore"
 
+	services_handlers_api_webhook "echo-starter/internal/services/handlers/api/webhook"
+
 	services_handlers_healthz "echo-starter/internal/services/handlers/healthz"
 	services_handlers_ready "echo-starter/internal/services/handlers/ready"
 	services_probes_database "echo-starter/internal/services/probes/database"
@@ -185,6 +187,8 @@ func (s *Startup) addAuthServices(builder *di.Builder) {
 }
 
 func (s *Startup) addAppHandlers(builder *di.Builder) {
+
+	services_handlers_api_webhook.AddScopedIHandler(builder)
 
 	services_handlers_healthz.AddScopedIHandler(builder)
 	services_handlers_ready.AddScopedIHandler(builder)

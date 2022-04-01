@@ -13,4 +13,5 @@ const (
 	APIArtistsIdAlbumsPath = "/api/:version/artists/:id/albums"
 	AccountsPath           = "/accounts"
 	APIAccountsPath        = "/api/:version/accounts"
+	WebHookPath            = "/api/:version/webhook"
 )

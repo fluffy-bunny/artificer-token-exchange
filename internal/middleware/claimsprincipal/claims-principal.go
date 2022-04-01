@@ -48,7 +48,17 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			for {
+
+				// Skip this if we see an authorization header
+				// important: The CSRF middleware is skipped as well if there is an Authorization header
+				// So if we get here then we can't be adding any claims if someone got our session
+				authorizationHeader := c.Request().Header.Get("Authorization")
+				if !core_utils.IsEmptyOrNil(authorizationHeader) {
+					break
+				}
+
 				sess := session.GetAuthSession(c)
+
 				var terminateAuthSession = func() {
 					sess.Values = make(map[interface{}]interface{})
 					sess.Save(c.Request(), c.Response())
