@@ -26,6 +26,7 @@ type (
 		AuthCookieName            string     `json:"authCookieName" mapstructure:"AUTH_COOKIE_NAME"`
 		SecureCookieHashKey       string     `json:"secureCookieHashKey" mapstructure:"SECURE_COOKIE_HASH_KEY"`
 		SecureCookieEncryptionKey string     `json:"secureCookieEncryptionKey" mapstructure:"SECURE_COOKIE_ENCRYPTION_KEY"`
+		GraphQLEndpoint           string     `json:"graphQLEndpoint" mapstructure:"GRAPHQL_ENDPOINT"`
 	}
 )
 
@@ -50,7 +51,8 @@ var (
 	"AUTH_COOKIE_EXPIRE_SECONDS": 60,
 	"AUTH_COOKIE_NAME": "_auth",
 	"SECURE_COOKIE_HASH_KEY": "",
-	"SECURE_COOKIE_ENCRYPTION_KEY": ""
+	"SECURE_COOKIE_ENCRYPTION_KEY": "",
+	"GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/"
 
 
 }
