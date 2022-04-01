@@ -7,6 +7,19 @@
 // Use this file to add JavaScript to your project
 
  
+function getCookieValue(name) {
+    const nameString = name + "="
+  
+    const value = document.cookie.split(";").filter(item => {
+      return item.includes(nameString)
+    })
+  
+    if (value.length) {
+      return value[0].substring(nameString.length, value[0].length)
+    } else {
+      return ""
+    }
+  }
 
 async function getArtists() {
     let url = '/api/v1/artists';
@@ -46,6 +59,7 @@ async function postArtistForgotCsrf() {
     }
 }
 async function postArtist() {
+    let csrf = getCookieValue('_csrf');
     let url = '/api/v1/artists/1';   
     try {
         let res = await fetch(url,{
@@ -100,6 +114,7 @@ async function getAlbums() {
     }
 }
 async function postAccountsForceRefresh() {
+    let csrf = getCookieValue('_csrf');
     let url = '/api/v1/accounts';   
     try {
         let res = await fetch(url,{
@@ -115,7 +130,7 @@ async function postAccountsForceRefresh() {
         console.log(payload);
         alert(JSON.stringify(payload));
         return payload
-    } catch (error) {s
+    } catch (error) {
         console.log(error);
         alert(error)
     }

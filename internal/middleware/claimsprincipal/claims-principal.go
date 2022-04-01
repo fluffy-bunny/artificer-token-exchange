@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+	core_echo "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo"
 
 	core_wellknown "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/wellknown"
 
@@ -13,6 +14,7 @@ import (
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
+
 	"github.com/rs/zerolog/log"
 	"golang.org/x/oauth2"
 )
@@ -48,12 +50,12 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			for {
-
 				// Skip this if we see an authorization header
 				// important: The CSRF middleware is skipped as well if there is an Authorization header
 				// So if we get here then we can't be adding any claims if someone got our session
-				authorizationHeader := c.Request().Header.Get("Authorization")
-				if !core_utils.IsEmptyOrNil(authorizationHeader) {
+				// always use the HasWellknownAuthHeaders centralized func
+				if core_echo.HasWellknownAuthHeaders(c) {
+					// this is a cookie/session claims maker so if another authorization scheme is used we will not contribute
 					break
 				}
 

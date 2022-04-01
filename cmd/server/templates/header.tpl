@@ -11,11 +11,6 @@
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="/css/styles.css" rel="stylesheet" />
-
-        {{ $csrf := .security.CSRF }}
-        <script>
-        let csrf = '{{$csrf}}';
-        </script>
   </head>
 
 {{end}}

@@ -1,7 +1,7 @@
 {{define "views/accounts/index"}}
 {{template "header" .}}
 {{template "navbar" .}}
-{{ template "csfr" .}}
+
 <body>
 <!-- Page content-->
 <div class="container">
