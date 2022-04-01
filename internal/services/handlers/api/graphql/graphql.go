@@ -67,6 +67,7 @@ func (s *service) post(c echo.Context) error {
 	}
 
 	b, err := ioutil.ReadAll(c.Request().Body)
+
 	url := s.Config.GraphQLEndpoint
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
 	if err != nil {

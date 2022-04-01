@@ -54,7 +54,6 @@
 	    // add event listener for the button, for action "click"
 	    btn.addEventListener("click", postArtistForgotCsrf);
  
- 
 
   
     </script>
