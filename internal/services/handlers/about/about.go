@@ -74,6 +74,8 @@ func (s *service) Do(c echo.Context) error {
 			Path:  path,
 		}
 
+	}).OrderBy(func(i interface{}) interface{} {
+		return i.(row).Path
 	}).ToSlice(&rows)
 
 	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/about/index", map[string]interface{}{

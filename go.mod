@@ -9,7 +9,7 @@ require (
 	github.com/catmullet/go-workers v1.4.1
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.222
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.223
 	github.com/fluffy-bunny/sarulabsdi v0.1.58
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
