@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"reflect"
 
+	contracts_config "echo-starter/internal/contracts/config"
+
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	contracts_timeutils "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/timeutils"
@@ -29,6 +31,9 @@ type (
 		SecureCookie        contracts_cookies.ISecureCookie                 `inject:""`
 		EchoContextAccessor contracts_contextaccessor.IEchoContextAccessor  `inject:""`
 		//---------------------------------------------------------------------------------------------
+
+		// internal services
+		Config *contracts_config.Config `inject:""`
 	}
 )
 

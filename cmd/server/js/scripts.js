@@ -29,8 +29,7 @@ async function getArtists() {
             credentials: 'include'
           });
           payload =  await res.json();
-          console.log(payload);
-          alert(JSON.stringify(payload));
+          jsonViewer.showJSON(payload);
           return payload
 
     } catch (error) {
@@ -50,8 +49,7 @@ async function postArtistForgotCsrf() {
             body: JSON.stringify({ name: 'test' }),
           });
         payload =  await res.json();
-        console.log(payload);
-        alert(JSON.stringify(payload));
+        jsonViewer.showJSON(payload);
         return payload
     } catch (error) {s
         console.log(error);
@@ -72,8 +70,7 @@ async function postArtist() {
             body: JSON.stringify({ name: 'test' }),
           });
         payload =  await res.json();
-        console.log(payload);
-        alert(JSON.stringify(payload));
+        jsonViewer.showJSON(payload);
         return payload
     } catch (error) {s
         console.log(error);
@@ -88,8 +85,7 @@ async function getArtist() {
             credentials: 'include'
           });
         payload =  await res.json();
-        console.log(payload);
-        alert(JSON.stringify(payload));
+        jsonViewer.showJSON(payload);
         return payload
     } catch (error) {
         console.log(error);
@@ -104,8 +100,7 @@ async function getAlbums() {
             credentials: 'include'
           });
         payload =  await res.json();
-        console.log(payload);
-        alert(JSON.stringify(payload));
+        jsonViewer.showJSON(payload);
 
         return payload
     } catch (error) {
@@ -127,8 +122,43 @@ async function postAccountsForceRefresh() {
             body: JSON.stringify({ directive: 'force-refresh' }),
           });
         payload =  await res.json();
+        jsonViewer.showJSON(payload);
+        return payload
+    } catch (error) {
+        console.log(error);
+        alert(error)
+    }
+}
+var jsonObj = {};
+var jsonViewer = new JSONViewer();
+document.querySelector("#json").appendChild(jsonViewer.getContainer());
+
+
+async function postGraphQLRequest() {
+    let csrf = getCookieValue('_csrf');
+    let url = '/api/v1/graphql';   
+    try {
+        const data = JSON.stringify({
+            query: `{
+                countries {
+                  name
+                }
+              }`,
+          });
+
+        let res = await fetch(url,{
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                    "X-Csrf-Token": csrf,
+                    "Content-Type": "application/json",
+                 },
+            body: data,
+          });
+        payload =  await res.json();
+        jsonViewer.showJSON(payload);
         console.log(payload);
-        alert(JSON.stringify(payload));
+       // alert(JSON.stringify(payload));
         return payload
     } catch (error) {
         console.log(error);
