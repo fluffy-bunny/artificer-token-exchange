@@ -28,6 +28,13 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/assets*")
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/js*")
 
+	// GraphQL
+	//---------------------------------------------------------------------------------------------------
+	entryPointClaimsBuilder.GetClaimsConfig(wellknown.GraphQLPath).
+		WithGrpcEntrypointPermissionsClaimFactsMapOR(
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
+		)
+
 	// ACCOUNTS
 	//---------------------------------------------------------------------------------------------------
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.AccountsPath).

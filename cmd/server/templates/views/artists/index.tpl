@@ -5,14 +5,27 @@
 <body>
 <!-- Page content-->
 <div class="container">
-    <div class="text-center mt-5">
+    <div class="text-left mt-5">
         <h1>Artists</h1>
         <button type="button" id="btnArtists">Artists</button>
         <button type="button" id="btnArtist">Artist</button>
         <button type="button" id="btnAlbums">Albums</button>
         <button type="button" id="btnPostArtist">Post Artist</button>
         <button type="button" id="btnPostArtistForgotCsrf">Post Artist - Forgot CSRF</button>
+ 
+		
     </div>
+	<div class="text-left mt-5">
+        <h1>GraphQL</h1>
+ 
+        <button type="button" id="btnPostGraphQLRequest">GraphQL</button>
+		
+    </div>
+	<div class="text-left mt-5">
+		<h2>Output:</h2>
+		<div id="json"></div>
+    </div>
+
 </div>
 </body>
 
@@ -43,5 +56,11 @@
 	    // add event listener for the button, for action "click"
 	    btn.addEventListener("click", postArtistForgotCsrf);
  
+         // get reference to button
+	    var btn = document.getElementById("btnPostGraphQLRequest");
+	    // add event listener for the button, for action "click"
+	    btn.addEventListener("click", postGraphQLRequest);
+
+  
     </script>
 {{end}}
