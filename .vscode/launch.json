@@ -33,6 +33,8 @@
                 "SECURE_COOKIE_HASH_KEY": "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY=",
                 "SECURE_COOKIE_ENCRYPTION_KEY": "7fB3PkhfOKsbU/2vE2KQdLqu0jGZ+GLaEL5AQ7maUw4=",
                 "GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
+                "GRAPHQL_ENDPOINT_MAPPED": "https://api-dev.mapped.com/graphql/",
+
 
             },
             "args": [  ]

@@ -15,12 +15,8 @@
  
 		
     </div>
-	<div class="text-left mt-5">
-        <h1>GraphQL</h1>
+	{{ $config := .config }}
  
-        <button type="button" id="btnPostGraphQLRequest">GraphQL</button>
-		
-    </div>
 	<div class="text-left mt-5">
 		<h2>Output:</h2>
 		<div id="json"></div>
@@ -31,6 +27,8 @@
 
 {{template "footer" .}}
      <script>
+
+ 
 	    // get reference to button
 	    var btn = document.getElementById("btnArtists");
 	    // add event listener for the button, for action "click"
@@ -56,10 +54,7 @@
 	    // add event listener for the button, for action "click"
 	    btn.addEventListener("click", postArtistForgotCsrf);
  
-         // get reference to button
-	    var btn = document.getElementById("btnPostGraphQLRequest");
-	    // add event listener for the button, for action "click"
-	    btn.addEventListener("click", postGraphQLRequest);
+ 
 
   
     </script>

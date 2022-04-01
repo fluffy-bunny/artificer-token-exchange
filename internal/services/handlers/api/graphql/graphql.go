@@ -39,7 +39,7 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.POST,
 		},
-		wellknown.GraphQLPath)
+		wellknown.GraphQLEndpointPath)
 }
 
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
@@ -67,14 +67,6 @@ func (s *service) post(c echo.Context) error {
 	}
 
 	b, err := ioutil.ReadAll(c.Request().Body)
-	/*
-		decoder := json.NewDecoder(c.Request().Body)
-		var body map[string]interface{}
-		if err := decoder.Decode(&body); err != nil {
-			return err
-		}
-		fmt.Println(body)
-	*/
 	url := s.Config.GraphQLEndpoint
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
 	if err != nil {

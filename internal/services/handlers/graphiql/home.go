@@ -1,4 +1,4 @@
-package artists
+package graphiql
 
 import (
 	"echo-starter/internal/templates"
@@ -10,6 +10,7 @@ import (
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
+	contracts_container "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/container"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -17,9 +18,10 @@ import (
 
 type (
 	service struct {
-		Logger          contracts_logger.ILogger                        `inject:""`
-		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
-		Config          *contracts_config.Config                        `inject:""`
+		Config            *contracts_config.Config                        `inject:""`
+		Logger            contracts_logger.ILogger                        `inject:""`
+		ContainerAccessor contracts_container.ContainerAccessor           `inject:""`
+		ClaimsPrincipal   contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
 	}
 )
 
@@ -36,7 +38,7 @@ func AddScopedIHandler(builder *di.Builder) {
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
 		},
-		wellknown.ArtistsPath)
+		wellknown.GraphiQLPath)
 }
 
 func (s *service) Ctor() {
@@ -46,14 +48,6 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 func (s *service) Do(c echo.Context) error {
-	query :=
-		`{
-  countries {
-	name
-  }
-}`
-	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/artists/index", map[string]interface{}{
-		"config": s.Config,
-		"query":  query,
-	})
+
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/graphiql/index", map[string]interface{}{})
 }

@@ -13,6 +13,7 @@ type Paths struct {
 	Profiles string
 	Artists  string
 	Accounts string
+	GraphiQL string
 }
 
 func NewPaths() *Paths {
@@ -25,5 +26,6 @@ func NewPaths() *Paths {
 		Profiles: wellknown.ProfilesPath,
 		Artists:  wellknown.ArtistsPath,
 		Accounts: wellknown.AccountsPath,
+		GraphiQL: wellknown.GraphiQLPath,
 	}
 }
