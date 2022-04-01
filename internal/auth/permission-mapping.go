@@ -30,11 +30,17 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 
 	// GraphQL
 	//---------------------------------------------------------------------------------------------------
-	entryPointClaimsBuilder.GetClaimsConfig(wellknown.GraphQLPath).
+	entryPointClaimsBuilder.GetClaimsConfig(wellknown.GraphQLEndpointPath).
 		WithGrpcEntrypointPermissionsClaimFactsMapOR(
 			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
 		)
-
+	entryPointClaimsBuilder.GetClaimsConfig(wellknown.GraphiQLPath).
+		WithGrpcEntrypointPermissionsClaimFactsMapOR(
+			services_claimsprincipal.NewClaimFactType(core_wellknown.ClaimTypeAuthenticated),
+		)
+	entryPointClaimsBuilder.AddMetaData(wellknown.GraphiQLPath, map[string]interface{}{
+		"onUnauthenticated": "login",
+	})
 	// ACCOUNTS
 	//---------------------------------------------------------------------------------------------------
 	entryPointClaimsBuilder.GetClaimsConfig(wellknown.AccountsPath).

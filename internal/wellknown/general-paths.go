@@ -14,5 +14,6 @@ const (
 	AccountsPath           = "/accounts"
 	APIAccountsPath        = "/api/:version/accounts"
 	WebHookPath            = "/api/:version/webhook"
-	GraphQLPath            = "/api/:version/graphql"
+	GraphQLEndpointPath    = "/api/:version/graphql"
+	GraphiQLPath           = "/graphiql"
 )
