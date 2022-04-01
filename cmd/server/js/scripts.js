@@ -133,7 +133,6 @@ var jsonObj = {};
 var jsonViewer = new JSONViewer();
 document.querySelector("#json").appendChild(jsonViewer.getContainer());
 
-
 async function postGraphQLRequest() {
     let csrf = getCookieValue('_csrf');
     let url = '/api/v1/graphql';   
@@ -152,6 +151,34 @@ async function postGraphQLRequest() {
             headers: {
                     "X-Csrf-Token": csrf,
                     "Content-Type": "application/json",
+                 },
+            body: data,
+          });
+        payload =  await res.json();
+        jsonViewer.showJSON(payload);
+        console.log(payload);
+       // alert(JSON.stringify(payload));
+        return payload
+    } catch (error) {
+        console.log(error);
+        alert(error)
+    }
+}
+async function postGraphQLRequest2(endpoint,queryV) {
+    let csrf = getCookieValue('_csrf');
+    let url = '/api/v1/graphql';   
+    try {
+        const data = JSON.stringify({
+            query: queryV,
+          });
+
+        let res = await fetch(url,{
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                    "X-Csrf-Token": csrf,
+                    "Content-Type": "application/json",
+                    "X-Graphql-Endpoint": endpoint
                  },
             body: data,
           });

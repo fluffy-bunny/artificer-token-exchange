@@ -25,6 +25,8 @@ import (
 
 	services_handlers_api_webhook "echo-starter/internal/services/handlers/api/webhook"
 
+	services_handlers_graphiql "echo-starter/internal/services/handlers/graphiql"
+
 	services_handlers_healthz "echo-starter/internal/services/handlers/healthz"
 	services_handlers_ready "echo-starter/internal/services/handlers/ready"
 	services_probes_database "echo-starter/internal/services/probes/database"
@@ -47,6 +49,7 @@ import (
 	services_handlers_api_graphql "echo-starter/internal/services/handlers/api/graphql"
 
 	//----------------------------------------------------------------------------------------------------------------------
+	services_handlers_api_graphql "echo-starter/internal/services/handlers/api/graphql"
 
 	services_handlers_auth_artifacts "echo-starter/internal/services/auth/auth_artifacts"
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
@@ -193,6 +196,8 @@ func (s *Startup) addAuthServices(builder *di.Builder) {
 }
 
 func (s *Startup) addAppHandlers(builder *di.Builder) {
+
+	services_handlers_graphiql.AddScopedIHandler(builder)
 
 	services_handlers_api_graphql.AddScopedIHandler(builder)
 	services_handlers_api_webhook.AddScopedIHandler(builder)
