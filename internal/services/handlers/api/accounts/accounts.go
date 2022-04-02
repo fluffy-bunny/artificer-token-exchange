@@ -78,9 +78,9 @@ func (s *service) post(c echo.Context) error {
 func (s *service) _getIdompotencyKey(c echo.Context) (string, error) {
 	sess := session.GetSession(c)
 
-	idompotencyKey, ok := sess.Values["idompontency_key"]
+	idompotencyKey, ok := sess.Values["idempotency_key"]
 	if !ok {
-		return "", fmt.Errorf("idompontency_key not found")
+		return "", fmt.Errorf("idempotency_key not found")
 	}
 	return idompotencyKey.(string), nil
 }
@@ -94,12 +94,12 @@ func (s *service) postForceRefresh(c echo.Context) error {
 
 	idompotencyKey, err := s._getIdompotencyKey(c)
 	if err != nil {
-		s.Logger.Error().Err(err).Msg("idompontency_key not found")
+		s.Logger.Error().Err(err).Msg("idempotency_key not found")
 		return denied()
 	}
 
 	for {
-		token, err := s.TokenStore.GetTokenByIdompotencyKey(idompotencyKey)
+		token, err := s.TokenStore.GetTokenByIdempotencyKey(idompotencyKey)
 		if err != nil {
 			s.Logger.Error().Msg("TokenStore.GetTokenByIdompotencyKey failed")
 			break
@@ -115,7 +115,7 @@ func (s *service) postForceRefresh(c echo.Context) error {
 			break
 		}
 		if newToken.AccessToken != token.AccessToken {
-			err = s.TokenStore.StoreTokenByIdompotencyKey(idompotencyKey, newToken)
+			err = s.TokenStore.StoreTokenByIdempotencyKey(idompotencyKey, newToken)
 			if err != nil {
 				s.Logger.Error().Err(err).Msg("TokenStore.StoreTokenByIdompotencyKey failed")
 				break

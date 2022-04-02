@@ -79,10 +79,10 @@ func (s *service) Do(c echo.Context) error {
 		authSess.Values["tokens"] = string(authTokensB)
 	*/
 	// the token store and the session share a idompotency key to bind them together
-	s.TokenStore.StoreTokenByIdompotencyKey(sessionState, token)
-	sess.Values["idompontency_key"] = sessionState
+	s.TokenStore.StoreTokenByIdempotencyKey(sessionState, token)
+	sess.Values["idempotency_key"] = sessionState
 
-	tt, err := s.TokenStore.GetTokenByIdompotencyKey(sessionState)
+	tt, err := s.TokenStore.GetTokenByIdempotencyKey(sessionState)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
