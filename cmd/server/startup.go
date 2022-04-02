@@ -21,7 +21,6 @@ import (
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"github.com/quasoft/memstore"
 
 	services_auth_cookie_token_store "echo-starter/internal/services/auth/cookie_token_store"
 
@@ -100,14 +99,19 @@ func (s *Startup) SetContainer(container di.Container) {
 	s.container = container
 }
 func (s *Startup) getSessionStore() sessions.Store {
-	sessionMemStore := memstore.NewMemStore(
-		[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey),
-	)
-	sessionMemStore.Options.Secure = true
-	sessionMemStore.Options.HttpOnly = true
-	sessionMemStore.Options.SameSite = http.SameSiteStrictMode
-	sessionMemStore.Options.MaxAge = s.config.SessionMaxAgeSeconds
-	return sessionMemStore
+
+	var sessionStore = sessions.NewCookieStore(
+		[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey))
+	/*
+		sessionStore := memstore.NewMemStore(
+			[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey),
+		)
+	*/
+	sessionStore.Options.Secure = true
+	sessionStore.Options.HttpOnly = true
+	sessionStore.Options.SameSite = http.SameSiteStrictMode
+	sessionStore.Options.MaxAge = s.config.SessionMaxAgeSeconds
+	return sessionStore
 
 }
 func (s *Startup) RegisterStaticRoutes(e *echo.Echo) error {
