@@ -28,13 +28,14 @@
                 "OIDC__CLIENT_SECRET": "${env:AUTH0_CLIENT_SECRET}",
                 "SESSION_MAX_AGE_SECONDS":    "1800",
                 "AUTH_COOKIE_EXPIRE_SECONDS": "1800",
-                "SECURE_COOKIE_HASH_KEY": "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY=",
-                "SECURE_COOKIE_ENCRYPTION_KEY": "7fB3PkhfOKsbU/2vE2KQdLqu0jGZ+GLaEL5AQ7maUw4=",
-                "GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
+                "_SECURE_COOKIE_HASH_KEY": "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY=",
+                "_SECURE_COOKIE_ENCRYPTION_KEY": "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY=",
+                "SECURE_COOKIE_HASH_KEY": "R9KecnJ7lG2P9hd5NFap5NKye7p266wBBNAL/zlBV4Y=",
+                "SECURE_COOKIE_ENCRYPTION_KEY": "R9KecnJ7lG2P9hd5NFap5NKye7p266wBBNAL/zlBV4Y=",
+                  "GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
 
             },
             "args": [  ]
         },
     ]
 }
- 
