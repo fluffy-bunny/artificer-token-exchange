@@ -10,143 +10,284 @@ import (
 	di "github.com/fluffy-bunny/sarulabsdi"
 )
 
-// ReflectTypeIAuthArtifacts used when your service claims to implement IAuthArtifacts
-var ReflectTypeIAuthArtifacts = di.GetInterfaceReflectType((*IAuthArtifacts)(nil))
+// ReflectTypeIInternalTokenStore used when your service claims to implement IInternalTokenStore
+var ReflectTypeIInternalTokenStore = di.GetInterfaceReflectType((*IInternalTokenStore)(nil))
 
-// AddSingletonIAuthArtifacts adds a type that implements IAuthArtifacts
-func AddSingletonIAuthArtifacts(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddSingletonIInternalTokenStore adds a type that implements IInternalTokenStore
+func AddSingletonIInternalTokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddSingleton(builder, implType, implementedTypes...)
 }
 
-// AddSingletonIAuthArtifactsWithMetadata adds a type that implements IAuthArtifacts
-func AddSingletonIAuthArtifactsWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddSingletonIInternalTokenStoreWithMetadata adds a type that implements IInternalTokenStore
+func AddSingletonIInternalTokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddSingletonWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
-// AddSingletonIAuthArtifactsByObj adds a prebuilt obj
-func AddSingletonIAuthArtifactsByObj(builder *di.Builder, obj interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddSingletonIInternalTokenStoreByObj adds a prebuilt obj
+func AddSingletonIInternalTokenStoreByObj(builder *di.Builder, obj interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddSingletonWithImplementedTypesByObj(builder, obj, implementedTypes...)
 }
 
-// AddSingletonIAuthArtifactsByObjWithMetadata adds a prebuilt obj
-func AddSingletonIAuthArtifactsByObjWithMetadata(builder *di.Builder, obj interface{}, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddSingletonIInternalTokenStoreByObjWithMetadata adds a prebuilt obj
+func AddSingletonIInternalTokenStoreByObjWithMetadata(builder *di.Builder, obj interface{}, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddSingletonWithImplementedTypesByObjWithMetadata(builder, obj, metaData, implementedTypes...)
 }
 
-// AddSingletonIAuthArtifactsByFunc adds a type by a custom func
-func AddSingletonIAuthArtifactsByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddSingletonIInternalTokenStoreByFunc adds a type by a custom func
+func AddSingletonIInternalTokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddSingletonWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
-// AddSingletonIAuthArtifactsByFuncWithMetadata adds a type by a custom func
-func AddSingletonIAuthArtifactsByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddSingletonIInternalTokenStoreByFuncWithMetadata adds a type by a custom func
+func AddSingletonIInternalTokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddSingletonWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
-// AddTransientIAuthArtifacts adds a type that implements IAuthArtifacts
-func AddTransientIAuthArtifacts(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddTransientIInternalTokenStore adds a type that implements IInternalTokenStore
+func AddTransientIInternalTokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddTransientWithImplementedTypes(builder, implType, implementedTypes...)
 }
 
-// AddTransientIAuthArtifactsWithMetadata adds a type that implements IAuthArtifacts
-func AddTransientIAuthArtifactsWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddTransientIInternalTokenStoreWithMetadata adds a type that implements IInternalTokenStore
+func AddTransientIInternalTokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddTransientWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
-// AddTransientIAuthArtifactsByFunc adds a type by a custom func
-func AddTransientIAuthArtifactsByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddTransientIInternalTokenStoreByFunc adds a type by a custom func
+func AddTransientIInternalTokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddTransientWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
-// AddTransientIAuthArtifactsByFuncWithMetadata adds a type by a custom func
-func AddTransientIAuthArtifactsByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddTransientIInternalTokenStoreByFuncWithMetadata adds a type by a custom func
+func AddTransientIInternalTokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddTransientWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
-// AddScopedIAuthArtifacts adds a type that implements IAuthArtifacts
-func AddScopedIAuthArtifacts(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddScopedIInternalTokenStore adds a type that implements IInternalTokenStore
+func AddScopedIInternalTokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddScopedWithImplementedTypes(builder, implType, implementedTypes...)
 }
 
-// AddScopedIAuthArtifactsWithMetadata adds a type that implements IAuthArtifacts
-func AddScopedIAuthArtifactsWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddScopedIInternalTokenStoreWithMetadata adds a type that implements IInternalTokenStore
+func AddScopedIInternalTokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddScopedWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
-// AddScopedIAuthArtifactsByFunc adds a type by a custom func
-func AddScopedIAuthArtifactsByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddScopedIInternalTokenStoreByFunc adds a type by a custom func
+func AddScopedIInternalTokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddScopedWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
-// AddScopedIAuthArtifactsByFuncWithMetadata adds a type by a custom func
-func AddScopedIAuthArtifactsByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
-	implementedTypes = append(implementedTypes, ReflectTypeIAuthArtifacts)
+// AddScopedIInternalTokenStoreByFuncWithMetadata adds a type by a custom func
+func AddScopedIInternalTokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
 	di.AddScopedWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
-// RemoveAllIAuthArtifacts removes all IAuthArtifacts from the DI
-func RemoveAllIAuthArtifacts(builder *di.Builder) {
-	builder.RemoveAllByType(ReflectTypeIAuthArtifacts)
+// RemoveAllIInternalTokenStore removes all IInternalTokenStore from the DI
+func RemoveAllIInternalTokenStore(builder *di.Builder) {
+	builder.RemoveAllByType(ReflectTypeIInternalTokenStore)
 }
 
-// GetIAuthArtifactsFromContainer alternative to SafeGetIAuthArtifactsFromContainer but panics of object is not present
-func GetIAuthArtifactsFromContainer(ctn di.Container) IAuthArtifacts {
-	return ctn.GetByType(ReflectTypeIAuthArtifacts).(IAuthArtifacts)
+// GetIInternalTokenStoreFromContainer alternative to SafeGetIInternalTokenStoreFromContainer but panics of object is not present
+func GetIInternalTokenStoreFromContainer(ctn di.Container) IInternalTokenStore {
+	return ctn.GetByType(ReflectTypeIInternalTokenStore).(IInternalTokenStore)
 }
 
-// GetManyIAuthArtifactsFromContainer alternative to SafeGetManyIAuthArtifactsFromContainer but panics of object is not present
-func GetManyIAuthArtifactsFromContainer(ctn di.Container) []IAuthArtifacts {
-	objs := ctn.GetManyByType(ReflectTypeIAuthArtifacts)
-	var results []IAuthArtifacts
+// GetManyIInternalTokenStoreFromContainer alternative to SafeGetManyIInternalTokenStoreFromContainer but panics of object is not present
+func GetManyIInternalTokenStoreFromContainer(ctn di.Container) []IInternalTokenStore {
+	objs := ctn.GetManyByType(ReflectTypeIInternalTokenStore)
+	var results []IInternalTokenStore
 	for _, obj := range objs {
-		results = append(results, obj.(IAuthArtifacts))
+		results = append(results, obj.(IInternalTokenStore))
 	}
 	return results
 }
 
-// SafeGetIAuthArtifactsFromContainer trys to get the object by type, will not panic, returns nil and error
-func SafeGetIAuthArtifactsFromContainer(ctn di.Container) (IAuthArtifacts, error) {
-	obj, err := ctn.SafeGetByType(ReflectTypeIAuthArtifacts)
+// SafeGetIInternalTokenStoreFromContainer trys to get the object by type, will not panic, returns nil and error
+func SafeGetIInternalTokenStoreFromContainer(ctn di.Container) (IInternalTokenStore, error) {
+	obj, err := ctn.SafeGetByType(ReflectTypeIInternalTokenStore)
 	if err != nil {
 		return nil, err
 	}
-	return obj.(IAuthArtifacts), nil
+	return obj.(IInternalTokenStore), nil
 }
 
-// GetIAuthArtifactsDefinition returns that last definition registered that this container can provide
-func GetIAuthArtifactsDefinition(ctn di.Container) *di.Def {
-	def := ctn.GetDefinitionByType(ReflectTypeIAuthArtifacts)
+// GetIInternalTokenStoreDefinition returns that last definition registered that this container can provide
+func GetIInternalTokenStoreDefinition(ctn di.Container) *di.Def {
+	def := ctn.GetDefinitionByType(ReflectTypeIInternalTokenStore)
 	return def
 }
 
-// GetIAuthArtifactsDefinitions returns all definitions that this container can provide
-func GetIAuthArtifactsDefinitions(ctn di.Container) []*di.Def {
-	defs := ctn.GetDefinitionsByType(ReflectTypeIAuthArtifacts)
+// GetIInternalTokenStoreDefinitions returns all definitions that this container can provide
+func GetIInternalTokenStoreDefinitions(ctn di.Container) []*di.Def {
+	defs := ctn.GetDefinitionsByType(ReflectTypeIInternalTokenStore)
 	return defs
 }
 
-// SafeGetManyIAuthArtifactsFromContainer trys to get the object by type, will not panic, returns nil and error
-func SafeGetManyIAuthArtifactsFromContainer(ctn di.Container) ([]IAuthArtifacts, error) {
-	objs, err := ctn.SafeGetManyByType(ReflectTypeIAuthArtifacts)
+// SafeGetManyIInternalTokenStoreFromContainer trys to get the object by type, will not panic, returns nil and error
+func SafeGetManyIInternalTokenStoreFromContainer(ctn di.Container) ([]IInternalTokenStore, error) {
+	objs, err := ctn.SafeGetManyByType(ReflectTypeIInternalTokenStore)
 	if err != nil {
 		return nil, err
 	}
-	var results []IAuthArtifacts
+	var results []IInternalTokenStore
 	for _, obj := range objs {
-		results = append(results, obj.(IAuthArtifacts))
+		results = append(results, obj.(IInternalTokenStore))
+	}
+	return results, nil
+}
+
+// ReflectTypeITokenStore used when your service claims to implement ITokenStore
+var ReflectTypeITokenStore = di.GetInterfaceReflectType((*ITokenStore)(nil))
+
+// AddSingletonITokenStore adds a type that implements ITokenStore
+func AddSingletonITokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddSingleton(builder, implType, implementedTypes...)
+}
+
+// AddSingletonITokenStoreWithMetadata adds a type that implements ITokenStore
+func AddSingletonITokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddSingletonWithMetadata(builder, implType, metaData, implementedTypes...)
+}
+
+// AddSingletonITokenStoreByObj adds a prebuilt obj
+func AddSingletonITokenStoreByObj(builder *di.Builder, obj interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddSingletonWithImplementedTypesByObj(builder, obj, implementedTypes...)
+}
+
+// AddSingletonITokenStoreByObjWithMetadata adds a prebuilt obj
+func AddSingletonITokenStoreByObjWithMetadata(builder *di.Builder, obj interface{}, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddSingletonWithImplementedTypesByObjWithMetadata(builder, obj, metaData, implementedTypes...)
+}
+
+// AddSingletonITokenStoreByFunc adds a type by a custom func
+func AddSingletonITokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddSingletonWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
+}
+
+// AddSingletonITokenStoreByFuncWithMetadata adds a type by a custom func
+func AddSingletonITokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddSingletonWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
+}
+
+// AddTransientITokenStore adds a type that implements ITokenStore
+func AddTransientITokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddTransientWithImplementedTypes(builder, implType, implementedTypes...)
+}
+
+// AddTransientITokenStoreWithMetadata adds a type that implements ITokenStore
+func AddTransientITokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddTransientWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
+}
+
+// AddTransientITokenStoreByFunc adds a type by a custom func
+func AddTransientITokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddTransientWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
+}
+
+// AddTransientITokenStoreByFuncWithMetadata adds a type by a custom func
+func AddTransientITokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddTransientWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
+}
+
+// AddScopedITokenStore adds a type that implements ITokenStore
+func AddScopedITokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddScopedWithImplementedTypes(builder, implType, implementedTypes...)
+}
+
+// AddScopedITokenStoreWithMetadata adds a type that implements ITokenStore
+func AddScopedITokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddScopedWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
+}
+
+// AddScopedITokenStoreByFunc adds a type by a custom func
+func AddScopedITokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddScopedWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
+}
+
+// AddScopedITokenStoreByFuncWithMetadata adds a type by a custom func
+func AddScopedITokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
+	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	di.AddScopedWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
+}
+
+// RemoveAllITokenStore removes all ITokenStore from the DI
+func RemoveAllITokenStore(builder *di.Builder) {
+	builder.RemoveAllByType(ReflectTypeITokenStore)
+}
+
+// GetITokenStoreFromContainer alternative to SafeGetITokenStoreFromContainer but panics of object is not present
+func GetITokenStoreFromContainer(ctn di.Container) ITokenStore {
+	return ctn.GetByType(ReflectTypeITokenStore).(ITokenStore)
+}
+
+// GetManyITokenStoreFromContainer alternative to SafeGetManyITokenStoreFromContainer but panics of object is not present
+func GetManyITokenStoreFromContainer(ctn di.Container) []ITokenStore {
+	objs := ctn.GetManyByType(ReflectTypeITokenStore)
+	var results []ITokenStore
+	for _, obj := range objs {
+		results = append(results, obj.(ITokenStore))
+	}
+	return results
+}
+
+// SafeGetITokenStoreFromContainer trys to get the object by type, will not panic, returns nil and error
+func SafeGetITokenStoreFromContainer(ctn di.Container) (ITokenStore, error) {
+	obj, err := ctn.SafeGetByType(ReflectTypeITokenStore)
+	if err != nil {
+		return nil, err
+	}
+	return obj.(ITokenStore), nil
+}
+
+// GetITokenStoreDefinition returns that last definition registered that this container can provide
+func GetITokenStoreDefinition(ctn di.Container) *di.Def {
+	def := ctn.GetDefinitionByType(ReflectTypeITokenStore)
+	return def
+}
+
+// GetITokenStoreDefinitions returns all definitions that this container can provide
+func GetITokenStoreDefinitions(ctn di.Container) []*di.Def {
+	defs := ctn.GetDefinitionsByType(ReflectTypeITokenStore)
+	return defs
+}
+
+// SafeGetManyITokenStoreFromContainer trys to get the object by type, will not panic, returns nil and error
+func SafeGetManyITokenStoreFromContainer(ctn di.Container) ([]ITokenStore, error) {
+	objs, err := ctn.SafeGetManyByType(ReflectTypeITokenStore)
+	if err != nil {
+		return nil, err
+	}
+	var results []ITokenStore
+	for _, obj := range objs {
+		results = append(results, obj.(ITokenStore))
 	}
 	return results, nil
 }
