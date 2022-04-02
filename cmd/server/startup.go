@@ -23,6 +23,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/quasoft/memstore"
 
+	services_auth_session_token_store "echo-starter/internal/services/auth/session_token_store"
 	services_handlers_api_webhook "echo-starter/internal/services/handlers/api/webhook"
 
 	services_handlers_graphiql "echo-starter/internal/services/handlers/graphiql"
@@ -190,6 +191,7 @@ func (s *Startup) addAuthServices(builder *di.Builder) {
 	services_handlers_auth_callback.AddScopedIHandler(builder)
 	services_handlers_auth_logout.AddScopedIHandler(builder)
 	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
+	services_auth_session_token_store.AddScopedITokenStore(builder)
 }
 
 func (s *Startup) addAppHandlers(builder *di.Builder) {

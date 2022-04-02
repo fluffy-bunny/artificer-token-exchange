@@ -2,21 +2,19 @@ package claimsprincipal
 
 import (
 	"echo-starter/internal/session"
-	"encoding/json"
 
 	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
 	core_echo "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo"
 
+	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	core_wellknown "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/wellknown"
+
+	contracts_auth "echo-starter/internal/contracts/auth"
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
-	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
-
-	"github.com/rs/zerolog/log"
-	"golang.org/x/oauth2"
 )
 
 func recursiveAddClaim(claimsConfig *middleware_oidc.ClaimsConfig, claimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal) {
@@ -43,13 +41,17 @@ type EntryPointConfigEx struct {
 	OnUnauthorizedAction OnUnauthorizedAction
 }
 
+const middlewareLogName = "token-to-claims-principal"
+
 func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.MiddlewareFunc {
 	// get authCookie service once during configuration
 
 	authenticator := core_contracts_oidc.GetIOIDCAuthenticatorFromContainer(root)
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+
 			for {
+
 				// Skip this if we see an authorization header
 				// important: The CSRF middleware is skipped as well if there is an Authorization header
 				// So if we get here then we can't be adding any claims if someone got our session
@@ -58,35 +60,40 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 					// this is a cookie/session claims maker so if another authorization scheme is used we will not contribute
 					break
 				}
-
-				sess := session.GetAuthSession(c)
-
-				var terminateAuthSession = func() {
-					sess.Values = make(map[interface{}]interface{})
-					sess.Save(c.Request(), c.Response())
-				}
-
-				authArtifacts, ok := sess.Values["tokens"]
-				if !ok || core_utils.IsNil(authArtifacts) {
+				// 1. get our idompontent session
+				sess := session.GetSession(c)
+				idompotencyKey, ok := sess.Values["idompontency_key"]
+				if !ok {
+					// if we don't  have this the user hasn't logged in
 					break
 				}
-				var token *oauth2.Token = &oauth2.Token{}
-				authArtifactsStr := authArtifacts.(string)
-				err := json.Unmarshal([]byte(authArtifactsStr), &token)
+				var terminateAuthSession = func() {
+					session.TerminateSession(c)
+				}
+
+				scopedContainer := c.Get(core_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
+				logger := contracts_logger.GetILoggerFromContainer(scopedContainer)
+				errorEvent := logger.GetLogger().Error().Str("middleware", middlewareLogName)
+				debugEvent := logger.GetLogger().Debug().Str("middleware", middlewareLogName)
+
+				tokenStore := contracts_auth.GetIInternalTokenStoreFromContainer(scopedContainer)
+
+				token, err := tokenStore.GetTokenByIdompotencyKey(idompotencyKey.(string))
 				if err != nil {
-					log.Error().Err(err).Msg("unmarshal token")
+					// not necessarily an error. The tokens could have been removed and our idompotent key could be stale
+					debugEvent.Err(err).Msg("Failed to get token")
 					terminateAuthSession()
 					break
 				}
+
 				accessToken, err := authenticator.ValidateJWTAccessToken(token.AccessToken)
 				if err != nil {
-					log.Error().Err(err).Msg("ValidateJWTAccessToken failed")
+					errorEvent.Err(err).Msg("ValidateJWTAccessToken failed")
 					terminateAuthSession()
 					break
 				}
 
 				accessTokenClaims := accessToken.ToClaims()
-				scopedContainer := c.Get(core_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
 				claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
 				for _, claim := range accessTokenClaims {
 					claimsPrincipal.AddClaim(*claim)
