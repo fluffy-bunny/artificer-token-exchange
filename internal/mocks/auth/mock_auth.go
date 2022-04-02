@@ -78,6 +78,20 @@ func (mr *MockIInternalTokenStoreMockRecorder) GetTokenByIdompotencyKey(arg0 int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTokenByIdompotencyKey", reflect.TypeOf((*MockIInternalTokenStore)(nil).GetTokenByIdompotencyKey), arg0)
 }
 
+// SlideOutExpiration mocks base method.
+func (m *MockIInternalTokenStore) SlideOutExpiration() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SlideOutExpiration")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SlideOutExpiration indicates an expected call of SlideOutExpiration.
+func (mr *MockIInternalTokenStoreMockRecorder) SlideOutExpiration() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SlideOutExpiration", reflect.TypeOf((*MockIInternalTokenStore)(nil).SlideOutExpiration))
+}
+
 // StoreTokenByIdompotencyKey mocks base method.
 func (m *MockIInternalTokenStore) StoreTokenByIdompotencyKey(arg0 string, arg1 *oauth2.Token) error {
 	m.ctrl.T.Helper()

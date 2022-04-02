@@ -19,5 +19,6 @@ type (
 		ITokenStore
 		GetTokenByIdompotencyKey(idompotencyKey string) (*oauth2.Token, error)
 		StoreTokenByIdompotencyKey(idompotencyKey string, token *oauth2.Token) error
+		SlideOutExpiration() error
 	}
 )

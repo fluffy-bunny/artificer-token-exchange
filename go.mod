@@ -9,7 +9,7 @@ require (
 	github.com/catmullet/go-workers v1.4.1
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.226
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.230
 	github.com/fluffy-bunny/sarulabsdi v0.1.58
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
@@ -18,6 +18,7 @@ require (
 	github.com/labstack/echo-contrib v0.12.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b
+	github.com/rs/xid v1.4.0
 	github.com/rs/zerolog v1.26.1
 	github.com/spf13/cobra v1.4.0
 	github.com/tufin/asciitree v0.0.0-20210127111056-bf70173ef677
@@ -73,7 +74,6 @@ require (
 	github.com/reugn/async v0.0.0-20200819063434-15e5b3951cd7 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/rs/xid v1.4.0 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect

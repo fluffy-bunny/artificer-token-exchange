@@ -53,6 +53,11 @@ func EnsureAuthTokenRefresh(container di.Container) echo.MiddlewareFunc {
 					if err != nil {
 						errorEvent.Err(err).Msg("Failed to store token")
 					}
+				} else {
+					err = tokenStore.SlideOutExpiration()
+					if err != nil {
+						errorEvent.Err(err).Msg("Failed to slide out expiration")
+					}
 				}
 				break
 			}

@@ -9,6 +9,10 @@
         <h1>Accounts</h1>
         <button type="button" id="btnForceRefresh">Force Refresh</button>
     </div>
+    <div class="text-left mt-5">
+		<h2>Output:</h2>
+		<div id="json"></div>
+    </div>
 </div>
 </body>
 

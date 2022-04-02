@@ -8,7 +8,6 @@ import (
 	"reflect"
 
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
-	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -16,9 +15,8 @@ import (
 
 type (
 	service struct {
-		Logger        contracts_logger.ILogger               `inject:""`
-		Authenticator core_contracts_oidc.IOIDCAuthenticator `inject:""`
-		TokenStore    contracts_auth.ITokenStore             `inject:""`
+		Logger     contracts_logger.ILogger   `inject:""`
+		TokenStore contracts_auth.ITokenStore `inject:""`
 	}
 )
 

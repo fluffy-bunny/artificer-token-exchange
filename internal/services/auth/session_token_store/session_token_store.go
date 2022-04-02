@@ -48,6 +48,12 @@ func (s *service) Clear() error {
 func (s *service) GetToken() (*oauth2.Token, error) {
 	return s.cachedToken, nil
 }
+func (s *service) SlideOutExpiration() error {
+	c := s.EchoContextAccessor.GetContext()
+	authSess := session.GetAuthSession(c)
+	return authSess.Save(c.Request(), c.Response())
+}
+
 func (s *service) GetTokenByIdompotencyKey(idompotencyKey string) (*oauth2.Token, error) {
 	if s.cachedToken == nil {
 		c := s.EchoContextAccessor.GetContext()
