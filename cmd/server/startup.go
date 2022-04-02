@@ -49,7 +49,6 @@ import (
 	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_api_graphql "echo-starter/internal/services/handlers/api/graphql"
 
-	services_handlers_auth_artifacts "echo-starter/internal/services/auth/auth_artifacts"
 	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
 	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
 	services_handlers_auth_logout "echo-starter/internal/services/handlers/auth/logout"
@@ -182,7 +181,6 @@ func (s *Startup) addAuthServices(builder *di.Builder) {
 		}
 	})
 	core_services_oidc.AddSingletonIOIDCAuthenticator(builder)
-	services_handlers_auth_artifacts.AddScopedIAuthArtifacts(builder)
 
 	// AUTH HANDLERS
 	//----------------------------------------------------------------------------------------------------------------------
