@@ -1,16 +1,15 @@
 package login
 
 import (
-	"crypto/rand"
 	auth_shared "echo-starter/internal/contracts/auth/shared"
 	"echo-starter/internal/session"
 	"echo-starter/internal/wellknown"
-	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"reflect"
 
 	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+	"github.com/rs/xid"
 
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
@@ -77,13 +76,5 @@ func (s *service) Do(c echo.Context) error {
 	return nil
 }
 func (s *service) generateRandomState() (string, error) {
-	b := make([]byte, 32)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
-	}
-
-	state := base64.StdEncoding.EncodeToString(b)
-
-	return state, nil
+	return xid.New().String(), nil
 }

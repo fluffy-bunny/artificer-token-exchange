@@ -20,9 +20,9 @@ import (
 
 type (
 	service struct {
-		Logger        contracts_logger.ILogger      `inject:""`
-		AuthArtifacts contracts_auth.IAuthArtifacts `inject:""`
-		Config        *contracts_config.Config      `inject:""`
+		Logger     contracts_logger.ILogger   `inject:""`
+		TokenStore contracts_auth.ITokenStore `inject:""`
+		Config     *contracts_config.Config   `inject:""`
 	}
 )
 
@@ -57,8 +57,8 @@ func (s *service) Do(c echo.Context) error {
 }
 
 func (s *service) post(c echo.Context) error {
-	token := s.AuthArtifacts.GetToken()
-	if token == nil {
+	token, err := s.TokenStore.GetToken()
+	if err != nil || token == nil {
 		return echo.NewHTTPError(http.StatusForbidden, "not authorized")
 	}
 	if core_utils.IsEmptyOrNil(token.AccessToken) {
