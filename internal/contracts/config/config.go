@@ -20,8 +20,6 @@ type (
 		Port                      int        `json:"port" mapstructure:"PORT"`
 		Oidc                      oidcConfig `json:"oidc" mapstructure:"OIDC"`
 		SessionMaxAgeSeconds      int        `json:"sessionMaxAgeSeconds" mapstructure:"SESSION_MAX_AGE_SECONDS"`
-		SessionKey                string     `json:"sessionKey" mapstructure:"SESSION_KEY"`
-		SessionEncryptionKey      string     `json:"sessionEncryptionKey" mapstructure:"SESSION_ENCRYPTION_KEY"`
 		AuthCookieExpireSeconds   int        `json:"authCookieExpireSeconds" mapstructure:"AUTH_COOKIE_EXPIRE_SECONDS"`
 		AuthCookieName            string     `json:"authCookieName" mapstructure:"AUTH_COOKIE_NAME"`
 		SecureCookieHashKey       string     `json:"secureCookieHashKey" mapstructure:"SECURE_COOKIE_HASH_KEY"`
@@ -45,9 +43,7 @@ var (
 		"CLIENT_SECRET": "in-environment",
 		"CALLBACK_URL": ""
 	},
-	"SESSION_KEY": "",
-	"SESSION_ENCRYPTION_KEY": "",
-	"SESSION_MAX_AGE_SECONDS": 60,
+ 	"SESSION_MAX_AGE_SECONDS": 60,
 	"AUTH_COOKIE_EXPIRE_SECONDS": 60,
 	"AUTH_COOKIE_NAME": "_auth",
 	"SECURE_COOKIE_HASH_KEY": "",

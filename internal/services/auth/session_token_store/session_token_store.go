@@ -54,16 +54,16 @@ func (s *service) SlideOutExpiration() error {
 	return authSess.Save(c.Request(), c.Response())
 }
 
-func (s *service) GetTokenByIdompotencyKey(idompotencyKey string) (*oauth2.Token, error) {
+func (s *service) GetTokenByIdempotencyKey(idompotencyKey string) (*oauth2.Token, error) {
 	if s.cachedToken == nil {
 		c := s.EchoContextAccessor.GetContext()
 		authSess := session.GetAuthSession(c)
-		myIdompotencyKey, ok := authSess.Values["idompontency_key"]
+		myIdompotencyKey, ok := authSess.Values["idempotency_key"]
 		if !ok {
-			return nil, errors.New("idompontency_key not found")
+			return nil, errors.New("idempotency_key not found")
 		}
 		if myIdompotencyKey.(string) != idompotencyKey {
-			return nil, errors.New("idompontency_key doesn't match with the one in session")
+			return nil, errors.New("idempotency_key doesn't match with the one in session")
 		}
 		authTokens, ok := authSess.Values["tokens"]
 		if !ok {
@@ -82,7 +82,7 @@ func (s *service) GetTokenByIdompotencyKey(idompotencyKey string) (*oauth2.Token
 	}
 	return s.cachedToken, nil
 }
-func (s *service) StoreTokenByIdompotencyKey(idompotencyKey string, token *oauth2.Token) error {
+func (s *service) StoreTokenByIdempotencyKey(idompotencyKey string, token *oauth2.Token) error {
 	c := s.EchoContextAccessor.GetContext()
 	authTokensB, err := json.Marshal(token)
 	if err != nil {
@@ -90,7 +90,7 @@ func (s *service) StoreTokenByIdompotencyKey(idompotencyKey string, token *oauth
 	}
 	authSess := session.GetAuthSession(c)
 	authSess.Values["tokens"] = string(authTokensB)
-	authSess.Values["idompontency_key"] = idompotencyKey
+	authSess.Values["idempotency_key"] = idompotencyKey
 	err = authSess.Save(c.Request(), c.Response())
 	if err != nil {
 		return err

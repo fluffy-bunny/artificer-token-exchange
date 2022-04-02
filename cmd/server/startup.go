@@ -102,8 +102,17 @@ func (s *Startup) SetContainer(container di.Container) {
 }
 func (s *Startup) getSessionStore() sessions.Store {
 
+	hashKey, err := base64.StdEncoding.DecodeString(s.config.SecureCookieHashKey)
+	if err != nil {
+		panic(err)
+	}
+	encryptionKey, err := base64.StdEncoding.DecodeString(s.config.SecureCookieEncryptionKey)
+	if err != nil {
+		panic(err)
+	}
+
 	var sessionStore = sessions.NewCookieStore(
-		[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey))
+		[]byte(hashKey), []byte(encryptionKey))
 	/*
 		sessionStore := memstore.NewMemStore(
 			[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey),

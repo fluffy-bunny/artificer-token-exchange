@@ -59,11 +59,11 @@ func (s *service) _getAuthCookieName() (string, error) {
 	c := s.EchoContextAccessor.GetContext()
 	sess := session.GetSession(c)
 
-	idompotencyKey, ok := sess.Values["idompontency_key"]
+	idempotencyKey, ok := sess.Values["idempotency_key"]
 	if !ok {
-		return "", errors.New("idompontency key not found in session")
+		return "", errors.New("idempotency key not found in session")
 	}
-	authCookieName := fmt.Sprintf("_auth_%s", idompotencyKey)
+	authCookieName := fmt.Sprintf("%s_%s", s.Config.AuthCookieName, idempotencyKey)
 	return authCookieName, nil
 }
 func (s *service) SlideOutExpiration() error {
@@ -77,7 +77,7 @@ func (s *service) SlideOutExpiration() error {
 func (s *service) GetToken() (*oauth2.Token, error) {
 	return s.cachedToken, nil
 }
-func (s *service) GetTokenByIdompotencyKey(idompotencyKey string) (*oauth2.Token, error) {
+func (s *service) GetTokenByIdempotencyKey(idempotencyKey string) (*oauth2.Token, error) {
 	if s.cachedToken == nil {
 		authCookieName, err := s._getAuthCookieName()
 		if err != nil {
@@ -92,18 +92,18 @@ func (s *service) GetTokenByIdompotencyKey(idompotencyKey string) (*oauth2.Token
 		if err != nil {
 			return nil, err
 		}
-		if container.ID != idompotencyKey {
-			s.Logger.Error().Str("request_idompotency_key", idompotencyKey).
-				Str("stored_idompotency_key", container.ID).Msg("idompotencyKey does not match cookieId")
+		if container.ID != idempotencyKey {
+			s.Logger.Error().Str("request_idompotency_key", idempotencyKey).
+				Str("stored_idompotency_key", container.ID).Msg("idempotencyKey does not match cookieId")
 			return nil, errors.New("idompotency key requsted doesn't match the one stored")
 		}
 		s.cachedToken = container.Token
 	}
 	return s.cachedToken, nil
 }
-func (s *service) StoreTokenByIdompotencyKey(idompotencyKey string, token *oauth2.Token) error {
+func (s *service) StoreTokenByIdempotencyKey(idempotencyKey string, token *oauth2.Token) error {
 	payload := &cookieContainer{
-		ID:    idompotencyKey,
+		ID:    idempotencyKey,
 		Token: token,
 	}
 	jsonB, err := json.Marshal(payload)
@@ -112,7 +112,7 @@ func (s *service) StoreTokenByIdompotencyKey(idompotencyKey string, token *oauth
 	}
 
 	expire := time.Now().Add(time.Duration(s.Config.SessionMaxAgeSeconds) * time.Second)
-	authCookieName := fmt.Sprintf("_auth_%s", idompotencyKey)
+	authCookieName := fmt.Sprintf("%s_%s", s.Config.AuthCookieName, idempotencyKey)
 	s.SecureCookie.SetCookieValue(authCookieName, string(jsonB), expire)
 	s.cachedToken = token
 	return nil
