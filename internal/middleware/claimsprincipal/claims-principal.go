@@ -62,7 +62,7 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 				}
 				// 1. get our idompontent session
 				sess := session.GetSession(c)
-				idompotencyKey, ok := sess.Values["idompontency_key"]
+				idompotencyKey, ok := sess.Values["idempotency_key"]
 				if !ok {
 					// if we don't  have this the user hasn't logged in
 					break
@@ -78,7 +78,7 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 
 				tokenStore := contracts_auth.GetIInternalTokenStoreFromContainer(scopedContainer)
 
-				token, err := tokenStore.GetTokenByIdompotencyKey(idompotencyKey.(string))
+				token, err := tokenStore.GetTokenByIdempotencyKey(idompotencyKey.(string))
 				if err != nil {
 					// not necessarily an error. The tokens could have been removed and our idompotent key could be stale
 					debugEvent.Err(err).Msg("Failed to get token")
