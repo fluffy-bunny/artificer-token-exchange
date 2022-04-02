@@ -24,8 +24,8 @@ services:
       OIDC__CLIENT_ID: "${AUTH0_CLIENT_ID}"
       OIDC__CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
       OIDC__CALLBACK_URL: "http://localhost:${ECHO_STARTER_PORT}/oidc"
-      SESSION_KEY: "c74fgCV8ub7q9c1FV214t67CzH1dPfIj"
-      SESSION_ENCRYPTION_KEY: "0ZAeBrf1MELbyqW2vOqBKao1kwWvBJxu"
+      SECURE_COOKIE_HASH_KEY: "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY="
+      SECURE_COOKIE_ENCRYPTION_KEY: "7fB3PkhfOKsbU/2vE2KQdLqu0jGZ+GLaEL5AQ7maUw4="
 
       
     entrypoint: ["/app/server"]
