@@ -2,14 +2,35 @@ version: "3.9"
 
 services:
 
- # echo-starter
-  echo-starter:
-    image: "${ECHO_STARTER_IMAGE_NAME}:${ECHO_STARTER_VERSION}"
-    container_name: "${ECHO_STARTER_NAME}"
-    networks:
-      - echostarter
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.6
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --api.insecure=true --providers.docker
     ports:
-      - ${ECHO_STARTER_PORT}:8081
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
+ # echostarter
+  echostarter:
+    image: "${ECHO_STARTER_IMAGE_NAME}:${ECHO_STARTER_VERSION}"
+    labels:
+      - "traefik.http.routers.echostarter.rule=Host(`echostarter.docker.localhost`)"
+      - "traefik.http.services.echostarter.loadbalancer.server.port=80"
+   
+  
+    ports:
+      - ${ECHO_STARTER_PORT}:80
     logging:
       driver: "json-file"
       options:
@@ -17,13 +38,13 @@ services:
         max-file: "${CONTAINER_LOG_COUNT}"
     environment:
       APPLICATION_ENVIRONMENT: "${APPLICATION_ENVIRONMENT}"
-      PORT: "8081"
+      PORT: "80"
       LOG_LEVEL: "${ECHO_STARTER_LOG_LEVEL}"
       PRETTY_LOG: "${ECHO_STARTER_PRETTY_LOG}"
       OIDC__DOMAIN: "${AUTH0_DOMAIN}"
       OIDC__CLIENT_ID: "${AUTH0_CLIENT_ID}"
       OIDC__CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
-      OIDC__CALLBACK_URL: "http://localhost:${ECHO_STARTER_PORT}/oidc"
+      OIDC__CALLBACK_URL: "http://echostarter.docker.localhost/oidc"
       SECURE_COOKIE_HASH_KEY: "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY="
       SECURE_COOKIE_ENCRYPTION_KEY: "7fB3PkhfOKsbU/2vE2KQdLqu0jGZ+GLaEL5AQ7maUw4="
 
