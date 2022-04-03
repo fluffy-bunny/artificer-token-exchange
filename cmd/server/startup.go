@@ -242,6 +242,7 @@ func (s *Startup) addAppHandlers(builder *di.Builder) {
 }
 
 func (s *Startup) ConfigureServices(builder *di.Builder) error {
+	fmt.Println(core_utils.PrettyJSON(s.config))
 	// add our config as a sigleton object
 	di.AddSingletonTypeByObj(builder, s.config)
 
