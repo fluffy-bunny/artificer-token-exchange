@@ -28,7 +28,7 @@ async function getArtists() {
             method: 'GET',
             credentials: 'include'
           });
-          payload =  await res.json();
+          let payload = await res.json();
           jsonViewer.showJSON(payload);
           return payload
 
@@ -48,10 +48,11 @@ async function postArtistForgotCsrf() {
             },
             body: JSON.stringify({ name: 'test' }),
           });
-        payload =  await res.json();
+        let payload = await res.json();
         jsonViewer.showJSON(payload);
         return payload
-    } catch (error) {s
+    } catch (error) {
+        console.log(error);
         console.log(error);
         alert(error)
     }
@@ -69,10 +70,10 @@ async function postArtist() {
             },
             body: JSON.stringify({ name: 'test' }),
           });
-        payload =  await res.json();
+        let payload = await res.json();
         jsonViewer.showJSON(payload);
         return payload
-    } catch (error) {s
+    } catch (error) {
         console.log(error);
         alert(error)
     }
@@ -84,7 +85,7 @@ async function getArtist() {
             method: 'GET',
             credentials: 'include'
           });
-        payload =  await res.json();
+        let payload = await res.json();
         jsonViewer.showJSON(payload);
         return payload
     } catch (error) {
@@ -99,7 +100,7 @@ async function getAlbums() {
             method: 'GET',
             credentials: 'include'
           });
-        payload =  await res.json();
+        let payload = await res.json();
         jsonViewer.showJSON(payload);
 
         return payload
@@ -121,7 +122,7 @@ async function postAccountsForceRefresh() {
                 },
             body: JSON.stringify({ directive: 'force-refresh' }),
           });
-        payload =  await res.json();
+        let payload = await res.json();
         jsonViewer.showJSON(payload);
         return payload
     } catch (error) {
@@ -154,10 +155,10 @@ async function postGraphQLRequest() {
                  },
             body: data,
           });
-        payload =  await res.json();
+        let payload = await res.json();
         jsonViewer.showJSON(payload);
         console.log(payload);
-       // alert(JSON.stringify(payload));
+        
         return payload
     } catch (error) {
         console.log(error);
@@ -182,10 +183,10 @@ async function postGraphQLRequest2(endpoint,queryV) {
                  },
             body: data,
           });
-        payload =  await res.json();
+        let payload = await res.json();
         jsonViewer.showJSON(payload);
         console.log(payload);
-       // alert(JSON.stringify(payload));
+        
         return payload
     } catch (error) {
         console.log(error);
