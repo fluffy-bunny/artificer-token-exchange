@@ -12,8 +12,10 @@ const (
 	APIArtistsIdPath       = "/api/:version/artists/:id"
 	APIArtistsIdAlbumsPath = "/api/:version/artists/:id/albums"
 	AccountsPath           = "/accounts"
-	APIAccountsPath        = "/api/:version/accounts"
-	WebHookPath            = "/api/:version/webhook"
-	GraphQLEndpointPath    = "/api/:version/graphql"
-	GraphiQLPath           = "/graphiql"
+	APIDevPath             = "/api/:version/dev"
+
+	APIAccountsPath     = "/api/:version/accounts"
+	WebHookPath         = "/api/:version/webhook"
+	GraphQLEndpointPath = "/api/:version/graphql"
+	GraphiQLPath        = "/graphiql"
 )

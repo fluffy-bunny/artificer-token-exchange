@@ -1,4 +1,5 @@
 {{define "views/artists/index"}}
+{{template "html_begin" .}}
 {{template "header" .}}
 {{template "navbar" .}}
 
@@ -57,4 +58,5 @@
 
   
     </script>
+{{template "html_end" .}}
 {{end}}

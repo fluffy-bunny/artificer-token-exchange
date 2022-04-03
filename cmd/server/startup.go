@@ -40,6 +40,7 @@ import (
 	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_accounts "echo-starter/internal/services/handlers/accounts"
 	services_handlers_api_accounts "echo-starter/internal/services/handlers/api/accounts"
+	services_handlers_api_dev "echo-starter/internal/services/handlers/api/dev"
 
 	// ARTISTS
 	//----------------------------------------------------------------------------------------------------------------------
@@ -231,6 +232,7 @@ func (s *Startup) addAppHandlers(builder *di.Builder) {
 	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_accounts.AddScopedIHandler(builder)
 	services_handlers_api_accounts.AddScopedIHandler(builder)
+	services_handlers_api_dev.AddScopedIHandler(builder)
 
 	// ARTISTS CRUD API
 	//----------------------------------------------------------------------------------------------------------------------

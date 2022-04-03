@@ -19,7 +19,7 @@
             "program": "${workspaceFolder}/cmd/server",
             "env": {
                 "APPLICATION_NAME": "echo-starter",
-                "APPLICATION_ENVIRONMENT": "Development",
+                "APPLICATION_ENVIRONMENT": "Production",
                 "PRETTY_LOG": "false",
                 "LOG_LEVEL": "info",
                 "PORT": "1323",
