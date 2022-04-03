@@ -28,7 +28,9 @@ AUTH0_DOMAIN=foo.auth0.com
 docker-compose pull
 docker-compose up
 ```
-naviage to the following [echo-starter](http://localhost:1323)  
+Docker-Compose using [Traefik](https://traefik.io/) to do loadbalancing and gives us an url that doesn't have a port.   
+naviage to the following [echo-starter](http://echostarter.docker.localhost/)  
+
 
 # Motivation  
 
