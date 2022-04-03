@@ -9,7 +9,7 @@ require (
 	github.com/catmullet/go-workers v1.4.1
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.231
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.236
 	github.com/fluffy-bunny/sarulabsdi v0.1.58
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
@@ -22,6 +22,7 @@ require (
 	github.com/spf13/cobra v1.4.0
 	github.com/tufin/asciitree v0.0.0-20210127111056-bf70173ef677
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
+	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
 require (
@@ -98,6 +99,5 @@ require (
 	google.golang.org/grpc v1.45.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
-	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

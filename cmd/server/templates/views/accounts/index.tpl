@@ -1,4 +1,5 @@
 {{define "views/accounts/index"}}
+{{template "html_begin" .}}
 {{template "header" .}}
 {{template "navbar" .}}
 
@@ -24,4 +25,5 @@
 	    btn.addEventListener("click", postAccountsForceRefresh);
 
     </script>
+{{template "html_end" .}}
 {{end}}
