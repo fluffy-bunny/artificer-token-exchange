@@ -5,11 +5,13 @@ import (
 	auth_shared "echo-starter/internal/contracts/auth/shared"
 	contracts_claimsprovider "echo-starter/internal/contracts/claimsprovider"
 	"echo-starter/internal/session"
+	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"encoding/json"
 	"net/http"
 	"reflect"
 
+	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
@@ -19,10 +21,11 @@ import (
 
 type (
 	service struct {
-		Logger         contracts_logger.ILogger                 `inject:""`
-		Authenticator  core_contracts_oidc.IOIDCAuthenticator   `inject:""`
-		ClaimsProvider contracts_claimsprovider.IClaimsProvider `inject:""`
-		TokenStore     contracts_auth.IInternalTokenStore       `inject:""`
+		Logger          contracts_logger.ILogger                        `inject:""`
+		Authenticator   core_contracts_oidc.IOIDCAuthenticator          `inject:""`
+		ClaimsProvider  contracts_claimsprovider.IClaimsProvider        `inject:""`
+		TokenStore      contracts_auth.IInternalTokenStore              `inject:""`
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
 	}
 )
 
@@ -38,18 +41,49 @@ func AddScopedIHandler(builder *di.Builder) {
 		reflectType,
 		[]contracts_handler.HTTPVERB{
 			contracts_handler.GET,
+			contracts_handler.POST,
 		},
 		wellknown.OIDCCallbackPath)
 }
 
-func (s *service) Ctor() {}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
 func (s *service) Do(c echo.Context) error {
+
+	switch c.Request().Method {
+	case http.MethodGet:
+		return s.get(c)
+	case http.MethodPost:
+		return s.post(c)
+	default:
+		return echo.NewHTTPError(http.StatusMethodNotAllowed)
+	}
+
+}
+func (s *service) get(c echo.Context) error {
+	// WHY?
+	/*
+		I have found that when the IDP redirects to here the cookies can't be read.
+		so we render a simple auto post back to ourselves to get the right context so that we can read the cookies.
+	*/
+	return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "query_params_auto_post", map[string]interface{}{})
+}
+
+type oidcCallbackParams struct {
+	Code  string `json:"code" xml:"code" form:"code" query:"code"`
+	State string `json:"state" xml:"state" form:"state" query:"state"`
+}
+
+func (s *service) post(c echo.Context) error {
+	u := new(oidcCallbackParams)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+
 	request := c.Request()
 	ctx := request.Context()
-	state := c.QueryParam("state")
+	state := u.State
 	sess := session.GetSession(c)
 	sessionState, _ := sess.Values[auth_shared.AuthStateSessionKey].(string)
 	jsonLoginParams, _ := sess.Values[auth_shared.LoginParamsSessionKey]
@@ -62,7 +96,7 @@ func (s *service) Do(c echo.Context) error {
 	}
 
 	// Exchange an authorization code for a token.
-	token, err := s.Authenticator.Exchange(ctx, c.QueryParam("code"))
+	token, err := s.Authenticator.Exchange(ctx, u.Code)
 	if err != nil {
 		return c.String(http.StatusUnauthorized, "Failed to convert an authorization code into a token.")
 	}

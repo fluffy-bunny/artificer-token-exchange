@@ -1,4 +1,5 @@
 {{define "views/graphiql/index"}}
+{{template "html_begin" .}}
 {{template "header-graphiql" .}}
 <body>
  
@@ -109,5 +110,5 @@
      
 </body>
     
- 
+{{template "html_end" .}}
 {{end}}

@@ -1,12 +1,10 @@
-package accounts
+package dev
 
 import (
 	"echo-starter/internal/session"
 	"echo-starter/internal/wellknown"
-	"fmt"
 	"net/http"
 	"reflect"
-	"time"
 
 	contracts_auth "echo-starter/internal/contracts/auth"
 
@@ -16,7 +14,6 @@ import (
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
 )
 
 type (
@@ -42,7 +39,7 @@ func AddScopedIHandler(builder *di.Builder) {
 			contracts_handler.POST,
 			contracts_handler.GET,
 		},
-		wellknown.APIAccountsPath)
+		wellknown.APIDevPath)
 }
 
 func (s *service) Ctor() {}
@@ -80,8 +77,18 @@ func (s *service) get(c echo.Context) error {
 func (s *service) getSessionData(c echo.Context) error {
 	sess := session.GetSession(c)
 	sess.Save(c.Request(), c.Response())
+	result := make(map[string]string)
+	for k, v := range sess.Values {
+		key := k.(string)
+		switch v.(type) {
+		case string:
+			result[key] = v.(string)
+		case []byte:
 
-	return c.JSON(http.StatusOK, sess.Values)
+			result[key] = string(v.([]byte))
+		}
+	}
+	return c.JSON(http.StatusOK, result)
 }
 func (s *service) post(c echo.Context) error {
 	u := new(params)
@@ -89,59 +96,9 @@ func (s *service) post(c echo.Context) error {
 		return err
 	}
 	switch u.Directive {
-	case "force-refresh":
-		return s.postForceRefresh(c)
+	case "session":
+		return s.getSessionData(c)
 	default:
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid directive")
 	}
-}
-func (s *service) _getIdompotencyKey(c echo.Context) (string, error) {
-	sess := session.GetSession(c)
-
-	idompotencyKey, ok := sess.Values["idempotency_key"]
-	if !ok {
-		return "", fmt.Errorf("idempotency_key not found")
-	}
-	return idompotencyKey.(string), nil
-}
-func (s *service) postForceRefresh(c echo.Context) error {
-	ctx := c.Request().Context()
-	fmt.Println("accounts: postForceRefresh")
-
-	var denied = func() error {
-		return echo.NewHTTPError(http.StatusForbidden, "not authorized")
-	}
-
-	idompotencyKey, err := s._getIdompotencyKey(c)
-	if err != nil {
-		s.Logger.Error().Err(err).Msg("idempotency_key not found")
-		return denied()
-	}
-
-	for {
-		token, err := s.TokenStore.GetTokenByIdempotencyKey(idompotencyKey)
-		if err != nil {
-			s.Logger.Error().Msg("TokenStore.GetTokenByIdompotencyKey failed")
-			break
-		}
-
-		// make the token expired so that tokenSource will refresh it
-		token.Expiry = time.Now().Add(time.Duration(-60) * time.Second)
-		tokenSource := s.OIDCAuthenticator.GetTokenSource(ctx, token)
-		// token source will not do the refresh for us
-		newToken, err := tokenSource.Token()
-		if err != nil {
-			log.Warn().Err(err).Msg("refresh token failed")
-			break
-		}
-		if newToken.AccessToken != token.AccessToken {
-			err = s.TokenStore.StoreTokenByIdempotencyKey(idompotencyKey, newToken)
-			if err != nil {
-				s.Logger.Error().Err(err).Msg("TokenStore.StoreTokenByIdompotencyKey failed")
-				break
-			}
-		}
-		return c.JSON(http.StatusOK, "ok")
-	}
-	return denied()
 }

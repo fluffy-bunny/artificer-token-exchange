@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 
+	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
 	"github.com/rs/xid"
 
@@ -20,8 +21,9 @@ import (
 
 type (
 	service struct {
-		Logger        contracts_logger.ILogger               `inject:""`
-		Authenticator core_contracts_oidc.IOIDCAuthenticator `inject:""`
+		Logger          contracts_logger.ILogger                        `inject:""`
+		Authenticator   core_contracts_oidc.IOIDCAuthenticator          `inject:""`
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
 	}
 )
 
@@ -45,6 +47,7 @@ func (s *service) Ctor() {}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
+
 func (s *service) Do(c echo.Context) error {
 	u := new(auth_shared.LoginParms)
 	if err := c.Bind(u); err != nil {
@@ -72,8 +75,12 @@ func (s *service) Do(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	url := s.Authenticator.AuthCodeURL(state)
-	c.Redirect(http.StatusFound, url)
-	return nil
+	/*
+		return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/auth/login/index", map[string]interface{}{
+			"url": url,
+		})
+	*/
+	return c.Redirect(http.StatusFound, url)
 }
 func (s *service) generateRandomState() (string, error) {
 	return xid.New().String(), nil

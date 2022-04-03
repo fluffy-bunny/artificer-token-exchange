@@ -1,4 +1,5 @@
 {{define "views/error/index"}}
+{{template "html_begin" .}}
 {{template "header" .}}
 {{template "navbar" .}}
 <body>
@@ -15,4 +16,5 @@
 </body>
     
 {{template "footer" .}}
+{{template "html_end" .}}
 {{end}}

@@ -15,6 +15,7 @@ import (
 	middleware_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/middleware/oidc"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
+	"gopkg.in/square/go-jose.v2/jwt"
 )
 
 func recursiveAddClaim(claimsConfig *middleware_oidc.ClaimsConfig, claimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal) {
@@ -86,17 +87,19 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 					break
 				}
 
-				accessToken, err := authenticator.ValidateJWTAccessToken(token.AccessToken)
-				if err != nil {
-					errorEvent.Err(err).Msg("ValidateJWTAccessToken failed")
-					terminateAuthSession()
-					break
-				}
-
-				accessTokenClaims := accessToken.ToClaims()
 				claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
-				for _, claim := range accessTokenClaims {
-					claimsPrincipal.AddClaim(*claim)
+
+				if ok, _ := isJWT(token.AccessToken); ok {
+					accessToken, err := authenticator.ValidateJWTAccessToken(token.AccessToken)
+					if err != nil {
+						errorEvent.Err(err).Msg("ValidateJWTAccessToken failed")
+						terminateAuthSession()
+						break
+					}
+					accessTokenClaims := accessToken.ToClaims()
+					for _, claim := range accessTokenClaims {
+						claimsPrincipal.AddClaim(*claim)
+					}
 				}
 
 				claimsPrincipal.AddClaim(contracts_core_claimsprincipal.Claim{
@@ -109,4 +112,11 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 			return next(c)
 		}
 	}
+}
+func isJWT(token string) (bool, error) {
+	_, err := jwt.ParseSigned(token)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
