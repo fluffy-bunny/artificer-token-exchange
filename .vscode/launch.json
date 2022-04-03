@@ -20,7 +20,7 @@
             "env": {
                 "APPLICATION_NAME": "echo-starter",
                 "APPLICATION_ENVIRONMENT": "Production",
-                "PRETTY_LOG": "false",
+                "PRETTY_LOG": "true",
                 "LOG_LEVEL": "info",
                 "PORT": "1323",
                 "OIDC__DOMAIN": "${env:AUTH0_DOMAIN}",

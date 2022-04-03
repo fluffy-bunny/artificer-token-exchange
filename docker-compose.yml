@@ -52,7 +52,6 @@ services:
     entrypoint: ["/app/server"]
 
 
-networks:
-  echostarter:
+ 
   
  
