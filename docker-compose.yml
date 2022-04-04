@@ -44,6 +44,8 @@ services:
       options:
         max-size: "${CONTAINER_LOG_SIZE}"
         max-file: "${CONTAINER_LOG_COUNT}"
+    depends_on:
+      - redis
     environment:
       APPLICATION_ENVIRONMENT: "${APPLICATION_ENVIRONMENT}"
       PORT: "80"
@@ -57,7 +59,14 @@ services:
       SECURE_COOKIE_ENCRYPTION_KEY: "7fB3PkhfOKsbU/2vE2KQdLqu0jGZ+GLaEL5AQ7maUw4="
  
     entrypoint: ["/app/server"]
+  redis:
+      image: 'bitnami/redis:latest'
 
+      ports:
+        - 6379:6379
+
+      environment:
+          - ALLOW_EMPTY_PASSWORD=yes
 
  
   

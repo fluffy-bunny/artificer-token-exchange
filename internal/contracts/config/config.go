@@ -25,6 +25,9 @@ type (
 		SecureCookieHashKey       string     `json:"secureCookieHashKey" mapstructure:"SECURE_COOKIE_HASH_KEY"`
 		SecureCookieEncryptionKey string     `json:"secureCookieEncryptionKey" mapstructure:"SECURE_COOKIE_ENCRYPTION_KEY"`
 		GraphQLEndpoint           string     `json:"graphQLEndpoint" mapstructure:"GRAPHQL_ENDPOINT"`
+		// cookie|inmemory|redis
+		SessionEngine string `json:"sessionEngine" mapstructure:"SESSION_ENGINE"`
+		RedisUrl      string `json:"redisUrl" mapstructure:"REDIS_URL"`
 	}
 )
 
@@ -48,7 +51,9 @@ var (
 	"AUTH_COOKIE_NAME": "_auth",
 	"SECURE_COOKIE_HASH_KEY": "",
 	"SECURE_COOKIE_ENCRYPTION_KEY": "",
-	"GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/"
+	"GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
+	"SESSION_ENGINE": "cookie",
+	"REDIS_URL": "redis://localhost:6379"
 
 
 }
