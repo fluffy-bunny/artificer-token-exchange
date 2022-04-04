@@ -148,13 +148,10 @@ func (s *Startup) getSessionStore() sessions.Store {
 			Secure:   true,
 			SameSite: http.SameSiteStrictMode,
 		})
-
+		return store
 	default:
 		return nil
 	}
-
-	return nil
-
 }
 func (s *Startup) RegisterStaticRoutes(e *echo.Echo) error {
 	e.Static("/css", "./css")
@@ -237,8 +234,14 @@ func (s *Startup) addAuthServices(builder *di.Builder) {
 	services_handlers_auth_callback.AddScopedIHandler(builder)
 	services_handlers_auth_logout.AddScopedIHandler(builder)
 	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
-	services_auth_session_token_store.AddScopedITokenStore(builder)
-	services_auth_cookie_token_store.AddScopedITokenStore(builder) // overrides the session one
+
+	switch s.config.AuthStore {
+	case "session":
+		services_auth_session_token_store.AddScopedITokenStore(builder)
+	default:
+		services_auth_cookie_token_store.AddScopedITokenStore(builder) // overrides the session one
+	}
+
 }
 
 func (s *Startup) addAppHandlers(builder *di.Builder) {
