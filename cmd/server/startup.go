@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	echostarter_auth "echo-starter/internal/auth"
 	tex_config "echo-starter/internal/contracts/config"
 	"echo-starter/internal/wellknown"
@@ -10,6 +11,8 @@ import (
 	"strconv"
 
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
+	"github.com/quasoft/memstore"
+	"github.com/rs/zerolog/log"
 
 	services_handlers_about "echo-starter/internal/services/handlers/about"
 	app_session "echo-starter/internal/session"
@@ -20,9 +23,6 @@ import (
 	echo_contracts_startup "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/startup"
 
 	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
-
-	// "github.com/quasoft/memstore"
 
 	services_auth_cookie_token_store "echo-starter/internal/services/auth/cookie_token_store"
 
@@ -76,10 +76,13 @@ import (
 	contracts_cookies "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/cookies"
 	core_middleware_session "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/middleware/session"
 	di "github.com/fluffy-bunny/sarulabsdi"
+	redis "github.com/go-redis/redis/v8"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	redisstore "github.com/rbcervilla/redisstore/v8"
 )
 
 type Startup struct {
@@ -112,19 +115,44 @@ func (s *Startup) getSessionStore() sessions.Store {
 		panic(err)
 	}
 
-	var sessionStore = sessions.NewCookieStore(
-		[]byte(hashKey), []byte(encryptionKey))
-	/*
-		sessionStore := memstore.NewMemStore(
-			[]byte(s.config.SessionKey), []byte(s.config.SessionEncryptionKey),
-		)
-	*/
-	sessionStore.Options.Secure = true
-	sessionStore.Options.HttpOnly = true
-	sessionStore.Options.SameSite = http.SameSiteStrictMode
-	sessionStore.Options.MaxAge = s.config.SessionMaxAgeSeconds
-	return sessionStore
+	switch s.config.SessionEngine {
+	case "cookie":
+		store := sessions.NewCookieStore(hashKey, encryptionKey)
+		store.Options.Secure = true
+		store.Options.HttpOnly = true
+		store.Options.SameSite = http.SameSiteStrictMode
+		store.Options.MaxAge = s.config.SessionMaxAgeSeconds
+		return store
+	case "inmemory":
+		store := memstore.NewMemStore(hashKey, encryptionKey)
+		store.Options.Secure = true
+		store.Options.HttpOnly = true
+		store.Options.SameSite = http.SameSiteStrictMode
+		store.Options.MaxAge = s.config.SessionMaxAgeSeconds
+		return store
+	case "redis":
+		client := redis.NewClient(&redis.Options{
+			Addr:     s.config.RedisUrl,
+			Password: s.config.RedisPassword,
+		})
 
+		// New default RedisStore
+		store, err := redisstore.NewRedisStore(context.Background(), client)
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to create redis store")
+
+		}
+		store.Options(sessions.Options{
+			Path:     "/",
+			MaxAge:   s.config.SessionMaxAgeSeconds,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteStrictMode,
+		})
+		return store
+	default:
+		return nil
+	}
 }
 func (s *Startup) RegisterStaticRoutes(e *echo.Echo) error {
 	e.Static("/css", "./css")
@@ -207,8 +235,14 @@ func (s *Startup) addAuthServices(builder *di.Builder) {
 	services_handlers_auth_callback.AddScopedIHandler(builder)
 	services_handlers_auth_logout.AddScopedIHandler(builder)
 	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
-	services_auth_session_token_store.AddScopedITokenStore(builder)
-	services_auth_cookie_token_store.AddScopedITokenStore(builder) // overrides the session one
+
+	switch s.config.AuthStore {
+	case "session":
+		services_auth_session_token_store.AddScopedITokenStore(builder)
+	default:
+		services_auth_cookie_token_store.AddScopedITokenStore(builder) // overrides the session one
+	}
+
 }
 
 func (s *Startup) addAppHandlers(builder *di.Builder) {
