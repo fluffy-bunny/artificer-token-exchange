@@ -62,5 +62,47 @@ IMemoryCache
 func ContainerAccessor vs aps.net's IServiceProvider  
 etc.   
 
+## Session
+
+Echo uses [gorilla sessions](https://github.com/gorilla/sessions).  Currently this kit supports 3 variants [cookie,inmemory,redis]  
+There is NO defaults, you must select one of the supported backends.  
+
+```env
+SESSION_ENGINE=redis|cookie|inmemory  
+```
+If you select redis you must also configure redis  
+```env
+REDIS_URL=localhost:6379
+REDIS_PASSWORD=blah
+```  
+
+## Auth
+
+Tokens are stored for backend eyes only.  Even when they are stored as cookies, those cookies are encrypted.  
+
+When selecting ```session``` it ***MUST*** backed by a backend sevice like redis.  The reason is that the cookies get HUGE and the cookie version chunks the big ole FAT auth cookie into parts so that we don't go over the 4K limit.  
+
+```env
+AUTH_STORE=cookie|session  
+```
+
+If  ```AUTH_STORE=session``` the SESSION_ENGINE ***MUST*** not be cookie.
+```env
+AUTH_STORE=session
+SESSION_ENGINE=inmemory|redis
+```  
+And if ```AUTH_STORE=cookie``` the SESSION_ENGINE can be any supported one.
+```env
+AUTH_STORE=cookie
+SESSION_ENGINE=cookie|inmemory|redis
+```  
+
+
+
+
+
+
+
+
 
 
