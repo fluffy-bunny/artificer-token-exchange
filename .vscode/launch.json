@@ -20,6 +20,7 @@
             "env": {
                 "APPLICATION_NAME": "echo-starter",
                 "APPLICATION_ENVIRONMENT": "Production",
+                "AUTH_STORE": "session", // cookie|session
                 "PRETTY_LOG": "true",
                 "LOG_LEVEL": "info",
                 "PORT": "1323",
@@ -27,13 +28,16 @@
                 "OIDC__CLIENT_ID": "${env:AUTH0_CLIENT_ID}",
                 "OIDC__CLIENT_SECRET": "${env:AUTH0_CLIENT_SECRET}",
                 "OIDC__CALLBACK_URL": "http://localhost:1323/oidc",
+                "SESSION_ENGINE": "redis",// cookie|inmemory|redis
                 "SESSION_MAX_AGE_SECONDS":    "1800",
                 "AUTH_COOKIE_EXPIRE_SECONDS": "1800",
                 "_SECURE_COOKIE_HASH_KEY": "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY=",
                 "_SECURE_COOKIE_ENCRYPTION_KEY": "wVsibJSltJAgkniN9tlzy39ZDUzuMTSFwsQek6qTcuY=",
                 "SECURE_COOKIE_HASH_KEY": "R9KecnJ7lG2P9hd5NFap5NKye7p266wBBNAL/zlBV4Y=",
                 "SECURE_COOKIE_ENCRYPTION_KEY": "R9KecnJ7lG2P9hd5NFap5NKye7p266wBBNAL/zlBV4Y=",
-                  "GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
+                "GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
+                "REDIS_PASSWORD": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
+                "REDIS_URL": "localhost:6379",
 
             },
             "args": [  ]

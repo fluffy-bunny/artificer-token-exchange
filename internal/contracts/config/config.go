@@ -13,18 +13,24 @@ type (
 	}
 	// Config type
 	Config struct {
-		ApplicationName           string     `json:"applicationName" mapstructure:"APPLICATION_NAME"`
-		ApplicationEnvironment    string     `json:"applicationEnvironment" mapstructure:"APPLICATION_ENVIRONMENT"`
-		PrettyLog                 bool       `json:"prettyLog" mapstructure:"PRETTY_LOG"`
-		LogLevel                  string     `json:"logLevel" mapstructure:"LOG_LEVEL"`
-		Port                      int        `json:"port" mapstructure:"PORT"`
-		Oidc                      oidcConfig `json:"oidc" mapstructure:"OIDC"`
-		SessionMaxAgeSeconds      int        `json:"sessionMaxAgeSeconds" mapstructure:"SESSION_MAX_AGE_SECONDS"`
-		AuthCookieExpireSeconds   int        `json:"authCookieExpireSeconds" mapstructure:"AUTH_COOKIE_EXPIRE_SECONDS"`
-		AuthCookieName            string     `json:"authCookieName" mapstructure:"AUTH_COOKIE_NAME"`
-		SecureCookieHashKey       string     `json:"secureCookieHashKey" mapstructure:"SECURE_COOKIE_HASH_KEY"`
-		SecureCookieEncryptionKey string     `json:"secureCookieEncryptionKey" mapstructure:"SECURE_COOKIE_ENCRYPTION_KEY"`
-		GraphQLEndpoint           string     `json:"graphQLEndpoint" mapstructure:"GRAPHQL_ENDPOINT"`
+		ApplicationName         string     `json:"applicationName" mapstructure:"APPLICATION_NAME"`
+		ApplicationEnvironment  string     `json:"applicationEnvironment" mapstructure:"APPLICATION_ENVIRONMENT"`
+		PrettyLog               bool       `json:"prettyLog" mapstructure:"PRETTY_LOG"`
+		LogLevel                string     `json:"logLevel" mapstructure:"LOG_LEVEL"`
+		Port                    int        `json:"port" mapstructure:"PORT"`
+		Oidc                    oidcConfig `json:"oidc" mapstructure:"OIDC"`
+		SessionMaxAgeSeconds    int        `json:"sessionMaxAgeSeconds" mapstructure:"SESSION_MAX_AGE_SECONDS"`
+		AuthCookieExpireSeconds int        `json:"authCookieExpireSeconds" mapstructure:"AUTH_COOKIE_EXPIRE_SECONDS"`
+		AuthCookieName          string     `json:"authCookieName" mapstructure:"AUTH_COOKIE_NAME"`
+		// session|cookie
+		AuthStore                 string `json:"authStore" mapstructure:"AUTH_STORE"`
+		SecureCookieHashKey       string `json:"secureCookieHashKey" mapstructure:"SECURE_COOKIE_HASH_KEY"`
+		SecureCookieEncryptionKey string `json:"secureCookieEncryptionKey" mapstructure:"SECURE_COOKIE_ENCRYPTION_KEY"`
+		GraphQLEndpoint           string `json:"graphQLEndpoint" mapstructure:"GRAPHQL_ENDPOINT"`
+		// cookie|inmemory|redis
+		SessionEngine string `json:"sessionEngine" mapstructure:"SESSION_ENGINE"`
+		RedisUrl      string `json:"redisUrl" mapstructure:"REDIS_URL"`
+		RedisPassword string `json:"redisPassword" mapstructure:"REDIS_PASSWORD"`
 	}
 )
 
@@ -46,9 +52,13 @@ var (
  	"SESSION_MAX_AGE_SECONDS": 60,
 	"AUTH_COOKIE_EXPIRE_SECONDS": 60,
 	"AUTH_COOKIE_NAME": "_auth",
+	"AUTH_STORE": "cookie",
 	"SECURE_COOKIE_HASH_KEY": "",
 	"SECURE_COOKIE_ENCRYPTION_KEY": "",
-	"GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/"
+	"GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
+	"SESSION_ENGINE": "cookie",
+	"REDIS_URL": "localhost:6379",
+	"REDIS_PASSWORD": ""
 
 
 }
