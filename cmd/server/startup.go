@@ -132,7 +132,8 @@ func (s *Startup) getSessionStore() sessions.Store {
 		return store
 	case "redis":
 		client := redis.NewClient(&redis.Options{
-			Addr: s.config.RedisUrl,
+			Addr:     s.config.RedisUrl,
+			Password: s.config.RedisPassword,
 		})
 
 		// New default RedisStore

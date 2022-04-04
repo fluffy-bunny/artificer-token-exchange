@@ -30,6 +30,7 @@ type (
 		// cookie|inmemory|redis
 		SessionEngine string `json:"sessionEngine" mapstructure:"SESSION_ENGINE"`
 		RedisUrl      string `json:"redisUrl" mapstructure:"REDIS_URL"`
+		RedisPassword string `json:"redisPassword" mapstructure:"REDIS_PASSWORD"`
 	}
 )
 
@@ -56,7 +57,8 @@ var (
 	"SECURE_COOKIE_ENCRYPTION_KEY": "",
 	"GRAPHQL_ENDPOINT": "https://countries.trevorblades.com/",
 	"SESSION_ENGINE": "cookie",
-	"REDIS_URL": "localhost:6379"
+	"REDIS_URL": "localhost:6379",
+	"REDIS_PASSWORD": ""
 
 
 }
