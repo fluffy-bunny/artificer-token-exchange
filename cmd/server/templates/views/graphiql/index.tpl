@@ -76,6 +76,7 @@
           // Change this to point wherever you host your GraphQL server.
           return fetch('/api/vi/graphql', {
             method: 'post',
+            credentials: 'include',
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',
