@@ -6,8 +6,10 @@ package auth
 
 import (
 	"reflect"
+	"strings"
 
 	di "github.com/fluffy-bunny/sarulabsdi"
+	"github.com/rs/zerolog/log"
 )
 
 // ReflectTypeIInternalTokenStore used when your service claims to implement IInternalTokenStore
@@ -16,84 +18,189 @@ var ReflectTypeIInternalTokenStore = di.GetInterfaceReflectType((*IInternalToken
 // AddSingletonIInternalTokenStore adds a type that implements IInternalTokenStore
 func AddSingletonIInternalTokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SINGLETON", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		})
 	di.AddSingleton(builder, implType, implementedTypes...)
 }
 
 // AddSingletonIInternalTokenStoreWithMetadata adds a type that implements IInternalTokenStore
 func AddSingletonIInternalTokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SINGLETON", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		},
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
 	di.AddSingletonWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
 // AddSingletonIInternalTokenStoreByObj adds a prebuilt obj
 func AddSingletonIInternalTokenStoreByObj(builder *di.Builder, obj interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SINGLETON", reflect.TypeOf(obj), _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "obj",
+		})
 	di.AddSingletonWithImplementedTypesByObj(builder, obj, implementedTypes...)
 }
 
 // AddSingletonIInternalTokenStoreByObjWithMetadata adds a prebuilt obj
 func AddSingletonIInternalTokenStoreByObjWithMetadata(builder *di.Builder, obj interface{}, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SINGLETON", reflect.TypeOf(obj), _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "obj",
+		},
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddSingletonWithImplementedTypesByObjWithMetadata(builder, obj, metaData, implementedTypes...)
 }
 
 // AddSingletonIInternalTokenStoreByFunc adds a type by a custom func
 func AddSingletonIInternalTokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SINGLETON", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		})
 	di.AddSingletonWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
 // AddSingletonIInternalTokenStoreByFuncWithMetadata adds a type by a custom func
 func AddSingletonIInternalTokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SINGLETON", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		},
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddSingletonWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
 // AddTransientIInternalTokenStore adds a type that implements IInternalTokenStore
 func AddTransientIInternalTokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("TRANSIENT", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		})
+
 	di.AddTransientWithImplementedTypes(builder, implType, implementedTypes...)
 }
 
 // AddTransientIInternalTokenStoreWithMetadata adds a type that implements IInternalTokenStore
 func AddTransientIInternalTokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("TRANSIENT", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		},
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddTransientWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
 // AddTransientIInternalTokenStoreByFunc adds a type by a custom func
 func AddTransientIInternalTokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("TRANSIENT", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		})
+
 	di.AddTransientWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
 // AddTransientIInternalTokenStoreByFuncWithMetadata adds a type by a custom func
 func AddTransientIInternalTokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("TRANSIENT", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		},
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddTransientWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
 // AddScopedIInternalTokenStore adds a type that implements IInternalTokenStore
 func AddScopedIInternalTokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SCOPED", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		})
 	di.AddScopedWithImplementedTypes(builder, implType, implementedTypes...)
 }
 
 // AddScopedIInternalTokenStoreWithMetadata adds a type that implements IInternalTokenStore
 func AddScopedIInternalTokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SCOPED", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		},
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
 	di.AddScopedWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
 // AddScopedIInternalTokenStoreByFunc adds a type by a custom func
 func AddScopedIInternalTokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SCOPED", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		})
 	di.AddScopedWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
 // AddScopedIInternalTokenStoreByFuncWithMetadata adds a type by a custom func
 func AddScopedIInternalTokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeIInternalTokenStore)
+	_logAddIInternalTokenStore("SCOPED", implType, _getImplementedIInternalTokenStoreNames(implementedTypes...),
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		},
+		_logIInternalTokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddScopedWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
@@ -151,90 +258,224 @@ func SafeGetManyIInternalTokenStoreFromContainer(ctn di.Container) ([]IInternalT
 	return results, nil
 }
 
+type _logIInternalTokenStoreExtra struct {
+	Name  string
+	Value interface{}
+}
+
+func _logAddIInternalTokenStore(scopeType string, implType reflect.Type, interfaces string, extra ..._logIInternalTokenStoreExtra) {
+	infoEvent := log.Info().
+		Str("DI", scopeType).
+		Str("DI-I", interfaces).
+		Str("DI-B", implType.Elem().String())
+
+	for _, extra := range extra {
+		infoEvent = infoEvent.Interface(extra.Name, extra.Value)
+	}
+
+	infoEvent.Send()
+
+}
+func _getImplementedIInternalTokenStoreNames(implementedTypes ...reflect.Type) string {
+	builder := strings.Builder{}
+	for idx, implementedType := range implementedTypes {
+		builder.WriteString(implementedType.Name())
+		if idx < len(implementedTypes)-1 {
+			builder.WriteString(", ")
+		}
+	}
+	return builder.String()
+}
+
 // ReflectTypeITokenStore used when your service claims to implement ITokenStore
 var ReflectTypeITokenStore = di.GetInterfaceReflectType((*ITokenStore)(nil))
 
 // AddSingletonITokenStore adds a type that implements ITokenStore
 func AddSingletonITokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SINGLETON", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		})
 	di.AddSingleton(builder, implType, implementedTypes...)
 }
 
 // AddSingletonITokenStoreWithMetadata adds a type that implements ITokenStore
 func AddSingletonITokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SINGLETON", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		},
+		_logITokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
 	di.AddSingletonWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
 // AddSingletonITokenStoreByObj adds a prebuilt obj
 func AddSingletonITokenStoreByObj(builder *di.Builder, obj interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SINGLETON", reflect.TypeOf(obj), _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "obj",
+		})
 	di.AddSingletonWithImplementedTypesByObj(builder, obj, implementedTypes...)
 }
 
 // AddSingletonITokenStoreByObjWithMetadata adds a prebuilt obj
 func AddSingletonITokenStoreByObjWithMetadata(builder *di.Builder, obj interface{}, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SINGLETON", reflect.TypeOf(obj), _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "obj",
+		},
+		_logITokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddSingletonWithImplementedTypesByObjWithMetadata(builder, obj, metaData, implementedTypes...)
 }
 
 // AddSingletonITokenStoreByFunc adds a type by a custom func
 func AddSingletonITokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SINGLETON", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		})
 	di.AddSingletonWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
 // AddSingletonITokenStoreByFuncWithMetadata adds a type by a custom func
 func AddSingletonITokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SINGLETON", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		},
+		_logITokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddSingletonWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
 // AddTransientITokenStore adds a type that implements ITokenStore
 func AddTransientITokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("TRANSIENT", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		})
+
 	di.AddTransientWithImplementedTypes(builder, implType, implementedTypes...)
 }
 
 // AddTransientITokenStoreWithMetadata adds a type that implements ITokenStore
 func AddTransientITokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("TRANSIENT", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		},
+		_logITokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddTransientWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
 // AddTransientITokenStoreByFunc adds a type by a custom func
 func AddTransientITokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("TRANSIENT", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		})
+
 	di.AddTransientWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
 // AddTransientITokenStoreByFuncWithMetadata adds a type by a custom func
 func AddTransientITokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("TRANSIENT", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		},
+		_logITokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddTransientWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
 // AddScopedITokenStore adds a type that implements ITokenStore
 func AddScopedITokenStore(builder *di.Builder, implType reflect.Type, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SCOPED", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		})
 	di.AddScopedWithImplementedTypes(builder, implType, implementedTypes...)
 }
 
 // AddScopedITokenStoreWithMetadata adds a type that implements ITokenStore
 func AddScopedITokenStoreWithMetadata(builder *di.Builder, implType reflect.Type, metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SCOPED", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "type",
+		},
+		_logITokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
 	di.AddScopedWithImplementedTypesWithMetadata(builder, implType, metaData, implementedTypes...)
 }
 
 // AddScopedITokenStoreByFunc adds a type by a custom func
 func AddScopedITokenStoreByFunc(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SCOPED", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		})
 	di.AddScopedWithImplementedTypesByFunc(builder, implType, build, implementedTypes...)
 }
 
 // AddScopedITokenStoreByFuncWithMetadata adds a type by a custom func
 func AddScopedITokenStoreByFuncWithMetadata(builder *di.Builder, implType reflect.Type, build func(ctn di.Container) (interface{}, error), metaData map[string]interface{}, implementedTypes ...reflect.Type) {
 	implementedTypes = append(implementedTypes, ReflectTypeITokenStore)
+	_logAddITokenStore("SCOPED", implType, _getImplementedITokenStoreNames(implementedTypes...),
+		_logITokenStoreExtra{
+			Name:  "DI-BY",
+			Value: "func",
+		},
+		_logITokenStoreExtra{
+			Name:  "DI-M",
+			Value: metaData,
+		})
+
 	di.AddScopedWithImplementedTypesByFuncWithMetadata(builder, implType, build, metaData, implementedTypes...)
 }
 
@@ -290,4 +531,33 @@ func SafeGetManyITokenStoreFromContainer(ctn di.Container) ([]ITokenStore, error
 		results = append(results, obj.(ITokenStore))
 	}
 	return results, nil
+}
+
+type _logITokenStoreExtra struct {
+	Name  string
+	Value interface{}
+}
+
+func _logAddITokenStore(scopeType string, implType reflect.Type, interfaces string, extra ..._logITokenStoreExtra) {
+	infoEvent := log.Info().
+		Str("DI", scopeType).
+		Str("DI-I", interfaces).
+		Str("DI-B", implType.Elem().String())
+
+	for _, extra := range extra {
+		infoEvent = infoEvent.Interface(extra.Name, extra.Value)
+	}
+
+	infoEvent.Send()
+
+}
+func _getImplementedITokenStoreNames(implementedTypes ...reflect.Type) string {
+	builder := strings.Builder{}
+	for idx, implementedType := range implementedTypes {
+		builder.WriteString(implementedType.Name())
+		if idx < len(implementedTypes)-1 {
+			builder.WriteString(", ")
+		}
+	}
+	return builder.String()
 }
