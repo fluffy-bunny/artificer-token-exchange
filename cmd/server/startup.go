@@ -103,6 +103,7 @@ func NewStartup() echo_contracts_startup.IStartup {
 }
 func (s *Startup) SetContainer(container di.Container) {
 	s.container = container
+	di.Dump(container)
 }
 func (s *Startup) getSessionStore() sessions.Store {
 

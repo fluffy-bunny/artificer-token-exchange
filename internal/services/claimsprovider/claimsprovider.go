@@ -9,7 +9,6 @@ import (
 	contracts_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/golang/mock/gomock"
-	"github.com/rs/zerolog/log"
 )
 
 type (
@@ -68,12 +67,10 @@ var reflectTypeMock = reflect.TypeOf((*serviceMock)(nil))
 
 // AddSingletonIClaimsProvider registers the *service as a singleton.
 func AddSingletonIClaimsProvider(builder *di.Builder) {
-	log.Info().Str("DI", "IClaimsProvider").Send()
 	contracts_claimsprovider.AddSingletonIClaimsProvider(builder, reflectType)
 }
 
 func AddSingletonIClaimsProviderMock(builder *di.Builder, ctrl *gomock.Controller) {
-	log.Info().Str("DI", "IClaimsProvider - MOCK").Send()
 	contracts_claimsprovider.AddSingletonIClaimsProvider(builder, reflectTypeMock)
 }
 func (s *service) Ctor() {}

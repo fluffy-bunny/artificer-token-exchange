@@ -12,7 +12,6 @@ import (
 	contracts_cookies "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/cookies"
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
-	"github.com/rs/zerolog/log"
 	"golang.org/x/oauth2"
 )
 
@@ -35,7 +34,6 @@ var reflectType = reflect.TypeOf((*service)(nil))
 
 // AddScopedITokenStore registers the *service as a singleton.
 func AddScopedITokenStore(builder *di.Builder) {
-	log.Info().Str("DI", "ITokenStore,IInternalTokenStore - SESSION SCOPED").Send()
 	contracts_auth.AddScopedITokenStore(builder, reflectType, contracts_auth.ReflectTypeIInternalTokenStore)
 }
 

@@ -7,7 +7,6 @@ import (
 
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	di "github.com/fluffy-bunny/sarulabsdi"
-	"github.com/rs/zerolog/log"
 )
 
 type (
@@ -24,7 +23,6 @@ var reflectType = reflect.TypeOf((*service)(nil))
 
 // AddSingletonIProbe registers the *service as a singleton.
 func AddSingletonIProbe(builder *di.Builder) {
-	log.Info().Str("DI", "IProbe - oidc").Send()
 	contracts_probe.AddSingletonIProbe(builder, reflectType)
 }
 func (s *service) GetName() string {
