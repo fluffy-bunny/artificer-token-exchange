@@ -2,14 +2,14 @@ module echo-starter
 
 go 1.18
 
-//replace github.com/fluffy-bunny/grpcdotnetgo => ../grpcdotnetgo
+replace github.com/fluffy-bunny/grpcdotnetgo => ../grpcdotnetgo
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
 	github.com/catmullet/go-workers v1.4.1
 	github.com/cheekybits/genny v1.0.0
 	github.com/containerd/containerd v1.6.1
-	github.com/fluffy-bunny/grpcdotnetgo v0.1.238
+	github.com/fluffy-bunny/grpcdotnetgo v0.1.240-github-login.0
 	github.com/fluffy-bunny/sarulabsdi v0.1.63
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang/mock v1.6.0

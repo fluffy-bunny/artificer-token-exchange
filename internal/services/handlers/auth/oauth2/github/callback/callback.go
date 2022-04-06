@@ -8,12 +8,13 @@ import (
 	"echo-starter/internal/templates"
 	"echo-starter/internal/wellknown"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
-	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+	core_contracts_oauth2_github "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oauth2/github"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
@@ -21,11 +22,11 @@ import (
 
 type (
 	service struct {
-		Logger          contracts_logger.ILogger                        `inject:""`
-		Authenticator   core_contracts_oidc.IOIDCAuthenticator          `inject:""`
-		ClaimsProvider  contracts_claimsprovider.IClaimsProvider        `inject:""`
-		TokenStore      contracts_auth.IInternalTokenStore              `inject:""`
-		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
+		Logger          contracts_logger.ILogger                                `inject:""`
+		Authenticator   core_contracts_oauth2_github.IGithubOAuth2Authenticator `inject:""`
+		ClaimsProvider  contracts_claimsprovider.IClaimsProvider                `inject:""`
+		TokenStore      contracts_auth.IInternalTokenStore                      `inject:""`
+		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal         `inject:""`
 	}
 )
 
@@ -43,7 +44,7 @@ func AddScopedIHandler(builder *di.Builder) {
 			contracts_handler.GET,
 			contracts_handler.POST,
 		},
-		wellknown.OIDCCallbackPath)
+		wellknown.OAuth2CallbackPath)
 }
 
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
@@ -100,21 +101,23 @@ func (s *service) post(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusUnauthorized, "Failed to convert an authorization code into a token.")
 	}
-	_, err = s.Authenticator.VerifyIDToken(ctx, token)
+
+	user, err := s.Authenticator.GetUser(token)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to verify ID Token.")
+		return c.String(http.StatusUnauthorized, "Failed to get user info from token.")
 	}
 
-	/*
-		authTokensB, err := json.Marshal(token)
-		if err != nil {
-			return c.String(http.StatusInternalServerError, err.Error())
-		}
-		authSess.Values["tokens"] = string(authTokensB)
-	*/
-	// the token store and the session share a idompotency key to bind them together
+	// this is where we trade in this user ID for claims we store in the session
+	claims, err := s.ClaimsProvider.GetClaims(fmt.Sprintf("%d", user.ID), "")
+	jsonClaims, _ := json.Marshal(claims)
+	sess.Values["claims"] = jsonClaims
+
+	// the token store and the session share a binding key to bind them together
 	s.TokenStore.StoreTokenByIdempotencyKey(sessionState, token)
-	sess.Values["idempotency_key"] = sessionState
+	sess.Values["binding_key"] = sessionState
+
+	jsonUser, _ := json.Marshal(user)
+	sess.Values["user"] = jsonUser
 
 	tt, err := s.TokenStore.GetTokenByIdempotencyKey(sessionState)
 	if err != nil {
