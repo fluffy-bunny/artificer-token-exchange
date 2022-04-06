@@ -53,15 +53,6 @@ func (s *service) Do(c echo.Context) error {
 	s.TokenStore.Clear()
 	session.TerminateSession(c)
 
-	// 2. log the user out of everything use the auth0 logout endpoint
-
-	// https://auth0.com/docs/api/authentication?javascript#logout
-	//GET https://YOUR_DOMAIN/v2/logout?client_id=YOUR_CLIENT_ID&returnTo=LOGOUT_URL
-	logoutUrl := fmt.Sprintf("https://%s/v2/logout?client_id=%s&returnTo=%s/",
-		s.Config.Oidc.Domain,
-		s.Config.Oidc.ClientID,
-		getMyRootPath(c))
-
 	// Redirect to home page.
-	return c.Redirect(http.StatusFound, logoutUrl)
+	return c.Redirect(http.StatusFound, "/")
 }

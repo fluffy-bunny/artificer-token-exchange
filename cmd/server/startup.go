@@ -10,6 +10,8 @@ import (
 	"os"
 	"strconv"
 
+	"golang.org/x/oauth2"
+
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	"github.com/quasoft/memstore"
 	"github.com/rs/zerolog/log"
@@ -53,12 +55,20 @@ import (
 	//----------------------------------------------------------------------------------------------------------------------
 	services_handlers_api_graphql "echo-starter/internal/services/handlers/api/graphql"
 
-	services_handlers_auth_callback "echo-starter/internal/services/handlers/auth/callback"
-	services_handlers_auth_login "echo-starter/internal/services/handlers/auth/login"
-	services_handlers_auth_logout "echo-starter/internal/services/handlers/auth/logout"
+	services_handlers_auth_oidc_callback "echo-starter/internal/services/handlers/auth/oidc/callback"
+	services_handlers_auth_oidc_login "echo-starter/internal/services/handlers/auth/oidc/login"
+	services_handlers_auth_oidc_logout "echo-starter/internal/services/handlers/auth/oidc/logout"
+
+	services_handlers_auth_oauth2_github_callback "echo-starter/internal/services/handlers/auth/oauth2/github/callback"
+	services_handlers_auth_oauth2_login "echo-starter/internal/services/handlers/auth/oauth2/login"
+	services_handlers_auth_oauth2_logout "echo-starter/internal/services/handlers/auth/oauth2/logout"
+
+	core_contracts_oauth2 "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oauth2"
 
 	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
 	core_services_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/oidc"
+
+	core_services_oauth2_github "github.com/fluffy-bunny/grpcdotnetgo/pkg/services/oauth2/github"
 
 	core_contracts_session "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/session"
 	core_middleware_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/middleware/claimsprincipal"
@@ -209,32 +219,58 @@ func (s *Startup) addSecureCookieOptions(builder *di.Builder) {
 	})
 }
 func (s *Startup) addAuthServices(builder *di.Builder) {
-	// AUTH SERVICES
-	//----------------------------------------------------------------------------------------------------------------------
-	core_contracts_oidc.AddGetOIDCAuthenticatorConfigFunc(builder, func() *core_contracts_oidc.AuthenticatorConfig {
-		if core_utils.IsEmptyOrNil(s.config.Oidc.CallbackURL) {
-			// primarily for development
-			port := s.config.Port
-			s.config.Oidc.CallbackURL = fmt.Sprintf("http://localhost:%v%s",
-				port,
-				wellknown.OIDCCallbackPath)
-		}
 
-		return &core_contracts_oidc.AuthenticatorConfig{
-			Domain:       s.config.Oidc.Domain,
-			ClientID:     s.config.Oidc.ClientID,
-			ClientSecret: s.config.Oidc.ClientSecret,
-			CallbackURL:  s.config.Oidc.CallbackURL,
-		}
-	})
-	core_services_oidc.AddSingletonIOIDCAuthenticator(builder)
+	switch s.config.AuthProvider {
+	case "oidc":
+		// AUTH SERVICES
+		//----------------------------------------------------------------------------------------------------------------------
+		core_contracts_oidc.AddGetOIDCAuthenticatorConfigFunc(builder, func() *core_contracts_oidc.AuthenticatorConfig {
+			if core_utils.IsEmptyOrNil(s.config.OIDC.CallbackURL) {
+				// primarily for development
+				port := s.config.Port
+				s.config.OIDC.CallbackURL = fmt.Sprintf("http://localhost:%v%s",
+					port,
+					wellknown.OIDCCallbackPath)
+			}
+
+			return &core_contracts_oidc.AuthenticatorConfig{
+				Domain:       s.config.OIDC.Domain,
+				ClientID:     s.config.OIDC.ClientID,
+				ClientSecret: s.config.OIDC.ClientSecret,
+				CallbackURL:  s.config.OIDC.CallbackURL,
+			}
+		})
+		core_services_oidc.AddSingletonIOIDCAuthenticator(builder)
+		// AUTH HANDLERS
+		//----------------------------------------------------------------------------------------------------------------------
+		services_handlers_auth_oidc_login.AddScopedIHandler(builder)
+		services_handlers_auth_oidc_callback.AddScopedIHandler(builder)
+		services_handlers_auth_oidc_logout.AddScopedIHandler(builder)
+
+	case "github":
+		core_contracts_oauth2.AddGetOAuth2AuthenticatorConfigFunc(builder, func() *oauth2.Config {
+			return &oauth2.Config{
+				ClientID:     s.config.OAuth2.ClientID,
+				ClientSecret: s.config.OAuth2.ClientSecret,
+				RedirectURL:  s.config.OAuth2.RedirectURL,
+				Scopes:       s.config.OAuth2.Scopes,
+			}
+
+		})
+		core_services_oauth2_github.AddSingletonIGithubOAuth2Authenticator(builder)
+		// AUTH HANDLERS
+		//----------------------------------------------------------------------------------------------------------------------
+		services_handlers_auth_oauth2_login.AddScopedIHandler(builder)
+		services_handlers_auth_oauth2_github_callback.AddScopedIHandler(builder)
+		services_handlers_auth_oauth2_logout.AddScopedIHandler(builder)
+
+	default:
+		panic("auth provider not supported")
+	}
 
 	// AUTH HANDLERS
 	//----------------------------------------------------------------------------------------------------------------------
-	services_handlers_auth_login.AddScopedIHandler(builder)
 	services_handlers_auth_profiles.AddScopedIHandler(builder)
-	services_handlers_auth_callback.AddScopedIHandler(builder)
-	services_handlers_auth_logout.AddScopedIHandler(builder)
 	services_handlers_auth_unauthorized.AddScopedIHandler(builder)
 
 	switch s.config.AuthStore {

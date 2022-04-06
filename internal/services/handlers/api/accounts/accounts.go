@@ -95,14 +95,14 @@ func (s *service) post(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid directive")
 	}
 }
-func (s *service) _getIdompotencyKey(c echo.Context) (string, error) {
+func (s *service) _getbindingKey(c echo.Context) (string, error) {
 	sess := session.GetSession(c)
 
-	idompotencyKey, ok := sess.Values["idempotency_key"]
+	bindingKey, ok := sess.Values["binding_key"]
 	if !ok {
-		return "", fmt.Errorf("idempotency_key not found")
+		return "", fmt.Errorf("binding_key not found")
 	}
-	return idompotencyKey.(string), nil
+	return bindingKey.(string), nil
 }
 func (s *service) postForceRefresh(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -112,16 +112,16 @@ func (s *service) postForceRefresh(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusForbidden, "not authorized")
 	}
 
-	idompotencyKey, err := s._getIdompotencyKey(c)
+	bindingKey, err := s._getbindingKey(c)
 	if err != nil {
-		s.Logger.Error().Err(err).Msg("idempotency_key not found")
+		s.Logger.Error().Err(err).Msg("binding_key not found")
 		return denied()
 	}
 
 	for {
-		token, err := s.TokenStore.GetTokenByIdempotencyKey(idompotencyKey)
+		token, err := s.TokenStore.GetTokenByIdempotencyKey(bindingKey)
 		if err != nil {
-			s.Logger.Error().Msg("TokenStore.GetTokenByIdompotencyKey failed")
+			s.Logger.Error().Msg("TokenStore.GetTokenBybindingKey failed")
 			break
 		}
 
@@ -135,9 +135,9 @@ func (s *service) postForceRefresh(c echo.Context) error {
 			break
 		}
 		if newToken.AccessToken != token.AccessToken {
-			err = s.TokenStore.StoreTokenByIdempotencyKey(idompotencyKey, newToken)
+			err = s.TokenStore.StoreTokenByIdempotencyKey(bindingKey, newToken)
 			if err != nil {
-				s.Logger.Error().Err(err).Msg("TokenStore.StoreTokenByIdompotencyKey failed")
+				s.Logger.Error().Err(err).Msg("TokenStore.StoreTokenBybindingKey failed")
 				break
 			}
 		}
