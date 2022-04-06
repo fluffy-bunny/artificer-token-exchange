@@ -16,10 +16,13 @@ import (
 const middlewareLogName = "ensure-auth-token-refresh"
 
 func EnsureAuthTokenRefresh(container di.Container) echo.MiddlewareFunc {
-	authenticator := core_contracts_oidc.GetIOIDCAuthenticatorFromContainer(container)
+	authenticator, _ := core_contracts_oidc.SafeGetIOIDCAuthenticatorFromContainer(container)
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return func(c echo.Context) error {
+			if authenticator == nil {
+				return next(c)
+			}
 			scopedContainer := c.Get(core_wellknown.SCOPED_CONTAINER_KEY).(di.Container)
 			logger := contracts_logger.GetILoggerFromContainer(scopedContainer)
 			warnEvent := logger.GetLogger().Warn().Str("middleware", middlewareLogName)
@@ -29,14 +32,14 @@ func EnsureAuthTokenRefresh(container di.Container) echo.MiddlewareFunc {
 			for {
 				// 1. get our idompontent session
 				sess := session.GetSession(c)
-				idompotencyKey, ok := sess.Values["idempotency_key"]
+				bindingKey, ok := sess.Values["binding_key"]
 				if !ok {
 					// if we don't  have this the user hasn't logged in
 					break
 				}
 				tokenStore := contracts_auth.GetIInternalTokenStoreFromContainer(scopedContainer)
 
-				token, err := tokenStore.GetTokenByIdempotencyKey(idompotencyKey.(string))
+				token, err := tokenStore.GetTokenByIdempotencyKey(bindingKey.(string))
 				if err != nil {
 					// not necessarily an error. The tokens could have been removed and our idompotent key could be stale
 					debugEvent.Err(err).Msg("Failed to get token")
@@ -49,7 +52,7 @@ func EnsureAuthTokenRefresh(container di.Container) echo.MiddlewareFunc {
 					break
 				}
 				if newToken.AccessToken != token.AccessToken {
-					err = tokenStore.StoreTokenByIdempotencyKey(idompotencyKey.(string), newToken)
+					err = tokenStore.StoreTokenByIdempotencyKey(bindingKey.(string), newToken)
 					if err != nil {
 						errorEvent.Err(err).Msg("Failed to store token")
 					}

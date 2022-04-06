@@ -17,8 +17,8 @@ type (
 	}
 	IInternalTokenStore interface {
 		ITokenStore
-		GetTokenByIdempotencyKey(idompotencyKey string) (*oauth2.Token, error)
-		StoreTokenByIdempotencyKey(idompotencyKey string, token *oauth2.Token) error
+		GetTokenByIdempotencyKey(bindingKey string) (*oauth2.Token, error)
+		StoreTokenByIdempotencyKey(bindingKey string, token *oauth2.Token) error
 		SlideOutExpiration() error
 	}
 )

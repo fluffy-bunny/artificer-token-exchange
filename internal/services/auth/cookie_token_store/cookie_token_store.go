@@ -57,7 +57,7 @@ func (s *service) _getAuthCookieName() (string, error) {
 	c := s.EchoContextAccessor.GetContext()
 	sess := session.GetSession(c)
 
-	idempotencyKey, ok := sess.Values["idempotency_key"]
+	idempotencyKey, ok := sess.Values["binding_key"]
 	if !ok {
 		return "", errors.New("idempotency key not found in session")
 	}
@@ -91,9 +91,9 @@ func (s *service) GetTokenByIdempotencyKey(idempotencyKey string) (*oauth2.Token
 			return nil, err
 		}
 		if container.ID != idempotencyKey {
-			s.Logger.Error().Str("request_idompotency_key", idempotencyKey).
-				Str("stored_idompotency_key", container.ID).Msg("idempotencyKey does not match cookieId")
-			return nil, errors.New("idompotency key requsted doesn't match the one stored")
+			s.Logger.Error().Str("request_binding_key", idempotencyKey).
+				Str("stored_binding_key", container.ID).Msg("idempotencyKey does not match cookieId")
+			return nil, errors.New("binding key requsted doesn't match the one stored")
 		}
 		s.cachedToken = container.Token
 	}

@@ -5,7 +5,6 @@ import (
 	contracts_auth "echo-starter/internal/contracts/auth"
 	contracts_config "echo-starter/internal/contracts/config"
 	"echo-starter/internal/wellknown"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -88,7 +87,5 @@ func (s *service) post(c echo.Context) error {
 		s.Logger.Error().Err(err).Msg("ioutil.ReadAll")
 		return err
 	}
-	fmt.Println(string(b))
 	return c.String(http.StatusOK, string(b))
-
 }

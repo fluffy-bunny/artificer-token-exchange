@@ -47,7 +47,8 @@ const middlewareLogName = "token-to-claims-principal"
 func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.MiddlewareFunc {
 	// get authCookie service once during configuration
 
-	authenticator := core_contracts_oidc.GetIOIDCAuthenticatorFromContainer(root)
+	oidcAuthenticator, _ := core_contracts_oidc.SafeGetIOIDCAuthenticatorFromContainer(root)
+
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 
@@ -63,7 +64,7 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 				}
 				// 1. get our idompontent session
 				sess := session.GetSession(c)
-				idompotencyKey, ok := sess.Values["idempotency_key"]
+				bindingKey, ok := sess.Values["binding_key"]
 				if !ok {
 					// if we don't  have this the user hasn't logged in
 					break
@@ -79,7 +80,7 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 
 				tokenStore := contracts_auth.GetIInternalTokenStoreFromContainer(scopedContainer)
 
-				token, err := tokenStore.GetTokenByIdempotencyKey(idompotencyKey.(string))
+				token, err := tokenStore.GetTokenByIdempotencyKey(bindingKey.(string))
 				if err != nil {
 					// not necessarily an error. The tokens could have been removed and our idompotent key could be stale
 					debugEvent.Err(err).Msg("Failed to get token")
@@ -90,15 +91,18 @@ func AuthenticatedSessionToClaimsPrincipalMiddleware(root di.Container) echo.Mid
 				claimsPrincipal := contracts_core_claimsprincipal.GetIClaimsPrincipalFromContainer(scopedContainer)
 
 				if ok, _ := isJWT(token.AccessToken); ok {
-					accessToken, err := authenticator.ValidateJWTAccessToken(token.AccessToken)
-					if err != nil {
-						errorEvent.Err(err).Msg("ValidateJWTAccessToken failed")
-						terminateAuthSession()
-						break
-					}
-					accessTokenClaims := accessToken.ToClaims()
-					for _, claim := range accessTokenClaims {
-						claimsPrincipal.AddClaim(*claim)
+					if oidcAuthenticator != nil {
+						accessToken, err := oidcAuthenticator.ValidateJWTAccessToken(token.AccessToken)
+						if err != nil {
+							errorEvent.Err(err).Msg("ValidateJWTAccessToken failed")
+							terminateAuthSession()
+							break
+						}
+						accessTokenClaims := accessToken.ToClaims()
+						for _, claim := range accessTokenClaims {
+							claimsPrincipal.AddClaim(*claim)
+						}
+
 					}
 				}
 

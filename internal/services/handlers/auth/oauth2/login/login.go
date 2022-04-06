@@ -9,7 +9,7 @@ import (
 	"reflect"
 
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
-	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+	core_contracts_oauth2 "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oauth2"
 	"github.com/rs/xid"
 
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
@@ -17,12 +17,13 @@ import (
 	core_utils "github.com/fluffy-bunny/grpcdotnetgo/pkg/utils"
 	di "github.com/fluffy-bunny/sarulabsdi"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/oauth2"
 )
 
 type (
 	service struct {
 		Logger          contracts_logger.ILogger                        `inject:""`
-		Authenticator   core_contracts_oidc.IOIDCAuthenticator          `inject:""`
+		Authenticator   core_contracts_oauth2.IOAuth2Authenticator      `inject:""`
 		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
 	}
 )
@@ -43,7 +44,6 @@ func AddScopedIHandler(builder *di.Builder) {
 		wellknown.LoginPath)
 }
 
-func (s *service) Ctor() {}
 func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 	return []echo.MiddlewareFunc{}
 }
@@ -74,12 +74,8 @@ func (s *service) Do(c echo.Context) error {
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	url := s.Authenticator.AuthCodeURL(state)
-	/*
-		return templates.Render(c, s.ClaimsPrincipal, http.StatusOK, "views/auth/login/index", map[string]interface{}{
-			"url": url,
-		})
-	*/
+	url := s.Authenticator.AuthCodeURL(state, oauth2.AccessTypeOffline)
+
 	return c.Redirect(http.StatusFound, url)
 }
 func (s *service) generateRandomState() (string, error) {
