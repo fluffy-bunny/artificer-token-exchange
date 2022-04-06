@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"reflect"
 
-	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
-
 	contracts_core_claimsprincipal "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/claimsprincipal"
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
@@ -18,7 +16,6 @@ import (
 type (
 	service struct {
 		Logger          contracts_logger.ILogger                        `inject:""`
-		Authenticator   core_contracts_oidc.IOIDCAuthenticator          `inject:""`
 		ClaimsPrincipal contracts_core_claimsprincipal.IClaimsPrincipal `inject:""`
 	}
 )
