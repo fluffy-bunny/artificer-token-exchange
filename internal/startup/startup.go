@@ -1,4 +1,4 @@
-package main
+package startup
 
 import (
 	"context"
@@ -96,9 +96,9 @@ import (
 )
 
 type Startup struct {
-	config    *tex_config.Config
-	ctrl      *gomock.Controller
-	container di.Container
+	echo_contracts_startup.CommonStartup
+	config *tex_config.Config
+	ctrl   *gomock.Controller
 }
 
 func assertImplementation() {
@@ -111,10 +111,7 @@ func NewStartup() echo_contracts_startup.IStartup {
 		ctrl:   gomock.NewController(nil),
 	}
 }
-func (s *Startup) SetContainer(container di.Container) {
-	s.container = container
-	di.Dump(container)
-}
+
 func (s *Startup) getSessionStore() sessions.Store {
 
 	hashKey, err := base64.StdEncoding.DecodeString(s.config.SecureCookieHashKey)
@@ -174,8 +171,7 @@ func (s *Startup) RegisterStaticRoutes(e *echo.Echo) error {
 
 func (s *Startup) GetOptions() *startup.Options {
 	return &startup.Options{
-		Listener: nil,
-		Port:     s.config.Port,
+		Port: s.config.Port,
 	}
 }
 
@@ -344,7 +340,7 @@ func (s *Startup) Configure(e *echo.Echo, root di.Container) error {
 	}))
 	// DevelopmentMiddlewareUsingClaimsMap adds all the needed claims so that FinalAuthVerificationMiddlewareUsingClaimsMap succeeds
 	//e.Use(middleware_claimsprincipal.DevelopmentMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
-	e.Use(middleware_session.EnsureAuthTokenRefresh(s.container))
+	e.Use(middleware_session.EnsureAuthTokenRefresh(s.GetContainer()))
 	e.Use(middleware_claimsprincipal.AuthenticatedSessionToClaimsPrincipalMiddleware(root))
 	e.Use(core_middleware_claimsprincipal.FinalAuthVerificationMiddlewareUsingClaimsMap(echostarter_auth.BuildGrpcEntrypointPermissionsClaimsMap(), true))
 	// only after we pass auth do we slide out the auth session
