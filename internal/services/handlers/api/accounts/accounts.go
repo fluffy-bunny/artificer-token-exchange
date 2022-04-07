@@ -11,7 +11,8 @@ import (
 	contracts_auth "echo-starter/internal/contracts/auth"
 
 	contracts_logger "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/logger"
-	core_contracts_oidc "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oidc"
+	core_contracts_oauth2 "github.com/fluffy-bunny/grpcdotnetgo/pkg/contracts/oauth2"
+
 	contracts_contextaccessor "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/contextaccessor"
 	contracts_handler "github.com/fluffy-bunny/grpcdotnetgo/pkg/echo/contracts/handler"
 	di "github.com/fluffy-bunny/sarulabsdi"
@@ -22,7 +23,7 @@ import (
 type (
 	service struct {
 		Logger              contracts_logger.ILogger                       `inject:""`
-		OIDCAuthenticator   core_contracts_oidc.IOIDCAuthenticator         `inject:""`
+		OAuth2Authenticator core_contracts_oauth2.IOAuth2Authenticator     `inject:""`
 		TokenStore          contracts_auth.IInternalTokenStore             `inject:""`
 		EchoContextAccessor contracts_contextaccessor.IEchoContextAccessor `inject:""`
 	}
@@ -127,12 +128,13 @@ func (s *service) postForceRefresh(c echo.Context) error {
 
 		// make the token expired so that tokenSource will refresh it
 		token.Expiry = time.Now().Add(time.Duration(-60) * time.Second)
-		tokenSource := s.OIDCAuthenticator.GetTokenSource(ctx, token)
+		tokenSource := s.OAuth2Authenticator.GetTokenSource(ctx, token)
+
 		// token source will not do the refresh for us
 		newToken, err := tokenSource.Token()
 		if err != nil {
 			log.Warn().Err(err).Msg("refresh token failed")
-			break
+			return c.JSON(http.StatusOK, err.Error())
 		}
 		if newToken.AccessToken != token.AccessToken {
 			err = s.TokenStore.StoreTokenByIdempotencyKey(bindingKey, newToken)
@@ -141,6 +143,7 @@ func (s *service) postForceRefresh(c echo.Context) error {
 				break
 			}
 		}
+
 		return c.JSON(http.StatusOK, "ok")
 	}
 	return denied()
