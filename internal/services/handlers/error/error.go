@@ -43,7 +43,7 @@ func (s *service) GetMiddleware() []echo.MiddlewareFunc {
 }
 
 type params struct {
-	Message string `param:"msg" query:"msg" header:"msg" form:"msg" json:"msg" xml:"msg"`
+	Message string `param:"message" query:"message" header:"message" form:"message" json:"message" xml:"message"`
 }
 
 func (s *service) Do(c echo.Context) error {
