@@ -2,7 +2,7 @@ module echo-starter
 
 go 1.18
 
-replace github.com/fluffy-bunny/grpcdotnetgo => ../grpcdotnetgo
+//replace github.com/fluffy-bunny/grpcdotnetgo => ../grpcdotnetgo
 
 require (
 	github.com/ahmetb/go-linq/v3 v3.2.0
