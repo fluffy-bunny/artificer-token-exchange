@@ -348,8 +348,8 @@ github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga
 github.com/fatih/structtag v1.2.0 h1:/OdNE99OxoI/PqaW/SuSK9uxxT3f/tcSZgon/ssNSx4=
 github.com/fatih/structtag v1.2.0/go.mod h1:mBJUNpUnHmRKrKlQQlmCrh5PuhftFbNv8Ys4/aAZl94=
 github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
-github.com/fluffy-bunny/grpcdotnetgo v0.1.242 h1:2GVSxwpzuWuaEj0jbXiJUs6YVD0eghTT0Lu7GpaOqJU=
-github.com/fluffy-bunny/grpcdotnetgo v0.1.242/go.mod h1:fycqWVoBRU3YrHJ1uYe5DLmd1MAGwqclZ6pLzurPsSw=
+github.com/fluffy-bunny/grpcdotnetgo v0.1.244 h1:ROdVGl5twwu6NDp/eGjg/yLjGF4hQOlcUevmS38wS4c=
+github.com/fluffy-bunny/grpcdotnetgo v0.1.244/go.mod h1:fycqWVoBRU3YrHJ1uYe5DLmd1MAGwqclZ6pLzurPsSw=
 github.com/fluffy-bunny/sarulabsdi v0.1.63 h1:mPkC25DBsWn0hE4xNMdVBcsY5TdtMwfR2/nntOOFkFA=
 github.com/fluffy-bunny/sarulabsdi v0.1.63/go.mod h1:/4TxiZYWMoADjmgKH3X7+scWtMqyJzRTPN0vNk1U20c=
 github.com/fluffy-bunny/viperEx v0.0.26 h1:6Dih/t8tw1RskFwdqZE71ddmYX+z3ZCu+i8tiFdXM18=
@@ -896,6 +896,7 @@ github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1 h1:5TQK59W5E3v0r2duFAb7P95B6hEeOyEnHRa8MjYSMTY=
+github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/syndtr/gocapability v0.0.0-20170704070218-db04d3cc01c8/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
