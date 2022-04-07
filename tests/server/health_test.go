@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"syscall"
 	"testing"
 
 	"net/http/httptest"
@@ -25,9 +24,6 @@ func TestHealthCheck(t *testing.T) {
 
 		folderChanger := NewFolderChanger("../../cmd/server")
 		defer folderChanger.ChangeBack()
-
-		CurrentWD, _ := syscall.Getwd()
-		fmt.Println("CurrentWD:", CurrentWD)
 
 		startChan := make(chan bool)
 
