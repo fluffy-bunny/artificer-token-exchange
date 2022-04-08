@@ -163,9 +163,7 @@ func (s *Startup) getSessionStore() sessions.Store {
 	}
 }
 func (s *Startup) RegisterStaticRoutes(e *echo.Echo) error {
-	e.Static("/css", "./css")
-	e.Static("/assets", "./assets")
-	e.Static("/js", "./js")
+	e.Static("/static", "./static")
 	return nil
 }
 
