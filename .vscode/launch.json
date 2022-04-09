@@ -19,7 +19,7 @@
             "program": "${workspaceFolder}/cmd/server",
             "env": {
                 "APPLICATION_NAME": "echo-starter",
-                "APPLICATION_ENVIRONMENT": "Production",
+                "APPLICATION_ENVIRONMENT": "Development",
                 "AUTH_STORE": "cookie", // cookie|session
                 "PRETTY_LOG": "true",
                 "LOG_LEVEL": "info",

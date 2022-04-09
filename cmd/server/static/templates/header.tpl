@@ -6,10 +6,10 @@
       <meta name="author" content="" />
       <title>Bare - Start Bootstrap Template</title>
       <!-- Favicon-->
-      <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+      <link rel="icon" type="image/x-icon" href="/static/assets/favicon.ico" />
       <!-- Core theme CSS (includes Bootstrap)-->
-      <link href="/css/styles.css" rel="stylesheet" />
-      <link href="/css/json-viewer.css" rel="stylesheet" />
+      <link href="/static/css/styles.css" rel="stylesheet" />
+      <link href="/static/css/json-viewer.css" rel="stylesheet" />
       
 </head>
 {{end}}

@@ -26,9 +26,7 @@ func BuildGrpcEntrypointPermissionsClaimsMap() map[string]*middleware_oidc.Entry
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.ErrorPath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.UnauthorizedPath)
 	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen(wellknown.APIDevPath)
-	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/css*")
-	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/assets*")
-	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/js*")
+	entryPointClaimsBuilder.WithGrpcEntrypointPermissionsClaimsMapOpen("/static*")
 
 	// GraphQL
 	//---------------------------------------------------------------------------------------------------
