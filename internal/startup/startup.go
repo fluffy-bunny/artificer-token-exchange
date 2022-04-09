@@ -3,7 +3,7 @@ package startup
 import (
 	"context"
 	echostarter_auth "echo-starter/internal/auth"
-	tex_config "echo-starter/internal/contracts/config"
+	contracts_config "echo-starter/internal/contracts/config"
 	"echo-starter/internal/wellknown"
 	"encoding/base64"
 	"fmt"
@@ -97,7 +97,7 @@ import (
 
 type Startup struct {
 	echo_contracts_startup.CommonStartup
-	config *tex_config.Config
+	config *contracts_config.Config
 	ctrl   *gomock.Controller
 }
 
@@ -106,10 +106,20 @@ func assertImplementation() {
 }
 
 func NewStartup() echo_contracts_startup.IStartup {
-	return &Startup{
-		config: &tex_config.Config{},
+	startup := &Startup{
+		config: &contracts_config.Config{},
 		ctrl:   gomock.NewController(nil),
 	}
+	hooks := &echo_contracts_startup.Hooks{
+		PostBuildHook: func(container di.Container) error {
+			if startup.config.ApplicationEnvironment == "Development" {
+				di.Dump(container)
+			}
+			return nil
+		}}
+
+	startup.AddHooks(hooks)
+	return startup
 }
 
 func (s *Startup) getSessionStore() sessions.Store {
@@ -180,7 +190,7 @@ func (s *Startup) GetConfigOptions() *core_contracts.ConfigOptions {
 	}
 
 	return &core_contracts.ConfigOptions{
-		RootConfig:             []byte(tex_config.ConfigDefaultJSON),
+		RootConfig:             []byte(contracts_config.ConfigDefaultJSON),
 		Destination:            s.config,
 		LogLevel:               os.Getenv("LOG_LEVEL"),
 		PrettyLog:              prettyLog,
