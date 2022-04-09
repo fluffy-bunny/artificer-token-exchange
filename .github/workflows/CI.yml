@@ -88,10 +88,7 @@ jobs:
       run: |
         mkdir -p ./artifacts
         cp -r ./${{ env.BINARY }} ./artifacts/
-        cp -r ./cmd/server/templates/ ./artifacts/
-        cp -r ./cmd/server/assets/ ./artifacts/ 
-        cp -r ./cmd/server/css/ ./artifacts/ 
-        cp -r ./cmd/server/js/ ./artifacts/ 
+        cp -r ./cmd/server/static/ ./artifacts/
         cd ./artifacts/
         ls -R
 
